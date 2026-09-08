@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restaurant Order Platform | Fresh Meals</title>
+  <meta name="description" content="Modern restaurant ordering website template. Customizable homepage for any restaurant." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="container header-inner">
+      <a href="#" class="logo">
+        <img src="assets/logo.png" alt="Restaurant Logo" width="48" height="48" />
+        <span class="logo-text">Restaurant <strong>Name</strong></span>
+      </a>
+      <nav class="nav" id="nav">
+        <a href="#about">About</a>
+        <a href="#menu-preview">Dishes</a>
+        <a href="#location">Location</a>
+        <a href="#contact">Contact</a>
+        <a href="#order" class="btn btn-primary nav-cta">Order Now</a>
+      </nav>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg">
+      <img src="assets/hero.jpg" alt="Fresh dishes" />
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="container hero-content">
+      <div class="hero-badge">Your Location</div>
+      <h1>Authentic Meals,<br />Prepared Fresh Daily</h1>
+      <p class="hero-sub">From our kitchen to your table. Rich flavours, generous portions, and the taste you love.</p>
+      <div class="hero-actions">
+        <a href="#order" class="btn btn-primary btn-lg">Order Now</a>
+        <a href="#menu-preview" class="btn btn-outline btn-lg">See What’s Available</a>
+      </div>
+      <div class="hero-meta">
+        <span>📞 Your Phone</span>
+        <span>📍 Your City</span>
+        <span>🚚 Delivery Available</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="section about" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-text">
+          <span class="section-label">Our Story</span>
+          <h2>Quality Food, Made With Care</h2>
+          <p>We believe great meals start with fresh ingredients and traditional recipes prepared daily. Our kitchen is committed to consistency, flavour, and generous portions.</p>
+          <p>Whether you’re dining in, taking away, or ordering delivery, you’ll get the same quality every time.</p>
+          <ul class="about-points">
+            <li>Fresh ingredients, traditional recipes</li>
+            <li>Dine-in, takeaway & delivery</li>
+            <li>Event catering available</li>
+          </ul>
+        </div>
+        <div class="about-image">
+          <img src="assets/about.jpg" alt="Kitchen and staff" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Menu Preview / Atmosphere -->
+  <section class="section menu-preview" id="menu-preview">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Taste the Difference</span>
+        <h2>Fresh Dishes. Real Flavour.</h2>
+        <p>A glimpse of what awaits you.</p>
+      </div>
+      <div class="gallery">
+        <div class="gallery-item large">
+          <img src="assets/gallery-1.jpg" alt="Food selection" />
+          <div class="gallery-caption">
+            <h3>Daily Fresh Selections</h3>
+            <p>Soups, stews, proteins & more — prepared with care</p>
+          </div>
+        </div>
+        <div class="gallery-item">
+          <img src="assets/gallery-2.jpg" alt="Proteins" />
+          <div class="gallery-caption">
+            <h3>Premium Proteins</h3>
+            <p>Chicken, fish, assorted meats</p>
+          </div>
+        </div>
+        <div class="gallery-item">
+          <img src="assets/gallery-3.jpg" alt="Happy customers" />
+          <div class="gallery-caption">
+            <h3>Great Atmosphere</h3>
+            <p>Dine with friends & family</p>
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-40">
+        <a href="#order" class="btn btn-primary">View Full Menu & Order</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Location & Delivery -->
+  <section class="section location" id="location">
+    <div class="container">
+      <div class="location-grid">
+        <div class="location-info">
+          <span class="section-label">Find Us</span>
+          <h2>Conveniently Located</h2>
+          <p>Visit us or order delivery in our service area.</p>
+          
+          <div class="info-cards">
+            <div class="info-card">
+              <div class="info-icon">📍</div>
+              <div>
+                <strong>Our Location</strong>
+                <p>Your Address<br />City, State</p>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-icon">🚚</div>
+              <div>
+                <strong>Delivery Area</strong>
+                <p>We deliver to selected areas around our location.</p>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-icon">🕐</div>
+              <div>
+                <strong>Opening Hours</strong>
+                <p>Open daily<br />Fresh meals ready when you are</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="location-map">
+          <div class="map-placeholder">
+            <div class="map-content">
+              <img src="assets/logo.png" alt="Logo" width="80" />
+              <h3>Your Restaurant</h3>
+              <p>City • Area</p>
+              <a href="#" class="btn btn-outline btn-sm">Open in Google Maps</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact / Order CTA -->
+  <section class="section cta" id="order">
+    <div class="container">
+      <div class="cta-box">
+        <h2>Ready to Order?</h2>
+        <p>Call or WhatsApp us now. Fresh meals, quick service, and the taste you love.</p>
+        <div class="cta-actions">
+          <a href="tel:+2340000000000" class="btn btn-primary btn-lg">
+            📞 Call Us
+          </a>
+          <a href="https://wa.me/2340000000000" target="_blank" rel="noopener" class="btn btn-whatsapp btn-lg">
+            💬 WhatsApp Us
+          </a>
+        </div>
+        <p class="cta-note">Same number for calls and WhatsApp</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" id="contact">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="logo">
+            <img src="assets/logo.png" alt="Logo" width="40" height="40" />
+            <span class="logo-text">Restaurant <strong>Name</strong></span>
+          </a>
+          <p>Quality meals prepared with care.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Quick Links</h4>
+          <a href="#about">About</a>
+          <a href="#menu-preview">Dishes</a>
+          <a href="#location">Location</a>
+          <a href="#order">Order</a>
+        </div>
+        <div class="footer-contact">
+          <h4>Contact</h4>
+          <p>📞 <a href="tel:+2340000000000">Your Phone</a></p>
+          <p>💬 <a href="https://wa.me/2340000000000" target="_blank" rel="noopener">WhatsApp</a></p>
+          <p>📍 Your City</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Restaurant Order Platform. All rights reserved.</p>
+        <p class="footer-note">White-label ready • Change homepage & branding for any restaurant</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
