@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Victorious Mega Kitchen (VMK) | Order Now</title>
-  <meta name="description" content="Order fresh Nigerian meals from Victorious Mega Kitchen. Pickup or Delivery around BIU & Ugbor." />
+  <meta name="description" content="Order fresh meals from Victorious Mega Kitchen. See what’s available, order for pickup and skip the queue, or get delivery around BIU & Ugbor." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <!-- Top Header -->
+  <!-- Header -->
   <header class="header">
     <div class="header-inner">
       <div class="brand">
@@ -21,48 +21,100 @@
           <span class="tag">VMK • Ugbor</span>
         </div>
       </div>
-      <button class="cart-btn" id="cartBtn">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/>
-        </svg>
-        <span class="cart-count" id="cartCount">0</span>
-      </button>
+
+      <div class="header-actions">
+        <button class="cart-btn" id="cartBtn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/>
+          </svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+
+        <button class="menu-btn" id="menuBtn" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <!-- Main -->
-  <main class="main">
-    <!-- Location + Order Type -->
-    <section class="top-section">
-      <div class="location-pill">
-        <span class="dot"></span>
-        Delivering to BIU & Ugbor
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="menu-link" onclick="openTrack()">Track Order</button>
+    <button class="menu-link" onclick="scrollToOrder()">Order Now</button>
+  </div>
+  <div class="menu-overlay" id="menuOverlay"></div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Welcome to Victorious Mega Kitchen</h1>
+      <p class="hero-sub">Fresh Nigerian meals in Ugbor. Order smart, skip the stress.</p>
+
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">1</div>
+          <div>
+            <strong>See What’s Available</strong>
+            <p>Check live availability before you come so you’re never left guessing.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">2</div>
+          <div>
+            <strong>Order Now & Pickup</strong>
+            <p>Pay ahead, we pack it for you. Arrive and pick up — no long queues.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">3</div>
+          <div>
+            <strong>Delivery</strong>
+            <p>Get your food delivered around BIU and Ugbor. Fast and reliable.</p>
+          </div>
+        </div>
       </div>
 
-      <div class="order-type">
-        <button class="type-btn active" data-type="pickup">Pickup</button>
-        <button class="type-btn" data-type="delivery">Delivery</button>
+      <button class="hero-cta" onclick="scrollToOrder()">Start Ordering</button>
+    </div>
+  </section>
+
+  <!-- Order Section -->
+  <main class="main" id="orderSection">
+    <div class="section-title">
+      <h2>What would you like?</h2>
+      <p>Choose a main category to begin</p>
+    </div>
+
+    <!-- Main Category Selection -->
+    <div class="main-cats" id="mainCats">
+      <button class="main-cat" data-path="rice">
+        <span class="cat-emoji">🍚</span>
+        <span>Rice Meals</span>
+      </button>
+      <button class="main-cat" data-path="swallow">
+        <span class="cat-emoji">🥣</span>
+        <span>Swallow & Soup</span>
+      </button>
+      <button class="main-cat" data-path="pastries">
+        <span class="cat-emoji">🍔</span>
+        <span>Pastries & Snacks</span>
+      </button>
+    </div>
+
+    <!-- Guided Steps -->
+    <div class="guided" id="guided" style="display:none;">
+      <div class="steps-bar">
+        <button class="back-btn" id="backBtn">← Back</button>
+        <span class="step-label" id="stepLabel">Step 1</span>
       </div>
-    </section>
 
-    <!-- Categories -->
-    <section class="categories" id="categories">
-      <button class="cat-btn active" data-cat="all">All</button>
-      <button class="cat-btn" data-cat="rice">Rice</button>
-      <button class="cat-btn" data-cat="swallow">Swallow</button>
-      <button class="cat-btn" data-cat="soup">Soup</button>
-      <button class="cat-btn" data-cat="proteins">Proteins</button>
-      <button class="cat-btn" data-cat="sides">Sides</button>
-      <button class="cat-btn" data-cat="pastries">Pastries</button>
-    </section>
-
-    <!-- Food Grid -->
-    <section class="grid" id="foodGrid">
-      <!-- Items injected by JS -->
-    </section>
+      <div class="step-content" id="stepContent">
+        <!-- Dynamic content -->
+      </div>
+    </div>
   </main>
 
-  <!-- Sticky Cart Bar (mobile) -->
+  <!-- Sticky Cart Bar -->
   <div class="cart-bar" id="cartBar">
     <div class="cart-bar-info">
       <span id="barCount">0 items</span>
@@ -89,6 +141,18 @@
       <button class="checkout-btn" id="checkoutBtn" disabled>Proceed to Checkout</button>
     </div>
   </aside>
+
+  <!-- Track Order Modal -->
+  <div class="modal" id="trackModal">
+    <div class="modal-content">
+      <button class="close-btn modal-close" id="closeTrack">&times;</button>
+      <h2>Track Your Order</h2>
+      <p>Enter your Order ID or Phone Number</p>
+      <input type="text" id="trackInput" placeholder="e.g. VMK-4831 or 0810..." />
+      <button class="checkout-btn" style="margin-top:12px;">Track Order</button>
+      <p class="track-note">You received your Order ID after placing an order.</p>
+    </div>
+  </div>
 
   <script src="js/main.js"></script>
 </body>
