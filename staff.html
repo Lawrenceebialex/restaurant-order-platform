@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Dashboard | VMK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/staff.css" />
+</head>
+<body>
+  <!-- Login Screen -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <img src="https://i.postimg.cc/nzTsyQWk/1000605467-removebg-preview.png" alt="VMK" class="login-logo" />
+      <h1>Staff Dashboard</h1>
+      <p>Victorious Mega Kitchen</p>
+      <input type="password" id="passwordInput" placeholder="Enter password" />
+      <button id="loginBtn">Login</button>
+      <p class="error" id="loginError" style="display:none;">Incorrect password</p>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="dashboard" id="dashboard" style="display:none;">
+    <header class="dash-header">
+      <div class="brand">
+        <img src="https://i.postimg.cc/nzTsyQWk/1000605467-removebg-preview.png" alt="VMK" />
+        <span>Staff Dashboard</span>
+      </div>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="orders">Orders</button>
+      <button class="tab" data-tab="menu">Menu Availability</button>
+    </div>
+
+    <!-- Orders Tab -->
+    <section class="tab-content active" id="ordersTab">
+      <div class="section-header">
+        <h2>Incoming Orders</h2>
+        <button class="refresh-btn" onclick="loadOrders()">Refresh</button>
+      </div>
+      <div class="orders-list" id="ordersList">
+        <p class="empty">No orders yet</p>
+      </div>
+    </section>
+
+    <!-- Menu Tab -->
+    <section class="tab-content" id="menuTab">
+      <div class="section-header">
+        <h2>Menu Availability</h2>
+        <p class="hint">Toggle items Available / Unavailable</p>
+      </div>
+      <div class="menu-controls" id="menuControls"></div>
+    </section>
+  </div>
+
+  <script src="js/staff.js"></script>
+</body>
+</html>
