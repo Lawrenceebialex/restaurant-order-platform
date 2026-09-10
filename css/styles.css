@@ -391,12 +391,32 @@ img { max-width: 100%; display: block; }
   font-size: 0.9rem;
   margin: 16px 0 6px;
 }
+.order-id-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
 .order-id {
   font-size: 1.8rem;
   font-weight: 800;
   color: var(--purple);
   letter-spacing: 1px;
-  margin-bottom: 28px;
+}
+.copy-btn {
+  background: var(--purple-light);
+  color: var(--purple);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.copy-btn:hover {
+  background: var(--purple);
+  color: white;
 }
 .track-guide {
   background: #f8f7fc;
