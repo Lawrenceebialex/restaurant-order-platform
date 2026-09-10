@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://js.paystack.co/v1/inline.js"></script>
 </head>
 <body>
   <!-- Header -->
@@ -45,7 +46,7 @@
   <div class="menu-overlay" id="menuOverlay"></div>
 
   <!-- Hero Section -->
-  <section class="hero">
+  <section class="hero" id="heroSection">
     <div class="hero-content">
       <h1>Welcome to Victorious Mega Kitchen</h1>
       <p class="hero-sub">Fresh Nigerian meals in Ugbor. Order smart, skip the stress.</p>
@@ -85,7 +86,6 @@
       <p>Choose a main category to begin</p>
     </div>
 
-    <!-- Main Category Selection -->
     <div class="main-cats" id="mainCats">
       <button class="main-cat" data-path="rice">
         <span class="cat-emoji">🍚</span>
@@ -101,18 +101,118 @@
       </button>
     </div>
 
-    <!-- Guided Steps -->
     <div class="guided" id="guided" style="display:none;">
       <div class="steps-bar">
         <button class="back-btn" id="backBtn">← Back</button>
         <span class="step-label" id="stepLabel">Step 1</span>
       </div>
-
-      <div class="step-content" id="stepContent">
-        <!-- Dynamic content -->
-      </div>
+      <div class="step-content" id="stepContent"></div>
     </div>
   </main>
+
+  <!-- Checkout Section (hidden by default) -->
+  <section class="checkout-section" id="checkoutSection" style="display:none;">
+    <div class="checkout-container">
+      <button class="back-btn" id="backToCart" style="margin-bottom:16px;">← Back to Cart</button>
+      <h2>Checkout</h2>
+
+      <div class="order-type-select">
+        <label class="radio-card">
+          <input type="radio" name="fulfillment" value="pickup" checked />
+          <div>
+            <strong>Pickup</strong>
+            <span>Pay now • Skip the queue</span>
+          </div>
+        </label>
+        <label class="radio-card">
+          <input type="radio" name="fulfillment" value="delivery" />
+          <div>
+            <strong>Delivery</strong>
+            <span>BIU & Ugbor area</span>
+          </div>
+        </label>
+      </div>
+
+      <form id="checkoutForm">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" id="customerName" required placeholder="Your full name" />
+        </div>
+
+        <div class="form-group">
+          <label>Phone Number *</label>
+          <input type="tel" id="customerPhone" required placeholder="0810 000 0000" />
+        </div>
+
+        <div class="form-group" id="locationGroup" style="display:none;">
+          <label>Delivery Location *</label>
+          <select id="deliveryLocation">
+            <option value="">Select location</option>
+            <option value="BIU Front Gate">BIU Front Gate</option>
+            <option value="BIU Back Gate">BIU Back Gate</option>
+            <option value="Delano Hotel">Delano Hotel</option>
+            <option value="GRA Ugbor">GRA Ugbor</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="otherLocationGroup" style="display:none;">
+          <label>Specify Location</label>
+          <input type="text" id="otherLocation" placeholder="Enter your exact location" />
+        </div>
+
+        <div class="form-group">
+          <label>Note (optional)</label>
+          <textarea id="orderNote" rows="2" placeholder="Any special request?"></textarea>
+        </div>
+
+        <div class="form-group" id="paymentGroup">
+          <label>Payment Method</label>
+          <div class="payment-options">
+            <label class="radio-card small">
+              <input type="radio" name="payment" value="paystack" checked />
+              <span>Pay Now (Paystack)</span>
+            </label>
+            <label class="radio-card small" id="payOnDeliveryOption">
+              <input type="radio" name="payment" value="pod" />
+              <span>Pay on Delivery</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="checkout-summary">
+          <div class="summary-row">
+            <span>Total</span>
+            <strong id="checkoutTotal">₦0</strong>
+          </div>
+        </div>
+
+        <button type="submit" class="checkout-btn" id="placeOrderBtn">Place Order</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Success Screen -->
+  <section class="success-section" id="successSection" style="display:none;">
+    <div class="success-card">
+      <div class="success-icon">✓</div>
+      <h2>Order Placed Successfully!</h2>
+      <p class="order-id-label">Your Order ID</p>
+      <div class="order-id" id="orderIdDisplay">VMK-0000</div>
+
+      <div class="track-guide">
+        <h3>How to Track Your Order</h3>
+        <ol>
+          <li>Tap the <strong>menu icon</strong> (☰) at the top right</li>
+          <li>Select <strong>Track Order</strong></li>
+          <li>Enter your <strong>Order ID</strong> or Phone Number</li>
+        </ol>
+        <p class="save-note">Please save your Order ID</p>
+      </div>
+
+      <button class="hero-cta" onclick="location.reload()">Back to Home</button>
+    </div>
+  </section>
 
   <!-- Sticky Cart Bar -->
   <div class="cart-bar" id="cartBar">
@@ -149,8 +249,9 @@
       <h2>Track Your Order</h2>
       <p>Enter your Order ID or Phone Number</p>
       <input type="text" id="trackInput" placeholder="e.g. VMK-4831 or 0810..." />
-      <button class="checkout-btn" style="margin-top:12px;">Track Order</button>
+      <button class="checkout-btn" style="margin-top:12px;" id="trackBtn">Track Order</button>
       <p class="track-note">You received your Order ID after placing an order.</p>
+      <div id="trackResult" style="margin-top:16px;display:none;"></div>
     </div>
   </div>
 
