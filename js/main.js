@@ -273,7 +273,6 @@ function placeOrder(e) {
   if (paymentMethod === "paystack") {
     payWithPaystack(order);
   } else {
-    // Pay on Delivery
     saveOrder(order);
     showSuccess(order.id);
   }
@@ -282,8 +281,8 @@ function placeOrder(e) {
 function payWithPaystack(order) {
   const handler = PaystackPop.setup({
     key: PAYSTACK_PUBLIC_KEY,
-    email: order.phone + "@vmk.customer", // Paystack requires email
-    amount: order.total * 100, // in kobo
+    email: order.phone + "@vmk.customer",
+    amount: order.total * 100,
     currency: "NGN",
     ref: order.id + "-" + Date.now(),
     metadata: {
@@ -319,6 +318,17 @@ function showSuccess(orderId) {
   document.getElementById("successSection").style.display = "block";
   document.getElementById("orderIdDisplay").textContent = orderId;
   window.scrollTo(0, 0);
+}
+
+function copyOrderId() {
+  const orderId = document.getElementById("orderIdDisplay").textContent;
+  navigator.clipboard.writeText(orderId).then(() => {
+    const btn = document.getElementById("copyOrderIdBtn");
+    btn.textContent = "Copied!";
+    setTimeout(() => { btn.textContent = "Copy"; }, 2000);
+  }).catch(() => {
+    alert("Order ID: " + orderId);
+  });
 }
 
 function openTrack() {
