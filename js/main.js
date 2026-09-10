@@ -1,3 +1,5 @@
+const PAYSTACK_PUBLIC_KEY = "pk_test_9d6a3822fd55c2eecbf5a42591775679e0b1d49a";
+
 const menu = {
   rice: [
     { id: 1, name: "Jollof Rice", price: 1500, img: "https://i.postimg.cc/W3vFfqGJ/images-(34).jpg", available: true },
@@ -45,19 +47,21 @@ const menu = {
 let cart = [];
 let currentPath = null;
 let currentStep = 0;
-let selectedMain = null; // for rice or soup type
-
-const mainCats = document.getElementById("mainCats");
-const guided = document.getElementById("guided");
-const stepContent = document.getElementById("stepContent");
-const stepLabel = document.getElementById("stepLabel");
-const backBtn = document.getElementById("backBtn");
 
 function formatPrice(n) {
   return "₦" + n.toLocaleString();
 }
 
+function generateOrderId() {
+  return "VMK-" + Math.floor(1000 + Math.random() * 9000);
+}
+
+function getTotal() {
+  return cart.reduce((s, i) => s + i.price * i.qty, 0);
+}
+
 function renderCards(items, nextStepLabel) {
+  const stepContent = document.getElementById("stepContent");
   stepContent.innerHTML = `
     <div class="grid">
       ${items.map(item => `
@@ -85,20 +89,18 @@ function renderCards(items, nextStepLabel) {
       </button>
     </div>
   `;
-  stepLabel.textContent = nextStepLabel;
+  document.getElementById("stepLabel").textContent = nextStepLabel;
 }
 
 function startPath(path) {
   currentPath = path;
   currentStep = 1;
-  selectedMain = null;
-  mainCats.style.display = "none";
-  guided.style.display = "block";
+  document.getElementById("mainCats").style.display = "none";
+  document.getElementById("guided").style.display = "block";
 
   if (path === "rice") {
     renderCards(menu.rice, "Step 1 • Choose your Rice");
   } else if (path === "swallow") {
-    // First show soups + swallow together or start with soup choice
     renderCards([...menu.soup, ...menu.swallow], "Step 1 • Choose Soup or Swallow");
   } else if (path === "pastries") {
     renderCards(menu.pastries, "Step 1 • Choose Pastry");
@@ -109,42 +111,28 @@ function nextStep() {
   currentStep++;
 
   if (currentPath === "rice") {
-    if (currentStep === 2) {
-      renderCards(menu.proteins, "Step 2 • Add Protein");
-    } else if (currentStep === 3) {
-      renderCards(menu.sides, "Step 3 • Add-ons (optional)");
-    } else if (currentStep === 4) {
-      renderCards(menu.drinks, "Step 4 • Add a Drink (optional)");
-    } else {
-      // Done
-      openCart();
-    }
+    if (currentStep === 2) renderCards(menu.proteins, "Step 2 • Add Protein");
+    else if (currentStep === 3) renderCards(menu.sides, "Step 3 • Add-ons (optional)");
+    else if (currentStep === 4) renderCards(menu.drinks, "Step 4 • Add a Drink (optional)");
+    else openCart();
   } else if (currentPath === "swallow") {
-    if (currentStep === 2) {
-      renderCards(menu.proteins, "Step 2 • Add Protein");
-    } else if (currentStep === 3) {
-      renderCards(menu.drinks, "Step 3 • Add a Drink (optional)");
-    } else {
-      openCart();
-    }
+    if (currentStep === 2) renderCards(menu.proteins, "Step 2 • Add Protein");
+    else if (currentStep === 3) renderCards(menu.drinks, "Step 3 • Add a Drink (optional)");
+    else openCart();
   } else if (currentPath === "pastries") {
-    if (currentStep === 2) {
-      renderCards([...menu.pastries.filter(p => p.isIceCream), ...menu.drinks], "Step 2 • Ice Cream or Drink (optional)");
-    } else {
-      openCart();
-    }
+    if (currentStep === 2) renderCards([...menu.pastries.filter(p => p.isIceCream), ...menu.drinks], "Step 2 • Ice Cream or Drink (optional)");
+    else openCart();
   }
 }
 
 function goBack() {
   if (currentStep <= 1) {
-    // Back to main categories
-    guided.style.display = "none";
-    mainCats.style.display = "grid";
+    document.getElementById("guided").style.display = "none";
+    document.getElementById("mainCats").style.display = "grid";
     currentPath = null;
     currentStep = 0;
   } else {
-    currentStep -= 2; // because nextStep will increment
+    currentStep -= 2;
     nextStep();
   }
 }
@@ -166,12 +154,13 @@ function changeQty(id, delta) {
 
 function updateCartUI() {
   const totalItems = cart.reduce((s, i) => s + i.qty, 0);
-  const totalPrice = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const totalPrice = getTotal();
 
   document.getElementById("cartCount").textContent = totalItems;
   document.getElementById("barCount").textContent = totalItems + (totalItems === 1 ? " item" : " items");
   document.getElementById("barTotal").textContent = formatPrice(totalPrice);
   document.getElementById("drawerTotal").textContent = formatPrice(totalPrice);
+  document.getElementById("checkoutTotal").textContent = formatPrice(totalPrice);
 
   document.getElementById("cartBar").classList.toggle("show", totalItems > 0);
   document.getElementById("checkoutBtn").disabled = totalItems === 0;
@@ -205,13 +194,166 @@ function closeCart() {
   document.getElementById("overlay").classList.remove("show");
 }
 
+function showCheckout() {
+  closeCart();
+  document.getElementById("heroSection").style.display = "none";
+  document.getElementById("orderSection").style.display = "none";
+  document.getElementById("checkoutSection").style.display = "block";
+  document.getElementById("cartBar").classList.remove("show");
+  updateCartUI();
+  updateFulfillmentUI();
+}
+
+function backToCart() {
+  document.getElementById("checkoutSection").style.display = "none";
+  document.getElementById("heroSection").style.display = "block";
+  document.getElementById("orderSection").style.display = "block";
+  openCart();
+}
+
+function updateFulfillmentUI() {
+  const isDelivery = document.querySelector('input[name="fulfillment"]:checked').value === "delivery";
+  document.getElementById("locationGroup").style.display = isDelivery ? "block" : "none";
+  document.getElementById("payOnDeliveryOption").style.display = isDelivery ? "flex" : "none";
+
+  if (!isDelivery) {
+    document.querySelector('input[name="payment"][value="paystack"]').checked = true;
+  }
+}
+
+function handleLocationChange() {
+  const val = document.getElementById("deliveryLocation").value;
+  document.getElementById("otherLocationGroup").style.display = val === "Other" ? "block" : "none";
+}
+
+function placeOrder(e) {
+  e.preventDefault();
+
+  const name = document.getElementById("customerName").value.trim();
+  const phone = document.getElementById("customerPhone").value.trim();
+  const fulfillment = document.querySelector('input[name="fulfillment"]:checked').value;
+  const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+  const note = document.getElementById("orderNote").value.trim();
+  let location = "";
+
+  if (!name || !phone) {
+    alert("Please fill in your name and phone number");
+    return;
+  }
+
+  if (fulfillment === "delivery") {
+    location = document.getElementById("deliveryLocation").value;
+    if (!location) {
+      alert("Please select a delivery location");
+      return;
+    }
+    if (location === "Other") {
+      location = document.getElementById("otherLocation").value.trim();
+      if (!location) {
+        alert("Please specify your location");
+        return;
+      }
+    }
+  }
+
+  const order = {
+    id: generateOrderId(),
+    name,
+    phone,
+    fulfillment,
+    location,
+    note,
+    paymentMethod,
+    items: [...cart],
+    total: getTotal(),
+    status: "Pending",
+    createdAt: new Date().toISOString()
+  };
+
+  if (paymentMethod === "paystack") {
+    payWithPaystack(order);
+  } else {
+    // Pay on Delivery
+    saveOrder(order);
+    showSuccess(order.id);
+  }
+}
+
+function payWithPaystack(order) {
+  const handler = PaystackPop.setup({
+    key: PAYSTACK_PUBLIC_KEY,
+    email: order.phone + "@vmk.customer", // Paystack requires email
+    amount: order.total * 100, // in kobo
+    currency: "NGN",
+    ref: order.id + "-" + Date.now(),
+    metadata: {
+      custom_fields: [
+        { display_name: "Customer Name", variable_name: "customer_name", value: order.name },
+        { display_name: "Phone", variable_name: "phone", value: order.phone },
+        { display_name: "Order ID", variable_name: "order_id", value: order.id }
+      ]
+    },
+    callback: function(response) {
+      order.paymentRef = response.reference;
+      order.paymentStatus = "Paid";
+      saveOrder(order);
+      showSuccess(order.id);
+    },
+    onClose: function() {
+      alert("Payment was not completed. You can try again.");
+    }
+  });
+  handler.openIframe();
+}
+
+function saveOrder(order) {
+  const orders = JSON.parse(localStorage.getItem("vmk_orders") || "[]");
+  orders.push(order);
+  localStorage.setItem("vmk_orders", JSON.stringify(orders));
+  cart = [];
+  updateCartUI();
+}
+
+function showSuccess(orderId) {
+  document.getElementById("checkoutSection").style.display = "none";
+  document.getElementById("successSection").style.display = "block";
+  document.getElementById("orderIdDisplay").textContent = orderId;
+  window.scrollTo(0, 0);
+}
+
 function openTrack() {
   document.getElementById("mobileMenu").classList.remove("open");
   document.getElementById("menuOverlay").classList.remove("show");
   document.getElementById("trackModal").classList.add("show");
+  document.getElementById("trackResult").style.display = "none";
 }
 function closeTrack() {
   document.getElementById("trackModal").classList.remove("show");
+}
+
+function trackOrder() {
+  const input = document.getElementById("trackInput").value.trim().toUpperCase();
+  if (!input) return;
+
+  const orders = JSON.parse(localStorage.getItem("vmk_orders") || "[]");
+  const found = orders.find(o => o.id === input || o.phone.includes(input.replace(/\D/g, "")));
+
+  const resultDiv = document.getElementById("trackResult");
+  resultDiv.style.display = "block";
+
+  if (found) {
+    resultDiv.innerHTML = `
+      <div style="text-align:left;background:#f8f7fc;padding:16px;border-radius:12px;">
+        <p><strong>Order ID:</strong> ${found.id}</p>
+        <p><strong>Status:</strong> ${found.status}</p>
+        <p><strong>Type:</strong> ${found.fulfillment}</p>
+        <p><strong>Total:</strong> ${formatPrice(found.total)}</p>
+        <p style="margin-top:8px;font-size:0.85rem;color:#6b7280;">Items: ${found.items.map(i => i.name + " ×" + i.qty).join(", ")}</p>
+      </div>
+    `;
+  } else {
+    resultDiv.innerHTML = `<p style="color:#991b1b;">No order found. Please check your Order ID or phone number.</p>`;
+  }
 }
 
 function scrollToOrder() {
@@ -225,12 +367,22 @@ document.querySelectorAll(".main-cat").forEach(btn => {
   btn.addEventListener("click", () => startPath(btn.dataset.path));
 });
 
-backBtn.addEventListener("click", goBack);
-
+document.getElementById("backBtn").addEventListener("click", goBack);
 document.getElementById("cartBtn").addEventListener("click", openCart);
 document.getElementById("viewCartBtn").addEventListener("click", openCart);
 document.getElementById("closeCart").addEventListener("click", closeCart);
 document.getElementById("overlay").addEventListener("click", closeCart);
+
+document.getElementById("checkoutBtn").addEventListener("click", showCheckout);
+document.getElementById("backToCart").addEventListener("click", backToCart);
+
+document.querySelectorAll('input[name="fulfillment"]').forEach(radio => {
+  radio.addEventListener("change", updateFulfillmentUI);
+});
+
+document.getElementById("deliveryLocation").addEventListener("change", handleLocationChange);
+
+document.getElementById("checkoutForm").addEventListener("submit", placeOrder);
 
 document.getElementById("menuBtn").addEventListener("click", () => {
   document.getElementById("mobileMenu").classList.add("open");
@@ -242,10 +394,7 @@ document.getElementById("menuOverlay").addEventListener("click", () => {
 });
 
 document.getElementById("closeTrack").addEventListener("click", closeTrack);
-
-document.getElementById("checkoutBtn").addEventListener("click", () => {
-  alert("Checkout coming next!\nTotal: " + document.getElementById("drawerTotal").textContent);
-});
+document.getElementById("trackBtn").addEventListener("click", trackOrder);
 
 // Init
 updateCartUI();
