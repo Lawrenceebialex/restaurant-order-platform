@@ -110,7 +110,7 @@
     </div>
   </main>
 
-  <!-- Checkout Section (hidden by default) -->
+  <!-- Checkout Section -->
   <section class="checkout-section" id="checkoutSection" style="display:none;">
     <div class="checkout-container">
       <button class="back-btn" id="backToCart" style="margin-bottom:16px;">← Back to Cart</button>
@@ -198,7 +198,11 @@
       <div class="success-icon">✓</div>
       <h2>Order Placed Successfully!</h2>
       <p class="order-id-label">Your Order ID</p>
-      <div class="order-id" id="orderIdDisplay">VMK-0000</div>
+      
+      <div class="order-id-row">
+        <div class="order-id" id="orderIdDisplay">VMK-0000</div>
+        <button class="copy-btn" id="copyOrderIdBtn" onclick="copyOrderId()">Copy</button>
+      </div>
 
       <div class="track-guide">
         <h3>How to Track Your Order</h3>
