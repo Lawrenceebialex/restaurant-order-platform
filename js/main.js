@@ -25,22 +25,21 @@ const menu = {
     { id: 15, name: "Turkey", price: 3500, img: "https://i.postimg.cc/PrbN753J/images-(49).jpg" },
     { id: 16, name: "Goat Meat", price: 2500, img: "https://i.postimg.cc/YqNjPCnh/images-(50).jpg" },
     { id: 17, name: "Catfish", price: 2500, img: "https://i.postimg.cc/dtRDfVHk/images-(51).jpg" },
-    { id: 18, name: "Fish", price: 2000, img: "https://i.postimg.cc/dtRDfVHk/images-(51).jpg" },
-    { id: 19, name: "Boiled Egg", price: 500, img: "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=400&h=400&fit=crop" }
+    { id: 18, name: "Boiled Egg", price: 500, img: "https://i.postimg.cc/PxbBj9BD/images-(52).jpg" }
   ],
   sides: [
-    { id: 20, name: "Plantain", price: 500, img: "https://images.unsplash.com/photo-1603833665858-e61d17a86224?w=400&h=400&fit=crop" },
-    { id: 21, name: "Coleslaw", price: 500, img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=400&fit=crop" }
+    { id: 20, name: "Fried Plantain", price: 500, img: "https://i.postimg.cc/LXkrpwrz/images-(53).jpg" },
+    { id: 21, name: "Coleslaw", price: 500, img: "https://i.postimg.cc/FRb24823/images-(54).jpg" }
   ],
   drinks: [
-    { id: 22, name: "Water", price: 300, img: "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=400&h=400&fit=crop" },
-    { id: 23, name: "Soft Drink", price: 500, img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400&h=400&fit=crop" },
-    { id: 24, name: "Chapman", price: 1500, img: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=400&h=400&fit=crop" }
+    { id: 22, name: "Bottled Water", price: 300, img: "https://i.postimg.cc/bJ0KhWKR/images-(57).jpg" },
+    { id: 23, name: "Fanta", price: 500, img: "https://i.postimg.cc/fL76Np6K/images-(58).jpg" },
+    { id: 24, name: "Coke", price: 500, img: "https://i.postimg.cc/761pkdp9/images-(59).jpg" }
   ],
   pastries: [
     { id: 25, name: "Burger", price: 3500, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop" },
-    { id: 26, name: "Hotdog", price: 2500, img: "https://images.unsplash.com/photo-1612392062798-2473ce6d0d4c?w=400&h=400&fit=crop" },
-    { id: 27, name: "Ice Cream", price: 2000, img: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400&h=400&fit=crop", isIceCream: true }
+    { id: 26, name: "Hotdog", price: 2500, img: "https://i.postimg.cc/26dPDMPn/images-(55).jpg" },
+    { id: 27, name: "Ice Cream", price: 2000, img: "https://i.postimg.cc/cH7VS2VM/images-(56).jpg", isIceCream: true }
   ]
 };
 
@@ -92,6 +91,7 @@ function updateStatusPill() {
 
 function renderCard(item, { showAdd = true } = {}) {
   const available = isAvailable(item.name);
+  const safeName = item.name.replace(/'/g, "\\'");
   return `
     <article class="card ${available ? "" : "unavailable"}">
       <div class="card-img">
@@ -101,13 +101,12 @@ function renderCard(item, { showAdd = true } = {}) {
       <div class="card-body">
         <div class="card-name">${item.name}</div>
         <div class="card-price">${formatPrice(item.price)}</div>
-        ${showAdd ? `<button type="button" class="add-btn" ${available ? "" : "disabled"} onclick="addToCart(${item.id}, '${item.name.replace(/'/g, "\\'")}', ${item.price})">${available ? "Add" : "Unavailable"}</button>` : ""}
+        ${showAdd ? `<button type="button" class="add-btn" ${available ? "" : "disabled"} onclick="addToCart(${item.id}, '${safeName}', ${item.price})">${available ? "Add" : "Unavailable"}</button>` : ""}
       </div>
     </article>
   `;
 }
 
-// Compact one-line previews (2–3 items)
 function renderCompactPreviews() {
   document.getElementById("previewRice").innerHTML =
     menu.rice.slice(0, 3).map(i => renderCard(i)).join("");
@@ -117,7 +116,18 @@ function renderCompactPreviews() {
     menu.pastries.slice(0, 3).map(i => renderCard(i)).join("");
 }
 
-// Fulfillment toggles (pre-selection only)
+function updateFulfillmentHints() {
+  const hintPickup = document.getElementById("hintPickup");
+  const hintDelivery = document.getElementById("hintDelivery");
+  hintPickup.classList.toggle("show", preferredFulfillment === "pickup");
+  hintDelivery.classList.toggle("show", preferredFulfillment === "delivery");
+  // If nothing selected, show both briefly as context under the toggles
+  if (!preferredFulfillment) {
+    hintPickup.classList.add("show");
+    hintDelivery.classList.add("show");
+  }
+}
+
 function setFulfillmentToggle(type) {
   if (preferredFulfillment === type) {
     preferredFulfillment = null;
@@ -126,13 +136,12 @@ function setFulfillmentToggle(type) {
   }
   document.getElementById("togglePickup").classList.toggle("active", preferredFulfillment === "pickup");
   document.getElementById("toggleDelivery").classList.toggle("active", preferredFulfillment === "delivery");
+  updateFulfillmentHints();
 }
 
-// Guided workflow
 function startPath(path) {
   currentPath = path;
   currentStep = 1;
-  document.getElementById("mainCats").style.display = "none";
   document.getElementById("compactPreviews").style.display = "none";
   document.getElementById("guided").style.display = "block";
 
@@ -177,7 +186,6 @@ function nextStep() {
 function goBack() {
   if (currentStep <= 1) {
     document.getElementById("guided").style.display = "none";
-    document.getElementById("mainCats").style.display = "grid";
     document.getElementById("compactPreviews").style.display = "block";
     currentPath = null;
     currentStep = 0;
@@ -187,7 +195,6 @@ function goBack() {
   }
 }
 
-// Availability view
 function showAvailability() {
   closeMobileMenu();
   document.getElementById("homeView").style.display = "none";
@@ -210,7 +217,6 @@ function renderAvailabilityView() {
   const byCat = (items) => {
     const g = {};
     items.forEach(i => {
-      // infer category from menu keys
       let cat = "other";
       for (const [k, arr] of Object.entries(menu)) {
         if (arr.some(x => x.id === i.id)) { cat = k; break; }
@@ -245,7 +251,6 @@ function renderAvailabilityView() {
   document.getElementById("availabilityContent").innerHTML = html;
 }
 
-// Cart
 function addToCart(id, name, price) {
   if (!isAvailable(name)) return;
   const existing = cart.find(c => c.id === id);
@@ -303,7 +308,6 @@ function closeCart() {
   document.getElementById("overlay").classList.remove("show");
 }
 
-// Checkout
 function showCheckout() {
   closeCart();
   document.getElementById("homeView").style.display = "none";
@@ -317,7 +321,6 @@ function showCheckout() {
   const deliveryRadio = document.getElementById("fulfillmentDelivery");
   pickupRadio.checked = preferredFulfillment === "pickup";
   deliveryRadio.checked = preferredFulfillment === "delivery";
-  // if null, neither checked
 
   updateFulfillmentUI();
   updateCartUI();
@@ -422,6 +425,7 @@ function saveOrder(order) {
   preferredFulfillment = null;
   document.getElementById("togglePickup").classList.remove("active");
   document.getElementById("toggleDelivery").classList.remove("active");
+  updateFulfillmentHints();
   updateCartUI();
 }
 
@@ -479,9 +483,6 @@ function closeMobileMenu() {
 }
 
 // Events
-document.querySelectorAll(".main-cat").forEach(btn => {
-  btn.addEventListener("click", () => startPath(btn.dataset.path));
-});
 document.querySelectorAll(".view-all").forEach(btn => {
   btn.addEventListener("click", () => startPath(btn.dataset.path));
 });
@@ -513,4 +514,5 @@ document.getElementById("trackBtn").addEventListener("click", trackOrder);
 
 updateStatusPill();
 renderCompactPreviews();
+updateFulfillmentHints();
 updateCartUI();
