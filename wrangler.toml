@@ -1,12 +1,10 @@
-# Cloudflare Pages + D1 configuration
-# Database name in dashboard: restaurant-platform-db
-# Binding name used in code: DB
+# Cloudflare Pages config
+# Do NOT put a fake database_id here — it breaks deploy.
+# Bind D1 in the dashboard instead:
+#   Pages project → Settings → Functions → D1 database bindings
+#   Variable name: DB
+#   Database: restaurant-platform-db
 
 name = "restaurant-order-platform"
 compatibility_date = "2024-09-23"
 pages_build_output_dir = "."
-
-[[d1_databases]]
-binding = "DB"
-database_name = "restaurant-platform-db"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
