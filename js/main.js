@@ -48,13 +48,8 @@ const ALL_ITEMS = [
 ];
 
 const CATEGORY_LABELS = {
-  rice: "Rice Meals",
-  swallow: "Swallow",
-  soup: "Soup",
-  proteins: "Proteins",
-  sides: "Sides",
-  drinks: "Drinks",
-  pastries: "Pastries & Snacks"
+  rice: "Rice Meals", swallow: "Swallow", soup: "Soup", proteins: "Proteins",
+  sides: "Sides", drinks: "Drinks", pastries: "Pastries & Snacks"
 };
 
 let cart = [];
@@ -115,8 +110,7 @@ function renderCard(item, { showAdd = true } = {}) {
         <div class="card-price">${formatPrice(item.price)}</div>
         ${showAdd ? `<button type="button" class="add-btn" ${available ? "" : "disabled"} onclick="addToCart(${item.id}, '${safeName}', ${item.price})">${available ? "Add" : "Unavailable"}</button>` : ""}
       </div>
-    </article>
-  `;
+    </article>`;
 }
 
 function renderCompactPreviews() {
@@ -168,9 +162,8 @@ function nextStep() {
     else if (currentStep === 3) renderStepCards(menu.drinks, "Step 3 • Add a Drink (optional)");
     else openCart();
   } else if (currentPath === "pastries") {
-    if (currentStep === 2) {
-      renderStepCards([...menu.pastries.filter(p => p.isIceCream), ...menu.drinks], "Step 2 • Ice Cream or Drink (optional)");
-    } else openCart();
+    if (currentStep === 2) renderStepCards([...menu.pastries.filter(p => p.isIceCream), ...menu.drinks], "Step 2 • Ice Cream or Drink (optional)");
+    else openCart();
   }
 }
 
@@ -470,6 +463,77 @@ async function trackOrder() {
   }
 }
 
+function getMyOrders() {
+  try {
+    return JSON.parse(localStorage.getItem("vmk_my_orders") || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function openMyOrders() {
+  closeMobileMenu();
+  renderMyOrders();
+  document.getElementById("myOrdersModal").classList.add("show");
+}
+
+function closeMyOrders() {
+  document.getElementById("myOrdersModal").classList.remove("show");
+}
+
+function renderMyOrders() {
+  const list = document.getElementById("myOrdersList");
+  const orders = getMyOrders();
+  if (!orders.length) {
+    list.innerHTML = `<p class="empty-cart">No past orders on this device yet.<br/>Place an order and it will show up here.</p>`;
+    return;
+  }
+  list.innerHTML = orders.map((o, idx) => {
+    const items = (o.items || []).map(i => `${i.name} × ${i.qty}`).join(", ");
+    const when = o.createdAt ? new Date(o.createdAt).toLocaleString() : "";
+    return `
+      <div class="history-card">
+        <div class="hid">${o.id}</div>
+        <div class="hmeta">${when} · ${formatPrice(o.total || 0)}</div>
+        <div class="hitems">${items || "—"}</div>
+        <div class="history-actions">
+          <button type="button" class="btn-reorder" onclick="reorderFromHistory(${idx})">Reorder</button>
+          <button type="button" class="btn-track-hist" onclick="trackFromHistory('${String(o.id).replace(/'/g, "")}')">Track</button>
+        </div>
+      </div>`;
+  }).join("");
+}
+
+function reorderFromHistory(index) {
+  const orders = getMyOrders();
+  const o = orders[index];
+  if (!o || !o.items) return;
+  let added = 0;
+  let skipped = 0;
+  o.items.forEach(item => {
+    if (!isAvailable(item.name)) { skipped++; return; }
+    const existing = cart.find(c => c.id === item.id);
+    if (existing) existing.qty += item.qty;
+    else cart.push({ id: item.id, name: item.name, price: item.price, qty: item.qty });
+    added += item.qty;
+  });
+  updateCartUI();
+  closeMyOrders();
+  if (added === 0) {
+    alert("None of those items are available right now.");
+    return;
+  }
+  if (skipped) alert(skipped + " item(s) unavailable and were skipped.");
+  openCart();
+}
+
+function trackFromHistory(orderId) {
+  closeMyOrders();
+  openTrack();
+  document.getElementById("trackInput").value = orderId;
+  trackOrder();
+}
+
 function closeMobileMenu() {
   document.getElementById("mobileMenu").classList.remove("open");
   document.getElementById("menuOverlay").classList.remove("show");
@@ -499,6 +563,10 @@ document.getElementById("menuBtn").addEventListener("click", () => {
 document.getElementById("menuOverlay").addEventListener("click", closeMobileMenu);
 document.getElementById("closeTrack").addEventListener("click", closeTrack);
 document.getElementById("trackBtn").addEventListener("click", trackOrder);
+document.getElementById("closeMyOrders").addEventListener("click", closeMyOrders);
+window.openMyOrders = openMyOrders;
+window.reorderFromHistory = reorderFromHistory;
+window.trackFromHistory = trackFromHistory;
 
 updateStatusPill();
 loadAvailability().then(() => updateCartUI());
