@@ -12,7 +12,6 @@
   <script src="https://js.paystack.co/v1/inline.js"></script>
 </head>
 <body>
-  <!-- Header -->
   <header class="header">
     <div class="header-inner">
       <div class="brand">
@@ -22,20 +21,17 @@
           <span class="tag">VMK • Ugbor</span>
         </div>
       </div>
-
       <div class="header-actions">
         <span class="status-pill" id="statusPill">
-          <span class="status-dot open"></span>
+          <span class="status-dot"></span>
           <span id="statusText">Open</span>
         </span>
-
         <button class="cart-btn" id="cartBtn" aria-label="Cart">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/>
           </svg>
           <span class="cart-count" id="cartCount">0</span>
         </button>
-
         <button class="menu-btn" id="menuBtn" aria-label="Menu">
           <span></span><span></span><span></span>
         </button>
@@ -43,30 +39,48 @@
     </div>
   </header>
 
-  <!-- Mobile Menu -->
   <div class="mobile-menu" id="mobileMenu">
     <button class="menu-link" onclick="openTrack()">Track Order</button>
     <button class="menu-link" onclick="showAvailability()">Check Availability</button>
-    <button class="menu-link" onclick="startOrder('pickup')">Pre-order for Pickup</button>
-    <button class="menu-link" onclick="startOrder('delivery')">Order for Delivery</button>
     <a class="menu-link" href="staff.html">Staff Login</a>
   </div>
   <div class="menu-overlay" id="menuOverlay"></div>
 
-  <!-- ========== HOME VIEW ========== -->
+  <!-- HOME -->
   <div id="homeView">
-    <!-- 1. Hero -->
-    <section class="hero" id="heroSection">
+    <!-- Hero with 3 brief features -->
+    <section class="hero">
       <div class="hero-content">
-        <h1>Meals around BIU</h1>
-        <p class="hero-sub">Check what’s available, pre-order for pickup, or get delivery from Victorious Mega Kitchen.</p>
-        <div class="hero-actions">
-          <button class="hero-cta" onclick="document.getElementById('orderOptions').scrollIntoView({behavior:'smooth'})">Order Now</button>
+        <h1>Welcome to Victorious Mega Kitchen</h1>
+        <p class="hero-sub">Fresh meals around BIU &amp; Ugbor</p>
+
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">1</div>
+            <div>
+              <strong>Check Availability</strong>
+              <p>See what’s available before you visit.</p>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">2</div>
+            <div>
+              <strong>Pre-order for Pickup</strong>
+              <p>Order now, skip the queue when you arrive.</p>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">3</div>
+            <div>
+              <strong>Delivery</strong>
+              <p>Get your meal delivered around BIU &amp; Ugbor.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- 2. Availability Callout -->
+    <!-- Availability callout -->
     <section class="availability-callout">
       <div class="callout-inner">
         <p>Check available meals before you visit VMK</p>
@@ -74,67 +88,73 @@
       </div>
     </section>
 
-    <!-- 3. Pre-order / Delivery -->
-    <section class="order-options" id="orderOptions">
-      <div class="options-grid">
-        <div class="option-card">
-          <h3>Pre-order for Pickup</h3>
-          <p>Order now. We’ll prepare your food before you arrive.</p>
-          <button class="option-btn" onclick="startOrder('pickup')">Pre-order for Pickup</button>
-        </div>
-        <div class="option-card">
-          <h3>Delivery</h3>
-          <p>Order your meal and have it delivered around BIU &amp; Ugbor.</p>
-          <button class="option-btn secondary" onclick="startOrder('delivery')">Order for Delivery</button>
-        </div>
+    <!-- Optional Pickup / Delivery pre-selection (toggles) -->
+    <section class="fulfillment-bar">
+      <p class="fulfillment-label">How do you want your order? <span>(optional)</span></p>
+      <div class="fulfillment-toggles">
+        <button type="button" class="fulfill-toggle" data-type="pickup" id="togglePickup">Pre-order Pickup</button>
+        <button type="button" class="fulfill-toggle" data-type="delivery" id="toggleDelivery">Delivery</button>
       </div>
     </section>
 
-    <!-- 4. Food Discovery -->
-    <section class="food-discovery" id="foodDiscovery">
-      <div class="discovery-header">
-        <h2>Explore Our Menu</h2>
-        <p>Browse popular dishes and add what you like</p>
+    <!-- Compact food intro + guided order paths -->
+    <main class="main" id="orderSection">
+      <div class="section-title">
+        <h2>What would you like?</h2>
+        <p>Choose a path to order, or browse a quick preview</p>
       </div>
 
-      <!-- Rice -->
-      <div class="category-block">
-        <div class="cat-header">
-          <h3>Rice Meals</h3>
-          <button class="view-all" onclick="openCategory('rice')">View All →</button>
+      <!-- Main paths -->
+      <div class="main-cats" id="mainCats">
+        <button class="main-cat" data-path="rice">
+          <span class="cat-emoji">🍚</span>
+          <span>Rice Meals</span>
+        </button>
+        <button class="main-cat" data-path="swallow">
+          <span class="cat-emoji">🥣</span>
+          <span>Swallow &amp; Soup</span>
+        </button>
+        <button class="main-cat" data-path="pastries">
+          <span class="cat-emoji">🍔</span>
+          <span>Pastries &amp; Snacks</span>
+        </button>
+      </div>
+
+      <!-- Compact one-line previews -->
+      <div class="compact-previews" id="compactPreviews">
+        <div class="compact-block">
+          <div class="compact-head">
+            <span>Rice Meals</span>
+            <button type="button" class="view-all" data-path="rice">View All →</button>
+          </div>
+          <div class="compact-row" id="previewRice"></div>
         </div>
-        <div class="preview-grid" id="previewRice"></div>
-      </div>
-
-      <!-- Swallow & Soup -->
-      <div class="category-block">
-        <div class="cat-header">
-          <h3>Swallow &amp; Soup</h3>
-          <button class="view-all" onclick="openCategory('swallow')">View All →</button>
+        <div class="compact-block">
+          <div class="compact-head">
+            <span>Swallow &amp; Soup</span>
+            <button type="button" class="view-all" data-path="swallow">View All →</button>
+          </div>
+          <div class="compact-row" id="previewSwallow"></div>
         </div>
-        <div class="preview-grid" id="previewSwallow"></div>
-      </div>
-
-      <!-- Proteins -->
-      <div class="category-block">
-        <div class="cat-header">
-          <h3>Proteins</h3>
-          <button class="view-all" onclick="openCategory('proteins')">View All →</button>
+        <div class="compact-block">
+          <div class="compact-head">
+            <span>Pastries &amp; Snacks</span>
+            <button type="button" class="view-all" data-path="pastries">View All →</button>
+          </div>
+          <div class="compact-row" id="previewPastries"></div>
         </div>
-        <div class="preview-grid" id="previewProteins"></div>
       </div>
 
-      <!-- Pastries -->
-      <div class="category-block">
-        <div class="cat-header">
-          <h3>Pastries &amp; Snacks</h3>
-          <button class="view-all" onclick="openCategory('pastries')">View All →</button>
+      <!-- Guided steps (same page) -->
+      <div class="guided" id="guided" style="display:none;">
+        <div class="steps-bar">
+          <button type="button" class="back-btn" id="backBtn">← Back</button>
+          <span class="step-label" id="stepLabel">Step 1</span>
         </div>
-        <div class="preview-grid" id="previewPastries"></div>
+        <div class="step-content" id="stepContent"></div>
       </div>
-    </section>
+    </main>
 
-    <!-- Footer -->
     <footer class="footer">
       <div class="footer-inner">
         <div class="footer-brand">
@@ -150,8 +170,8 @@
           <p><strong>Hours:</strong> Open daily</p>
         </div>
         <div class="footer-links">
-          <button onclick="showAvailability()">Check Availability</button>
-          <button onclick="openTrack()">Track Order</button>
+          <button type="button" onclick="showAvailability()">Check Availability</button>
+          <button type="button" onclick="openTrack()">Track Order</button>
           <a href="staff.html">Staff</a>
         </div>
         <p class="footer-copy">© Victorious Mega Kitchen (VMK)</p>
@@ -159,33 +179,19 @@
     </footer>
   </div>
 
-  <!-- ========== AVAILABILITY VIEW ========== -->
+  <!-- Availability view only -->
   <section class="availability-view" id="availabilityView" style="display:none;">
     <div class="av-header">
-      <button class="back-btn" onclick="hideAvailability()">← Back</button>
+      <button type="button" class="back-btn" onclick="hideAvailability()">← Back</button>
       <h2>What’s Available</h2>
     </div>
-    <div class="av-content" id="availabilityContent">
-      <!-- Injected by JS -->
-    </div>
+    <div class="av-content" id="availabilityContent"></div>
   </section>
 
-  <!-- ========== FULL MENU VIEW ========== -->
-  <section class="menu-view" id="menuView" style="display:none;">
-    <div class="av-header">
-      <button class="back-btn" id="menuBackBtn">← Back</button>
-      <h2 id="menuViewTitle">Menu</h2>
-    </div>
-    <div class="menu-toolbar">
-      <div class="cat-chips" id="menuCatChips"></div>
-    </div>
-    <div class="grid" id="fullMenuGrid"></div>
-  </section>
-
-  <!-- ========== CHECKOUT ========== -->
+  <!-- Checkout -->
   <section class="checkout-section" id="checkoutSection" style="display:none;">
     <div class="checkout-container">
-      <button class="back-btn" id="backToCart" style="margin-bottom:16px;">← Back to Cart</button>
+      <button type="button" class="back-btn" id="backToCart" style="margin-bottom:16px;">← Back to Cart</button>
       <h2>Checkout</h2>
 
       <div class="order-type-select">
@@ -257,7 +263,6 @@
     </div>
   </section>
 
-  <!-- Success -->
   <section class="success-section" id="successSection" style="display:none;">
     <div class="success-card">
       <div class="success-icon">✓</div>
@@ -265,7 +270,7 @@
       <p class="order-id-label">Your Order ID</p>
       <div class="order-id-row">
         <div class="order-id" id="orderIdDisplay">VMK-0000</div>
-        <button class="copy-btn" id="copyOrderIdBtn" onclick="copyOrderId()">Copy</button>
+        <button type="button" class="copy-btn" id="copyOrderIdBtn" onclick="copyOrderId()">Copy</button>
       </div>
       <div class="track-guide">
         <h3>How to Track Your Order</h3>
@@ -276,25 +281,23 @@
         </ol>
         <p class="save-note">Please save your Order ID</p>
       </div>
-      <button class="hero-cta" onclick="location.reload()">Back to Home</button>
+      <button type="button" class="hero-cta" onclick="location.reload()">Back to Home</button>
     </div>
   </section>
 
-  <!-- Cart Bar -->
   <div class="cart-bar" id="cartBar">
     <div class="cart-bar-info">
       <span id="barCount">0 items</span>
       <strong id="barTotal">₦0</strong>
     </div>
-    <button class="cart-bar-btn" id="viewCartBtn">View Cart</button>
+    <button type="button" class="cart-bar-btn" id="viewCartBtn">View Cart</button>
   </div>
 
-  <!-- Cart Drawer -->
   <div class="overlay" id="overlay"></div>
   <aside class="cart-drawer" id="cartDrawer">
     <div class="drawer-header">
       <h2>Your Order</h2>
-      <button class="close-btn" id="closeCart">&times;</button>
+      <button type="button" class="close-btn" id="closeCart">&times;</button>
     </div>
     <div class="drawer-body" id="cartItems">
       <p class="empty-cart">Your cart is empty</p>
@@ -304,18 +307,17 @@
         <span>Total</span>
         <strong id="drawerTotal">₦0</strong>
       </div>
-      <button class="checkout-btn" id="checkoutBtn" disabled>Proceed to Checkout</button>
+      <button type="button" class="checkout-btn" id="checkoutBtn" disabled>Proceed to Checkout</button>
     </div>
   </aside>
 
-  <!-- Track Modal -->
   <div class="modal" id="trackModal">
     <div class="modal-content">
-      <button class="close-btn modal-close" id="closeTrack">&times;</button>
+      <button type="button" class="close-btn modal-close" id="closeTrack">&times;</button>
       <h2>Track Your Order</h2>
       <p>Enter your Order ID or Phone Number</p>
       <input type="text" id="trackInput" placeholder="e.g. VMK-4831 or 0810..." />
-      <button class="checkout-btn" style="margin-top:12px;" id="trackBtn">Track Order</button>
+      <button type="button" class="checkout-btn" style="margin-top:12px;" id="trackBtn">Track Order</button>
       <p class="track-note">You received your Order ID after placing an order.</p>
       <div id="trackResult" style="margin-top:16px;display:none;"></div>
     </div>
