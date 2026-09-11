@@ -61,24 +61,37 @@ let cart = [];
 let preferredFulfillment = null;
 let currentPath = null;
 let currentStep = 0;
+let availabilityCache = {};
 
 function formatPrice(n) { return "₦" + n.toLocaleString(); }
 function generateOrderId() { return "VMK-" + Math.floor(1000 + Math.random() * 9000); }
 function getTotal() { return cart.reduce((s, i) => s + i.price * i.qty, 0); }
 
-function getAvailability() {
-  return JSON.parse(localStorage.getItem("vmk_availability") || "{}");
-}
 function isAvailable(name) {
-  const av = getAvailability();
-  return av[name] !== false;
+  return availabilityCache[name] !== false;
 }
 
-function updateStatusPill() {
-  const isOpen = localStorage.getItem("vmk_is_open") !== "false";
+async function loadAvailability() {
+  try {
+    const res = await fetch("/api/availability");
+    const data = await res.json();
+    availabilityCache = data.availability || {};
+  } catch {
+    availabilityCache = {};
+  }
+  renderCompactPreviews();
+}
+
+async function updateStatusPill() {
   const pill = document.getElementById("statusPill");
   const text = document.getElementById("statusText");
   if (!pill) return;
+  let isOpen = true;
+  try {
+    const res = await fetch("/api/settings");
+    const data = await res.json();
+    isOpen = data.is_open !== false;
+  } catch { /* default open */ }
   if (isOpen) {
     pill.classList.remove("closed");
     text.textContent = "Open";
@@ -107,15 +120,15 @@ function renderCard(item, { showAdd = true } = {}) {
 }
 
 function renderCompactPreviews() {
-  document.getElementById("previewRice").innerHTML =
-    menu.rice.slice(0, 3).map(i => renderCard(i)).join("");
-  document.getElementById("previewSwallow").innerHTML =
-    [...menu.soup.slice(0, 2), ...menu.swallow.slice(0, 1)].map(i => renderCard(i)).join("");
-  document.getElementById("previewPastries").innerHTML =
-    menu.pastries.slice(0, 3).map(i => renderCard(i)).join("");
+  const elR = document.getElementById("previewRice");
+  const elS = document.getElementById("previewSwallow");
+  const elP = document.getElementById("previewPastries");
+  if (!elR) return;
+  elR.innerHTML = menu.rice.slice(0, 3).map(i => renderCard(i)).join("");
+  elS.innerHTML = [...menu.soup.slice(0, 2), ...menu.swallow.slice(0, 1)].map(i => renderCard(i)).join("");
+  elP.innerHTML = menu.pastries.slice(0, 3).map(i => renderCard(i)).join("");
 }
 
-// Fulfillment is required: selecting sets it; cannot clear — only switch
 function setFulfillmentToggle(type) {
   preferredFulfillment = type;
   document.getElementById("togglePickup").classList.toggle("active", preferredFulfillment === "pickup");
@@ -129,14 +142,9 @@ function startPath(path) {
   document.getElementById("guided").style.display = "block";
   document.body.style.overflow = "hidden";
   window.scrollTo(0, 0);
-
-  if (path === "rice") {
-    renderStepCards(menu.rice, "Step 1 • Choose your Rice");
-  } else if (path === "swallow") {
-    renderStepCards([...menu.soup, ...menu.swallow], "Step 1 • Choose Soup or Swallow");
-  } else if (path === "pastries") {
-    renderStepCards(menu.pastries, "Step 1 • Choose Pastry");
-  }
+  if (path === "rice") renderStepCards(menu.rice, "Step 1 • Choose your Rice");
+  else if (path === "swallow") renderStepCards([...menu.soup, ...menu.swallow], "Step 1 • Choose Soup or Swallow");
+  else if (path === "pastries") renderStepCards(menu.pastries, "Step 1 • Choose Pastry");
 }
 
 function renderStepCards(items, label) {
@@ -145,8 +153,7 @@ function renderStepCards(items, label) {
     <div class="grid">${items.map(i => renderCard(i)).join("")}</div>
     <div style="margin-top:18px;text-align:center;">
       <button type="button" class="hero-cta" style="padding:12px 24px;font-size:0.95rem;" onclick="nextStep()">Continue →</button>
-    </div>
-  `;
+    </div>`;
 }
 
 function nextStep() {
@@ -162,8 +169,7 @@ function nextStep() {
     else openCart();
   } else if (currentPath === "pastries") {
     if (currentStep === 2) {
-      const extras = [...menu.pastries.filter(p => p.isIceCream), ...menu.drinks];
-      renderStepCards(extras, "Step 2 • Ice Cream or Drink (optional)");
+      renderStepCards([...menu.pastries.filter(p => p.isIceCream), ...menu.drinks], "Step 2 • Ice Cream or Drink (optional)");
     } else openCart();
   }
 }
@@ -190,7 +196,7 @@ function showAvailability() {
   document.getElementById("availabilityView").style.display = "block";
   document.body.style.overflow = "hidden";
   window.scrollTo(0, 0);
-  renderAvailabilityView();
+  loadAvailability().then(() => renderAvailabilityView());
 }
 
 function hideAvailability() {
@@ -202,7 +208,6 @@ function hideAvailability() {
 function renderAvailabilityView() {
   const available = ALL_ITEMS.filter(i => isAvailable(i.name));
   const unavailable = ALL_ITEMS.filter(i => !isAvailable(i.name));
-
   const byCat = (items) => {
     const g = {};
     items.forEach(i => {
@@ -215,7 +220,6 @@ function renderAvailabilityView() {
     });
     return g;
   };
-
   let html = "";
   if (available.length) {
     html += `<h3 class="av-section-title">Available Now</h3>`;
@@ -224,10 +228,7 @@ function renderAvailabilityView() {
       html += `<h4 style="font-size:0.9rem;margin:14px 0 8px;color:var(--muted);">${CATEGORY_LABELS[cat] || cat}</h4>`;
       html += `<div class="grid">${groups[cat].map(i => renderCard(i, { showAdd: false })).join("")}</div>`;
     });
-  } else {
-    html += `<p style="text-align:center;color:var(--muted);padding:24px 0;">No items marked available right now.</p>`;
-  }
-
+  } else html += `<p style="text-align:center;color:var(--muted);padding:24px 0;">No items marked available right now.</p>`;
   if (unavailable.length) {
     html += `<h3 class="av-section-title">Currently Unavailable</h3>`;
     const groups = byCat(unavailable);
@@ -236,7 +237,6 @@ function renderAvailabilityView() {
       html += `<div class="grid">${groups[cat].map(i => renderCard(i, { showAdd: false })).join("")}</div>`;
     });
   }
-
   document.getElementById("availabilityContent").innerHTML = html;
 }
 
@@ -259,22 +259,17 @@ function changeQty(id, delta) {
 function updateCartUI() {
   const totalItems = cart.reduce((s, i) => s + i.qty, 0);
   const totalPrice = getTotal();
-
   document.getElementById("cartCount").textContent = totalItems;
   document.getElementById("barCount").textContent = totalItems + (totalItems === 1 ? " item" : " items");
   document.getElementById("barTotal").textContent = formatPrice(totalPrice);
   document.getElementById("drawerTotal").textContent = formatPrice(totalPrice);
   const ct = document.getElementById("checkoutTotal");
   if (ct) ct.textContent = formatPrice(totalPrice);
-
   document.getElementById("cartBar").classList.toggle("show", totalItems > 0);
   document.getElementById("checkoutBtn").disabled = totalItems === 0;
-
   const cartItems = document.getElementById("cartItems");
-  if (cart.length === 0) {
-    cartItems.innerHTML = `<p class="empty-cart">Your cart is empty</p>`;
-  } else {
-    cartItems.innerHTML = cart.map(item => `
+  if (cart.length === 0) cartItems.innerHTML = `<p class="empty-cart">Your cart is empty</p>`;
+  else cartItems.innerHTML = cart.map(item => `
       <div class="cart-item">
         <div class="cart-item-name">${item.name}</div>
         <div class="cart-item-price">${formatPrice(item.price)}</div>
@@ -283,9 +278,7 @@ function updateCartUI() {
           <span>${item.qty}</span>
           <button type="button" class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
         </div>
-      </div>
-    `).join("");
-  }
+      </div>`).join("");
 }
 
 function openCart() {
@@ -307,13 +300,8 @@ function showCheckout() {
   document.getElementById("cartBar").classList.remove("show");
   document.body.style.overflow = "";
   window.scrollTo(0, 0);
-
-  const pickupRadio = document.getElementById("fulfillmentPickup");
-  const deliveryRadio = document.getElementById("fulfillmentDelivery");
-  pickupRadio.checked = preferredFulfillment === "pickup";
-  deliveryRadio.checked = preferredFulfillment === "delivery";
-  // If none preselected, leave both unchecked so user must choose (required)
-
+  document.getElementById("fulfillmentPickup").checked = preferredFulfillment === "pickup";
+  document.getElementById("fulfillmentDelivery").checked = preferredFulfillment === "delivery";
   updateFulfillmentUI();
   updateCartUI();
 }
@@ -323,9 +311,7 @@ function backToCart() {
   if (currentPath) {
     document.getElementById("guided").style.display = "block";
     document.body.style.overflow = "hidden";
-  } else {
-    document.getElementById("homeView").style.display = "block";
-  }
+  } else document.getElementById("homeView").style.display = "block";
   openCart();
 }
 
@@ -333,14 +319,9 @@ function updateFulfillmentUI() {
   const selected = document.querySelector('input[name="fulfillment"]:checked');
   const isDelivery = selected && selected.value === "delivery";
   const isPickup = selected && selected.value === "pickup";
-
   document.getElementById("locationGroup").style.display = isDelivery ? "block" : "none";
   document.getElementById("payOnDeliveryOption").style.display = isDelivery ? "flex" : "none";
-
-  if (isPickup) {
-    document.querySelector('input[name="payment"][value="paystack"]').checked = true;
-  }
-
+  if (isPickup) document.querySelector('input[name="payment"][value="paystack"]').checked = true;
   if (selected) {
     preferredFulfillment = selected.value;
     document.getElementById("togglePickup").classList.toggle("active", preferredFulfillment === "pickup");
@@ -349,8 +330,8 @@ function updateFulfillmentUI() {
 }
 
 function handleLocationChange() {
-  const val = document.getElementById("deliveryLocation").value;
-  document.getElementById("otherLocationGroup").style.display = val === "Other" ? "block" : "none";
+  document.getElementById("otherLocationGroup").style.display =
+    document.getElementById("deliveryLocation").value === "Other" ? "block" : "none";
 }
 
 function placeOrder(e) {
@@ -361,24 +342,14 @@ function placeOrder(e) {
   const fulfillmentEl = document.querySelector('input[name="fulfillment"]:checked');
   const paymentEl = document.querySelector('input[name="payment"]:checked');
   const note = document.getElementById("orderNote").value.trim();
-
-  if (!name || !phone) {
-    alert("Please fill in your name and phone number");
-    return;
-  }
+  if (!name || !phone) { alert("Please fill in your name and phone number"); return; }
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    alert("Please enter a valid email address (required for payment)");
-    return;
+    alert("Please enter a valid email address (required for payment)"); return;
   }
-  if (!fulfillmentEl) {
-    alert("Please select Pickup or Delivery");
-    return;
-  }
-
+  if (!fulfillmentEl) { alert("Please select Pickup or Delivery"); return; }
   const fulfillment = fulfillmentEl.value;
   const paymentMethod = paymentEl ? paymentEl.value : "paystack";
   let location = "";
-
   if (fulfillment === "delivery") {
     location = document.getElementById("deliveryLocation").value;
     if (!location) { alert("Please select a delivery location"); return; }
@@ -387,29 +358,15 @@ function placeOrder(e) {
       if (!location) { alert("Please specify your location"); return; }
     }
   }
-
   if (fulfillment === "pickup" && paymentMethod !== "paystack") {
-    alert("Pickup orders require Pay Now");
-    return;
+    alert("Pickup orders require Pay Now"); return;
   }
-
   const order = {
-    id: generateOrderId(),
-    name,
-    email,
-    phone,
-    fulfillment,
-    location,
-    note,
-    paymentMethod,
-    items: [...cart],
-    total: getTotal(),
-    status: "Pending",
-    createdAt: new Date().toISOString()
+    id: generateOrderId(), name, email, phone, fulfillment, location, note, paymentMethod,
+    items: [...cart], total: getTotal(), status: "Pending", createdAt: new Date().toISOString()
   };
-
   if (paymentMethod === "paystack") payWithPaystack(order);
-  else { saveOrder(order); showSuccess(order.id); }
+  else saveOrder(order).then(() => showSuccess(order.id)).catch(() => {});
 }
 
 function payWithPaystack(order) {
@@ -429,18 +386,32 @@ function payWithPaystack(order) {
     callback: function(response) {
       order.paymentRef = response.reference;
       order.paymentStatus = "Paid";
-      saveOrder(order);
-      showSuccess(order.id);
+      saveOrder(order).then(() => showSuccess(order.id)).catch(() => {});
     },
     onClose: function() { alert("Payment was not completed. You can try again."); }
   });
   handler.openIframe();
 }
 
-function saveOrder(order) {
-  const orders = JSON.parse(localStorage.getItem("vmk_orders") || "[]");
-  orders.push(order);
-  localStorage.setItem("vmk_orders", JSON.stringify(orders));
+async function saveOrder(order) {
+  try {
+    const res = await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(order),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to save order");
+    if (data.id) order.id = data.id;
+  } catch (e) {
+    alert(e.message || "Could not save order. Please try again.");
+    throw e;
+  }
+  try {
+    const hist = JSON.parse(localStorage.getItem("vmk_my_orders") || "[]");
+    hist.unshift({ id: order.id, total: order.total, createdAt: order.createdAt, items: order.items });
+    localStorage.setItem("vmk_my_orders", JSON.stringify(hist.slice(0, 20)));
+  } catch { /* ignore */ }
   cart = [];
   updateCartUI();
 }
@@ -472,26 +443,30 @@ function closeTrack() {
   document.getElementById("trackModal").classList.remove("show");
 }
 
-function trackOrder() {
-  const input = document.getElementById("trackInput").value.trim().toUpperCase();
+async function trackOrder() {
+  const input = document.getElementById("trackInput").value.trim();
   if (!input) return;
-  const orders = JSON.parse(localStorage.getItem("vmk_orders") || "[]");
-  const found = orders.find(o =>
-    o.id === input || (o.phone && o.phone.replace(/\D/g, "").includes(input.replace(/\D/g, "")))
-  );
   const resultDiv = document.getElementById("trackResult");
   resultDiv.style.display = "block";
-  if (found) {
-    resultDiv.innerHTML = `
-      <div style="text-align:left;background:#f8f7fc;padding:16px;border-radius:12px;">
-        <p><strong>Order ID:</strong> ${found.id}</p>
-        <p><strong>Status:</strong> ${found.status}</p>
-        <p><strong>Type:</strong> ${found.fulfillment}</p>
-        <p><strong>Total:</strong> ${formatPrice(found.total)}</p>
-        <p style="margin-top:8px;font-size:0.85rem;color:#6b7280;">Items: ${found.items.map(i => i.name + " ×" + i.qty).join(", ")}</p>
-      </div>`;
-  } else {
-    resultDiv.innerHTML = `<p style="color:#991b1b;">No order found. Please check your Order ID or phone number.</p>`;
+  resultDiv.innerHTML = `<p style="color:#6b7280;">Searching...</p>`;
+  try {
+    const res = await fetch(`/api/orders?track=${encodeURIComponent(input)}`);
+    const data = await res.json();
+    const found = (data.orders || [])[0];
+    if (found) {
+      resultDiv.innerHTML = `
+        <div style="text-align:left;background:#f8f7fc;padding:16px;border-radius:12px;">
+          <p><strong>Order ID:</strong> ${found.id}</p>
+          <p><strong>Status:</strong> ${found.status}</p>
+          <p><strong>Type:</strong> ${found.fulfillment}</p>
+          <p><strong>Total:</strong> ${formatPrice(found.total)}</p>
+          <p style="margin-top:8px;font-size:0.85rem;color:#6b7280;">Items: ${(found.items || []).map(i => i.name + " ×" + i.qty).join(", ")}</p>
+        </div>`;
+    } else {
+      resultDiv.innerHTML = `<p style="color:#991b1b;">No order found. Please check your Order ID or phone number.</p>`;
+    }
+  } catch {
+    resultDiv.innerHTML = `<p style="color:#991b1b;">Could not reach server. Try again.</p>`;
   }
 }
 
@@ -504,23 +479,19 @@ document.querySelectorAll(".view-all").forEach(btn => {
   btn.addEventListener("click", () => startPath(btn.dataset.path));
 });
 document.getElementById("backBtn").addEventListener("click", goBack);
-
 document.getElementById("togglePickup").addEventListener("click", () => setFulfillmentToggle("pickup"));
 document.getElementById("toggleDelivery").addEventListener("click", () => setFulfillmentToggle("delivery"));
-
 document.getElementById("cartBtn").addEventListener("click", openCart);
 document.getElementById("viewCartBtn").addEventListener("click", openCart);
 document.getElementById("closeCart").addEventListener("click", closeCart);
 document.getElementById("overlay").addEventListener("click", closeCart);
 document.getElementById("checkoutBtn").addEventListener("click", showCheckout);
 document.getElementById("backToCart").addEventListener("click", backToCart);
-
 document.querySelectorAll('input[name="fulfillment"]').forEach(radio => {
   radio.addEventListener("change", updateFulfillmentUI);
 });
 document.getElementById("deliveryLocation").addEventListener("change", handleLocationChange);
 document.getElementById("checkoutForm").addEventListener("submit", placeOrder);
-
 document.getElementById("menuBtn").addEventListener("click", () => {
   document.getElementById("mobileMenu").classList.add("open");
   document.getElementById("menuOverlay").classList.add("show");
@@ -530,5 +501,5 @@ document.getElementById("closeTrack").addEventListener("click", closeTrack);
 document.getElementById("trackBtn").addEventListener("click", trackOrder);
 
 updateStatusPill();
-renderCompactPreviews();
+loadAvailability().then(() => updateCartUI());
 updateCartUI();
