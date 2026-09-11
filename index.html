@@ -15,7 +15,7 @@
   <header class="header">
     <div class="header-inner">
       <div class="brand">
-        <img src="https://i.postimg.cc/nzTsyQWk/1000605467-removebg-preview.png" alt="VMK Logo" class="logo" />
+        <img src="https://i.ibb.co/rfKhD4nY/1000605467-removebg-preview.png" alt="VMK Logo" class="logo" />
         <div class="brand-text">
           <span class="name">Victorious Mega Kitchen</span>
           <span class="tag">VMK • Ugbor</span>
@@ -51,7 +51,6 @@
       <div class="hero-content">
         <h1>Welcome to Victorious Mega Kitchen</h1>
         <p class="hero-sub">Fresh meals around BIU &amp; Ugbor</p>
-
         <div class="features">
           <div class="feature">
             <div class="feature-icon">1</div>
@@ -85,16 +84,18 @@
       </div>
     </section>
 
-    <!-- Optional fulfillment toggles with explanations -->
+    <!-- Each toggle on its own line with explanation under it -->
     <section class="fulfillment-bar">
-      <p class="fulfillment-label">How do you want your order? <span>(optional)</span></p>
-      <div class="fulfillment-toggles">
-        <button type="button" class="fulfill-toggle" data-type="pickup" id="togglePickup">Pre-order Pickup</button>
-        <button type="button" class="fulfill-toggle" data-type="delivery" id="toggleDelivery">Delivery</button>
-      </div>
-      <div class="fulfillment-hints">
-        <p id="hintPickup" class="fulfill-hint">Pay ahead and we’ll pack your food — pick it up ready when you arrive.</p>
-        <p id="hintDelivery" class="fulfill-hint">We’ll bring your order to BIU gates, Delano Hotel, GRA Ugbor, and nearby.</p>
+      <p class="fulfillment-label">How do you want your order?</p>
+      <div class="fulfillment-stack">
+        <div class="fulfill-item">
+          <button type="button" class="fulfill-toggle" data-type="pickup" id="togglePickup">Pre-order Pickup</button>
+          <p class="fulfill-hint">Pay ahead and we’ll pack your food — pick it up ready when you arrive.</p>
+        </div>
+        <div class="fulfill-item">
+          <button type="button" class="fulfill-toggle" data-type="delivery" id="toggleDelivery">Delivery</button>
+          <p class="fulfill-hint">We’ll bring your order to BIU gates, Delano Hotel, GRA Ugbor, and nearby.</p>
+        </div>
       </div>
     </section>
 
@@ -104,7 +105,6 @@
         <p>Browse a quick preview, then View All to order</p>
       </div>
 
-      <!-- Compact one-line previews only (no emoji category buttons) -->
       <div class="compact-previews" id="compactPreviews">
         <div class="compact-block">
           <div class="compact-head">
@@ -128,20 +128,12 @@
           <div class="compact-row" id="previewPastries"></div>
         </div>
       </div>
-
-      <div class="guided" id="guided" style="display:none;">
-        <div class="steps-bar">
-          <button type="button" class="back-btn" id="backBtn">← Back</button>
-          <span class="step-label" id="stepLabel">Step 1</span>
-        </div>
-        <div class="step-content" id="stepContent"></div>
-      </div>
     </main>
 
     <footer class="footer">
       <div class="footer-inner">
         <div class="footer-brand">
-          <img src="https://i.postimg.cc/nzTsyQWk/1000605467-removebg-preview.png" alt="VMK" />
+          <img src="https://i.ibb.co/rfKhD4nY/1000605467-removebg-preview.png" alt="VMK" />
           <div>
             <strong>Victorious Mega Kitchen</strong>
             <span>Ugbor • Near BIU</span>
@@ -162,6 +154,17 @@
     </footer>
   </div>
 
+  <!-- Full-screen guided ordering (covers hero) -->
+  <section class="guided-fullscreen" id="guided" style="display:none;">
+    <div class="guided-inner">
+      <div class="steps-bar">
+        <button type="button" class="back-btn" id="backBtn">← Back</button>
+        <span class="step-label" id="stepLabel">Step 1</span>
+      </div>
+      <div class="step-content" id="stepContent"></div>
+    </div>
+  </section>
+
   <section class="availability-view" id="availabilityView" style="display:none;">
     <div class="av-header">
       <button type="button" class="back-btn" onclick="hideAvailability()">← Back</button>
@@ -174,7 +177,6 @@
     <div class="checkout-container">
       <button type="button" class="back-btn" id="backToCart" style="margin-bottom:16px;">← Back to Cart</button>
       <h2>Checkout</h2>
-
       <div class="order-type-select">
         <label class="radio-card">
           <input type="radio" name="fulfillment" value="pickup" id="fulfillmentPickup" />
@@ -191,7 +193,6 @@
           </div>
         </label>
       </div>
-
       <form id="checkoutForm">
         <div class="form-group">
           <label>Full Name *</label>
