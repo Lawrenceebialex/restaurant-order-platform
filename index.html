@@ -40,6 +40,7 @@
   </header>
 
   <div class="mobile-menu" id="mobileMenu">
+    <button class="menu-link" onclick="openMyOrders()">My Orders</button>
     <button class="menu-link" onclick="openTrack()">Track Order</button>
     <button class="menu-link" onclick="showAvailability()">Check Availability</button>
   </div>
@@ -145,6 +146,7 @@
         <div class="footer-links">
           <button type="button" onclick="showAvailability()">Check Availability</button>
           <button type="button" onclick="openTrack()">Track Order</button>
+          <button type="button" onclick="openMyOrders()">My Orders</button>
         </div>
         <p class="footer-copy">© Victorious Mega Kitchen (VMK)</p>
       </div>
@@ -305,6 +307,17 @@
       <button type="button" class="checkout-btn" style="margin-top:12px;" id="trackBtn">Track Order</button>
       <p class="track-note">You received your Order ID after placing an order.</p>
       <div id="trackResult" style="margin-top:16px;display:none;"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="myOrdersModal">
+    <div class="modal-content modal-wide">
+      <button type="button" class="close-btn modal-close" id="closeMyOrders">&times;</button>
+      <h2>My Orders</h2>
+      <p class="my-orders-note">Saved on this phone only — no login needed.</p>
+      <div id="myOrdersList" class="my-orders-list">
+        <p class="empty-cart">No past orders on this device yet.</p>
+      </div>
     </div>
   </div>
 

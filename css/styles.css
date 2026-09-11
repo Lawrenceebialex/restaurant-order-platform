@@ -321,7 +321,6 @@ button { font-family: inherit; }
   width: 140px;
 }
 
-/* Full-screen guided — ABOVE header so Back is always tappable */
 .guided-fullscreen {
   position: fixed;
   inset: 0;
@@ -495,6 +494,12 @@ button { font-family: inherit; }
   max-width: 520px;
   margin: 0 auto;
   padding: 24px 16px 60px;
+}
+.checkout-required-note {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 10px;
 }
 .checkout-container h2 { font-size: 1.4rem; margin-bottom: 18px; }
 .order-type-select {
@@ -732,10 +737,13 @@ button { font-family: inherit; }
   max-width: 360px;
   position: relative;
   text-align: center;
+  max-height: 85vh;
+  overflow-y: auto;
 }
+.modal-content.modal-wide { max-width: 420px; text-align: left; }
 .modal-close { position: absolute; top: 12px; right: 16px; }
-.modal-content h2 { margin-bottom: 8px; }
-.modal-content p { color: var(--muted); font-size: 0.9rem; margin-bottom: 16px; }
+.modal-content h2 { margin-bottom: 8px; text-align: center; }
+.modal-content > p { color: var(--muted); font-size: 0.9rem; margin-bottom: 16px; text-align: center; }
 .modal-content input {
   width: 100%;
   padding: 12px 14px;
@@ -744,6 +752,44 @@ button { font-family: inherit; }
   font-size: 1rem;
 }
 .track-note { font-size: 0.8rem; margin-top: 12px; }
+.my-orders-note { font-size: 0.82rem !important; }
+.my-orders-list { margin-top: 8px; }
+.history-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #fafafa;
+}
+.history-card .hid {
+  font-weight: 700;
+  color: var(--purple);
+  font-size: 0.95rem;
+}
+.history-card .hmeta {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 4px 0 8px;
+}
+.history-card .hitems {
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+}
+.history-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.history-actions button {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-reorder { background: var(--purple); color: white; }
+.btn-track-hist { background: var(--purple-light); color: var(--purple); }
 
 @media (max-width: 480px) {
   .callout-inner {
