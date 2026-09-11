@@ -8,51 +8,59 @@
   <link rel="stylesheet" href="css/staff.css" />
 </head>
 <body>
-  <!-- Login Screen -->
   <div class="login-screen" id="loginScreen">
     <div class="login-card">
-      <img src="https://i.postimg.cc/nzTsyQWk/1000605467-removebg-preview.png" alt="VMK" class="login-logo" />
+      <img src="https://i.ibb.co/rfKhD4nY/1000605467-removebg-preview.png" alt="VMK" class="login-logo" />
       <h1>Staff Dashboard</h1>
       <p>Victorious Mega Kitchen</p>
-      <input type="password" id="passwordInput" placeholder="Enter password" />
-      <button id="loginBtn">Login</button>
+      <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="current-password" />
+      <button type="button" id="loginBtn">Login</button>
       <p class="error" id="loginError" style="display:none;">Incorrect password</p>
     </div>
   </div>
 
-  <!-- Dashboard -->
   <div class="dashboard" id="dashboard" style="display:none;">
     <header class="dash-header">
       <div class="brand">
-        <img src="https://i.postimg.cc/nzTsyQWk/1000605467-removebg-preview.png" alt="VMK" />
+        <img src="https://i.ibb.co/rfKhD4nY/1000605467-removebg-preview.png" alt="VMK" />
         <span>Staff Dashboard</span>
       </div>
-      <button class="logout-btn" id="logoutBtn">Logout</button>
+      <button type="button" class="logout-btn" id="logoutBtn">Logout</button>
     </header>
 
     <div class="tabs">
-      <button class="tab active" data-tab="orders">Orders</button>
-      <button class="tab" data-tab="menu">Menu Availability</button>
+      <button type="button" class="tab active" data-tab="orders">Orders</button>
+      <button type="button" class="tab" data-tab="menu">Menu Availability</button>
+      <button type="button" class="tab" data-tab="status">Shop Status</button>
     </div>
 
-    <!-- Orders Tab -->
     <section class="tab-content active" id="ordersTab">
       <div class="section-header">
         <h2>Incoming Orders</h2>
-        <button class="refresh-btn" onclick="loadOrders()">Refresh</button>
+        <button type="button" class="refresh-btn" onclick="loadOrders()">Refresh</button>
       </div>
       <div class="orders-list" id="ordersList">
         <p class="empty">No orders yet</p>
       </div>
     </section>
 
-    <!-- Menu Tab -->
     <section class="tab-content" id="menuTab">
       <div class="section-header">
         <h2>Menu Availability</h2>
         <p class="hint">Toggle items Available / Unavailable</p>
       </div>
       <div class="menu-controls" id="menuControls"></div>
+    </section>
+
+    <section class="tab-content" id="statusTab">
+      <div class="section-header">
+        <h2>Shop Open / Closed</h2>
+        <p class="hint">Controls the status pill on the customer site</p>
+      </div>
+      <div class="shop-status-card">
+        <p>Current status: <strong id="shopStatusLabel">Open</strong></p>
+        <button type="button" class="refresh-btn" id="toggleShopBtn">Mark as Closed</button>
+      </div>
     </section>
   </div>
 

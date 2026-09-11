@@ -1,6 +1,15 @@
 const STAFF_PASSWORD = "pineapple1";
 
-// Login
+const allMenuItems = [
+  "Jollof Rice", "Asun Rice", "Oil Rice", "Fried Rice", "White Rice & Stew",
+  "Eba (Garri)", "Fufu", "Semo",
+  "Pepper Soup", "Egusi Soup", "Vegetable Soup", "Afang Soup",
+  "Beef", "Chicken", "Turkey", "Goat Meat", "Catfish", "Boiled Egg",
+  "Fried Plantain", "Coleslaw",
+  "Bottled Water", "Fanta", "Coke",
+  "Hotdog", "Ice Cream"
+];
+
 document.getElementById("loginBtn").addEventListener("click", tryLogin);
 document.getElementById("passwordInput").addEventListener("keypress", (e) => {
   if (e.key === "Enter") tryLogin();
@@ -21,9 +30,9 @@ function showDashboard() {
   document.getElementById("dashboard").style.display = "block";
   loadOrders();
   loadMenuControls();
+  loadShopStatus();
 }
 
-// Check if already logged in
 if (sessionStorage.getItem("vmk_staff") === "true") {
   showDashboard();
 }
@@ -33,7 +42,6 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   location.reload();
 });
 
-// Tabs
 document.querySelectorAll(".tab").forEach(tab => {
   tab.addEventListener("click", () => {
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
@@ -43,7 +51,6 @@ document.querySelectorAll(".tab").forEach(tab => {
   });
 });
 
-// Orders
 function loadOrders() {
   const orders = JSON.parse(localStorage.getItem("vmk_orders") || "[]");
   const list = document.getElementById("ordersList");
@@ -53,7 +60,6 @@ function loadOrders() {
     return;
   }
 
-  // Sort newest first
   orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   list.innerHTML = orders.map(order => `
@@ -63,26 +69,24 @@ function loadOrders() {
           <div class="order-id">${order.id}</div>
           <div class="order-meta">
             ${order.name} • ${order.phone}<br/>
-            ${order.fulfillment.toUpperCase()}${order.location ? " • " + order.location : ""}<br/>
+            ${(order.fulfillment || "").toUpperCase()}${order.location ? " • " + order.location : ""}<br/>
             ${new Date(order.createdAt).toLocaleString()}
           </div>
         </div>
         <span class="status-badge status-${order.status}">${order.status}</span>
       </div>
-
       <div class="order-items">
-        ${order.items.map(i => `${i.name} × ${i.qty}`).join("<br/>")}
-        <div style="margin-top:6px;font-weight:700;">Total: ₦${order.total.toLocaleString()}</div>
+        ${(order.items || []).map(i => `${i.name} × ${i.qty}`).join("<br/>")}
+        <div style="margin-top:6px;font-weight:700;">Total: ₦${(order.total || 0).toLocaleString()}</div>
         ${order.note ? `<div style="margin-top:4px;font-size:0.85rem;color:#6b7280;">Note: ${order.note}</div>` : ""}
         <div style="margin-top:4px;font-size:0.85rem;">Payment: ${order.paymentMethod === "paystack" ? "Paid Online" : "Pay on Delivery"}</div>
       </div>
-
       <div class="order-actions">
-        ${order.status === "Pending" ? `<button class="action-btn btn-confirm" onclick="updateStatus('${order.id}', 'Confirmed')">Confirm</button>` : ""}
-        ${["Pending", "Confirmed"].includes(order.status) ? `<button class="action-btn btn-preparing" onclick="updateStatus('${order.id}', 'Preparing')">Preparing</button>` : ""}
-        ${["Confirmed", "Preparing"].includes(order.status) ? `<button class="action-btn btn-ready" onclick="updateStatus('${order.id}', 'Ready')">Ready</button>` : ""}
-        ${["Ready", "Preparing"].includes(order.status) ? `<button class="action-btn btn-complete" onclick="updateStatus('${order.id}', 'Completed')">Complete</button>` : ""}
-        ${!["Completed", "Cancelled"].includes(order.status) ? `<button class="action-btn btn-cancel" onclick="updateStatus('${order.id}', 'Cancelled')">Cancel</button>` : ""}
+        ${order.status === "Pending" ? `<button type="button" class="action-btn btn-confirm" onclick="updateStatus('${order.id}', 'Confirmed')">Confirm</button>` : ""}
+        ${["Pending", "Confirmed"].includes(order.status) ? `<button type="button" class="action-btn btn-preparing" onclick="updateStatus('${order.id}', 'Preparing')">Preparing</button>` : ""}
+        ${["Confirmed", "Preparing"].includes(order.status) ? `<button type="button" class="action-btn btn-ready" onclick="updateStatus('${order.id}', 'Ready')">Ready</button>` : ""}
+        ${["Ready", "Preparing"].includes(order.status) ? `<button type="button" class="action-btn btn-complete" onclick="updateStatus('${order.id}', 'Completed')">Complete</button>` : ""}
+        ${!["Completed", "Cancelled"].includes(order.status) ? `<button type="button" class="action-btn btn-cancel" onclick="updateStatus('${order.id}', 'Cancelled')">Cancel</button>` : ""}
       </div>
     </div>
   `).join("");
@@ -98,35 +102,24 @@ function updateStatus(orderId, newStatus) {
   }
 }
 
-// Menu Availability
-const allMenuItems = [
-  ...["Jollof Rice", "Asun Rice", "Oil Rice", "Fried Rice", "White Rice & Stew"],
-  ...["Eba (Garri)", "Fufu", "Semo"],
-  ...["Pepper Soup", "Egusi Soup", "Vegetable Soup", "Afang Soup"],
-  ...["Beef", "Chicken", "Turkey", "Goat Meat", "Catfish", "Fish", "Boiled Egg"],
-  ...["Plantain", "Coleslaw"],
-  ...["Water", "Soft Drink", "Chapman"],
-  ...["Burger", "Hotdog", "Ice Cream"]
-];
-
 function loadMenuControls() {
   let availability = JSON.parse(localStorage.getItem("vmk_availability") || "{}");
-
-  // Default everything to available
   allMenuItems.forEach(name => {
     if (availability[name] === undefined) availability[name] = true;
   });
 
   const container = document.getElementById("menuControls");
-  container.innerHTML = allMenuItems.map(name => `
+  container.innerHTML = allMenuItems.map(name => {
+    const safe = name.replace(/'/g, "\\'");
+    return `
     <div class="menu-item-row">
       <span class="menu-item-name">${name}</span>
       <label class="toggle">
-        <input type="checkbox" ${availability[name] ? "checked" : ""} onchange="toggleItem('${name}', this.checked)" />
+        <input type="checkbox" ${availability[name] ? "checked" : ""} onchange="toggleItem('${safe}', this.checked)" />
         <span class="slider"></span>
       </label>
-    </div>
-  `).join("");
+    </div>`;
+  }).join("");
 }
 
 function toggleItem(name, isAvailable) {
@@ -134,3 +127,17 @@ function toggleItem(name, isAvailable) {
   availability[name] = isAvailable;
   localStorage.setItem("vmk_availability", JSON.stringify(availability));
 }
+
+function loadShopStatus() {
+  const isOpen = localStorage.getItem("vmk_is_open") !== "false";
+  const label = document.getElementById("shopStatusLabel");
+  const btn = document.getElementById("toggleShopBtn");
+  label.textContent = isOpen ? "Open" : "Closed";
+  btn.textContent = isOpen ? "Mark as Closed" : "Mark as Open";
+}
+
+document.getElementById("toggleShopBtn").addEventListener("click", () => {
+  const isOpen = localStorage.getItem("vmk_is_open") !== "false";
+  localStorage.setItem("vmk_is_open", isOpen ? "false" : "true");
+  loadShopStatus();
+});
