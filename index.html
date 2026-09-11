@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Victorious Mega Kitchen (VMK) | Order Now</title>
-  <meta name="description" content="Order fresh meals from Victorious Mega Kitchen. See what’s available, order for pickup and skip the queue, or get delivery around BIU & Ugbor." />
+  <meta name="description" content="Meals around BIU. Check what’s available, pre-order for pickup, or get delivery from Victorious Mega Kitchen." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -24,7 +24,12 @@
       </div>
 
       <div class="header-actions">
-        <button class="cart-btn" id="cartBtn">
+        <span class="status-pill" id="statusPill">
+          <span class="status-dot open"></span>
+          <span id="statusText">Open</span>
+        </span>
+
+        <button class="cart-btn" id="cartBtn" aria-label="Cart">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/>
           </svg>
@@ -41,76 +46,143 @@
   <!-- Mobile Menu -->
   <div class="mobile-menu" id="mobileMenu">
     <button class="menu-link" onclick="openTrack()">Track Order</button>
-    <button class="menu-link" onclick="scrollToOrder()">Order Now</button>
+    <button class="menu-link" onclick="showAvailability()">Check Availability</button>
+    <button class="menu-link" onclick="startOrder('pickup')">Pre-order for Pickup</button>
+    <button class="menu-link" onclick="startOrder('delivery')">Order for Delivery</button>
+    <a class="menu-link" href="staff.html">Staff Login</a>
   </div>
   <div class="menu-overlay" id="menuOverlay"></div>
 
-  <!-- Hero Section -->
-  <section class="hero" id="heroSection">
-    <div class="hero-content">
-      <h1>Welcome to Victorious Mega Kitchen</h1>
-      <p class="hero-sub">Fresh Nigerian meals in Ugbor. Order smart, skip the stress.</p>
-
-      <div class="features">
-        <div class="feature">
-          <div class="feature-icon">1</div>
-          <div>
-            <strong>See What’s Available</strong>
-            <p>Check live availability before you come so you’re never left guessing.</p>
-          </div>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">2</div>
-          <div>
-            <strong>Order Now & Pickup</strong>
-            <p>Pay ahead, we pack it for you. Arrive and pick up — no long queues.</p>
-          </div>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">3</div>
-          <div>
-            <strong>Delivery</strong>
-            <p>Get your food delivered around BIU and Ugbor. Fast and reliable.</p>
-          </div>
+  <!-- ========== HOME VIEW ========== -->
+  <div id="homeView">
+    <!-- 1. Hero -->
+    <section class="hero" id="heroSection">
+      <div class="hero-content">
+        <h1>Meals around BIU</h1>
+        <p class="hero-sub">Check what’s available, pre-order for pickup, or get delivery from Victorious Mega Kitchen.</p>
+        <div class="hero-actions">
+          <button class="hero-cta" onclick="document.getElementById('orderOptions').scrollIntoView({behavior:'smooth'})">Order Now</button>
         </div>
       </div>
+    </section>
 
-      <button class="hero-cta" onclick="scrollToOrder()">Start Ordering</button>
+    <!-- 2. Availability Callout -->
+    <section class="availability-callout">
+      <div class="callout-inner">
+        <p>Check available meals before you visit VMK</p>
+        <button class="callout-btn" onclick="showAvailability()">Check Availability</button>
+      </div>
+    </section>
+
+    <!-- 3. Pre-order / Delivery -->
+    <section class="order-options" id="orderOptions">
+      <div class="options-grid">
+        <div class="option-card">
+          <h3>Pre-order for Pickup</h3>
+          <p>Order now. We’ll prepare your food before you arrive.</p>
+          <button class="option-btn" onclick="startOrder('pickup')">Pre-order for Pickup</button>
+        </div>
+        <div class="option-card">
+          <h3>Delivery</h3>
+          <p>Order your meal and have it delivered around BIU &amp; Ugbor.</p>
+          <button class="option-btn secondary" onclick="startOrder('delivery')">Order for Delivery</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Food Discovery -->
+    <section class="food-discovery" id="foodDiscovery">
+      <div class="discovery-header">
+        <h2>Explore Our Menu</h2>
+        <p>Browse popular dishes and add what you like</p>
+      </div>
+
+      <!-- Rice -->
+      <div class="category-block">
+        <div class="cat-header">
+          <h3>Rice Meals</h3>
+          <button class="view-all" onclick="openCategory('rice')">View All →</button>
+        </div>
+        <div class="preview-grid" id="previewRice"></div>
+      </div>
+
+      <!-- Swallow & Soup -->
+      <div class="category-block">
+        <div class="cat-header">
+          <h3>Swallow &amp; Soup</h3>
+          <button class="view-all" onclick="openCategory('swallow')">View All →</button>
+        </div>
+        <div class="preview-grid" id="previewSwallow"></div>
+      </div>
+
+      <!-- Proteins -->
+      <div class="category-block">
+        <div class="cat-header">
+          <h3>Proteins</h3>
+          <button class="view-all" onclick="openCategory('proteins')">View All →</button>
+        </div>
+        <div class="preview-grid" id="previewProteins"></div>
+      </div>
+
+      <!-- Pastries -->
+      <div class="category-block">
+        <div class="cat-header">
+          <h3>Pastries &amp; Snacks</h3>
+          <button class="view-all" onclick="openCategory('pastries')">View All →</button>
+        </div>
+        <div class="preview-grid" id="previewPastries"></div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="https://i.postimg.cc/nzTsyQWk/1000605467-removebg-preview.png" alt="VMK" />
+          <div>
+            <strong>Victorious Mega Kitchen</strong>
+            <span>Ugbor • Near BIU</span>
+          </div>
+        </div>
+        <div class="footer-info">
+          <p><strong>Location:</strong> Ugbor, Benin City (near BIU)</p>
+          <p><strong>Phone / WhatsApp:</strong> <a href="https://wa.me/2348107350932">0810 735 0932</a></p>
+          <p><strong>Hours:</strong> Open daily</p>
+        </div>
+        <div class="footer-links">
+          <button onclick="showAvailability()">Check Availability</button>
+          <button onclick="openTrack()">Track Order</button>
+          <a href="staff.html">Staff</a>
+        </div>
+        <p class="footer-copy">© Victorious Mega Kitchen (VMK)</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ========== AVAILABILITY VIEW ========== -->
+  <section class="availability-view" id="availabilityView" style="display:none;">
+    <div class="av-header">
+      <button class="back-btn" onclick="hideAvailability()">← Back</button>
+      <h2>What’s Available</h2>
+    </div>
+    <div class="av-content" id="availabilityContent">
+      <!-- Injected by JS -->
     </div>
   </section>
 
-  <!-- Order Section -->
-  <main class="main" id="orderSection">
-    <div class="section-title">
-      <h2>What would you like?</h2>
-      <p>Choose a main category to begin</p>
+  <!-- ========== FULL MENU VIEW ========== -->
+  <section class="menu-view" id="menuView" style="display:none;">
+    <div class="av-header">
+      <button class="back-btn" id="menuBackBtn">← Back</button>
+      <h2 id="menuViewTitle">Menu</h2>
     </div>
-
-    <div class="main-cats" id="mainCats">
-      <button class="main-cat" data-path="rice">
-        <span class="cat-emoji">🍚</span>
-        <span>Rice Meals</span>
-      </button>
-      <button class="main-cat" data-path="swallow">
-        <span class="cat-emoji">🥣</span>
-        <span>Swallow & Soup</span>
-      </button>
-      <button class="main-cat" data-path="pastries">
-        <span class="cat-emoji">🍔</span>
-        <span>Pastries & Snacks</span>
-      </button>
+    <div class="menu-toolbar">
+      <div class="cat-chips" id="menuCatChips"></div>
     </div>
+    <div class="grid" id="fullMenuGrid"></div>
+  </section>
 
-    <div class="guided" id="guided" style="display:none;">
-      <div class="steps-bar">
-        <button class="back-btn" id="backBtn">← Back</button>
-        <span class="step-label" id="stepLabel">Step 1</span>
-      </div>
-      <div class="step-content" id="stepContent"></div>
-    </div>
-  </main>
-
-  <!-- Checkout Section -->
+  <!-- ========== CHECKOUT ========== -->
   <section class="checkout-section" id="checkoutSection" style="display:none;">
     <div class="checkout-container">
       <button class="back-btn" id="backToCart" style="margin-bottom:16px;">← Back to Cart</button>
@@ -118,17 +190,17 @@
 
       <div class="order-type-select">
         <label class="radio-card">
-          <input type="radio" name="fulfillment" value="pickup" checked />
+          <input type="radio" name="fulfillment" value="pickup" id="fulfillmentPickup" />
           <div>
             <strong>Pickup</strong>
             <span>Pay now • Skip the queue</span>
           </div>
         </label>
         <label class="radio-card">
-          <input type="radio" name="fulfillment" value="delivery" />
+          <input type="radio" name="fulfillment" value="delivery" id="fulfillmentDelivery" />
           <div>
             <strong>Delivery</strong>
-            <span>BIU & Ugbor area</span>
+            <span>BIU &amp; Ugbor area</span>
           </div>
         </label>
       </div>
@@ -138,12 +210,10 @@
           <label>Full Name *</label>
           <input type="text" id="customerName" required placeholder="Your full name" />
         </div>
-
         <div class="form-group">
           <label>Phone Number *</label>
           <input type="tel" id="customerPhone" required placeholder="0810 000 0000" />
         </div>
-
         <div class="form-group" id="locationGroup" style="display:none;">
           <label>Delivery Location *</label>
           <select id="deliveryLocation">
@@ -155,17 +225,14 @@
             <option value="Other">Other</option>
           </select>
         </div>
-
         <div class="form-group" id="otherLocationGroup" style="display:none;">
           <label>Specify Location</label>
           <input type="text" id="otherLocation" placeholder="Enter your exact location" />
         </div>
-
         <div class="form-group">
           <label>Note (optional)</label>
           <textarea id="orderNote" rows="2" placeholder="Any special request?"></textarea>
         </div>
-
         <div class="form-group" id="paymentGroup">
           <label>Payment Method</label>
           <div class="payment-options">
@@ -173,37 +240,33 @@
               <input type="radio" name="payment" value="paystack" checked />
               <span>Pay Now (Paystack)</span>
             </label>
-            <label class="radio-card small" id="payOnDeliveryOption">
+            <label class="radio-card small" id="payOnDeliveryOption" style="display:none;">
               <input type="radio" name="payment" value="pod" />
               <span>Pay on Delivery</span>
             </label>
           </div>
         </div>
-
         <div class="checkout-summary">
           <div class="summary-row">
             <span>Total</span>
             <strong id="checkoutTotal">₦0</strong>
           </div>
         </div>
-
         <button type="submit" class="checkout-btn" id="placeOrderBtn">Place Order</button>
       </form>
     </div>
   </section>
 
-  <!-- Success Screen -->
+  <!-- Success -->
   <section class="success-section" id="successSection" style="display:none;">
     <div class="success-card">
       <div class="success-icon">✓</div>
       <h2>Order Placed Successfully!</h2>
       <p class="order-id-label">Your Order ID</p>
-      
       <div class="order-id-row">
         <div class="order-id" id="orderIdDisplay">VMK-0000</div>
         <button class="copy-btn" id="copyOrderIdBtn" onclick="copyOrderId()">Copy</button>
       </div>
-
       <div class="track-guide">
         <h3>How to Track Your Order</h3>
         <ol>
@@ -213,12 +276,11 @@
         </ol>
         <p class="save-note">Please save your Order ID</p>
       </div>
-
       <button class="hero-cta" onclick="location.reload()">Back to Home</button>
     </div>
   </section>
 
-  <!-- Sticky Cart Bar -->
+  <!-- Cart Bar -->
   <div class="cart-bar" id="cartBar">
     <div class="cart-bar-info">
       <span id="barCount">0 items</span>
@@ -246,7 +308,7 @@
     </div>
   </aside>
 
-  <!-- Track Order Modal -->
+  <!-- Track Modal -->
   <div class="modal" id="trackModal">
     <div class="modal-content">
       <button class="close-btn modal-close" id="closeTrack">&times;</button>
