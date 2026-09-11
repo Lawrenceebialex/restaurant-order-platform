@@ -1,7 +1,5 @@
 const PAYSTACK_PUBLIC_KEY = "pk_test_9d6a3822fd55c2eecbf5a42591775679e0b1d49a";
 
-const LOGO = "https://i.ibb.co/rfKhD4nY/1000605467-removebg-preview.png";
-
 const menu = {
   rice: [
     { id: 1, name: "Jollof Rice", price: 1500, img: "https://i.ibb.co/nNmqrsWq/images-34.jpg" },
@@ -117,12 +115,9 @@ function renderCompactPreviews() {
     menu.pastries.slice(0, 3).map(i => renderCard(i)).join("");
 }
 
+// Fulfillment is required: selecting sets it; cannot clear — only switch
 function setFulfillmentToggle(type) {
-  if (preferredFulfillment === type) {
-    preferredFulfillment = null;
-  } else {
-    preferredFulfillment = type;
-  }
+  preferredFulfillment = type;
   document.getElementById("togglePickup").classList.toggle("active", preferredFulfillment === "pickup");
   document.getElementById("toggleDelivery").classList.toggle("active", preferredFulfillment === "delivery");
 }
@@ -317,6 +312,7 @@ function showCheckout() {
   const deliveryRadio = document.getElementById("fulfillmentDelivery");
   pickupRadio.checked = preferredFulfillment === "pickup";
   deliveryRadio.checked = preferredFulfillment === "delivery";
+  // If none preselected, leave both unchecked so user must choose (required)
 
   updateFulfillmentUI();
   updateCartUI();
@@ -344,6 +340,12 @@ function updateFulfillmentUI() {
   if (isPickup) {
     document.querySelector('input[name="payment"][value="paystack"]').checked = true;
   }
+
+  if (selected) {
+    preferredFulfillment = selected.value;
+    document.getElementById("togglePickup").classList.toggle("active", preferredFulfillment === "pickup");
+    document.getElementById("toggleDelivery").classList.toggle("active", preferredFulfillment === "delivery");
+  }
 }
 
 function handleLocationChange() {
@@ -354,13 +356,24 @@ function handleLocationChange() {
 function placeOrder(e) {
   e.preventDefault();
   const name = document.getElementById("customerName").value.trim();
+  const email = document.getElementById("customerEmail").value.trim();
   const phone = document.getElementById("customerPhone").value.trim();
   const fulfillmentEl = document.querySelector('input[name="fulfillment"]:checked');
   const paymentEl = document.querySelector('input[name="payment"]:checked');
   const note = document.getElementById("orderNote").value.trim();
 
-  if (!name || !phone) { alert("Please fill in your name and phone number"); return; }
-  if (!fulfillmentEl) { alert("Please select Pickup or Delivery"); return; }
+  if (!name || !phone) {
+    alert("Please fill in your name and phone number");
+    return;
+  }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert("Please enter a valid email address (required for payment)");
+    return;
+  }
+  if (!fulfillmentEl) {
+    alert("Please select Pickup or Delivery");
+    return;
+  }
 
   const fulfillment = fulfillmentEl.value;
   const paymentMethod = paymentEl ? paymentEl.value : "paystack";
@@ -382,7 +395,13 @@ function placeOrder(e) {
 
   const order = {
     id: generateOrderId(),
-    name, phone, fulfillment, location, note, paymentMethod,
+    name,
+    email,
+    phone,
+    fulfillment,
+    location,
+    note,
+    paymentMethod,
     items: [...cart],
     total: getTotal(),
     status: "Pending",
@@ -396,7 +415,7 @@ function placeOrder(e) {
 function payWithPaystack(order) {
   const handler = PaystackPop.setup({
     key: PAYSTACK_PUBLIC_KEY,
-    email: order.phone.replace(/\D/g, "") + "@vmk.customer",
+    email: order.email,
     amount: order.total * 100,
     currency: "NGN",
     ref: order.id + "-" + Date.now(),
@@ -423,9 +442,6 @@ function saveOrder(order) {
   orders.push(order);
   localStorage.setItem("vmk_orders", JSON.stringify(orders));
   cart = [];
-  preferredFulfillment = null;
-  document.getElementById("togglePickup").classList.remove("active");
-  document.getElementById("toggleDelivery").classList.remove("active");
   updateCartUI();
 }
 
