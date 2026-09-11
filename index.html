@@ -46,9 +46,7 @@
   </div>
   <div class="menu-overlay" id="menuOverlay"></div>
 
-  <!-- HOME -->
   <div id="homeView">
-    <!-- Hero with 3 brief features -->
     <section class="hero">
       <div class="hero-content">
         <h1>Welcome to Victorious Mega Kitchen</h1>
@@ -80,7 +78,6 @@
       </div>
     </section>
 
-    <!-- Availability callout -->
     <section class="availability-callout">
       <div class="callout-inner">
         <p>Check available meals before you visit VMK</p>
@@ -88,39 +85,26 @@
       </div>
     </section>
 
-    <!-- Optional Pickup / Delivery pre-selection (toggles) -->
+    <!-- Optional fulfillment toggles with explanations -->
     <section class="fulfillment-bar">
       <p class="fulfillment-label">How do you want your order? <span>(optional)</span></p>
       <div class="fulfillment-toggles">
         <button type="button" class="fulfill-toggle" data-type="pickup" id="togglePickup">Pre-order Pickup</button>
         <button type="button" class="fulfill-toggle" data-type="delivery" id="toggleDelivery">Delivery</button>
       </div>
+      <div class="fulfillment-hints">
+        <p id="hintPickup" class="fulfill-hint">Pay ahead and we’ll pack your food — pick it up ready when you arrive.</p>
+        <p id="hintDelivery" class="fulfill-hint">We’ll bring your order to BIU gates, Delano Hotel, GRA Ugbor, and nearby.</p>
+      </div>
     </section>
 
-    <!-- Compact food intro + guided order paths -->
     <main class="main" id="orderSection">
       <div class="section-title">
         <h2>What would you like?</h2>
-        <p>Choose a path to order, or browse a quick preview</p>
+        <p>Browse a quick preview, then View All to order</p>
       </div>
 
-      <!-- Main paths -->
-      <div class="main-cats" id="mainCats">
-        <button class="main-cat" data-path="rice">
-          <span class="cat-emoji">🍚</span>
-          <span>Rice Meals</span>
-        </button>
-        <button class="main-cat" data-path="swallow">
-          <span class="cat-emoji">🥣</span>
-          <span>Swallow &amp; Soup</span>
-        </button>
-        <button class="main-cat" data-path="pastries">
-          <span class="cat-emoji">🍔</span>
-          <span>Pastries &amp; Snacks</span>
-        </button>
-      </div>
-
-      <!-- Compact one-line previews -->
+      <!-- Compact one-line previews only (no emoji category buttons) -->
       <div class="compact-previews" id="compactPreviews">
         <div class="compact-block">
           <div class="compact-head">
@@ -145,7 +129,6 @@
         </div>
       </div>
 
-      <!-- Guided steps (same page) -->
       <div class="guided" id="guided" style="display:none;">
         <div class="steps-bar">
           <button type="button" class="back-btn" id="backBtn">← Back</button>
@@ -179,7 +162,6 @@
     </footer>
   </div>
 
-  <!-- Availability view only -->
   <section class="availability-view" id="availabilityView" style="display:none;">
     <div class="av-header">
       <button type="button" class="back-btn" onclick="hideAvailability()">← Back</button>
@@ -188,7 +170,6 @@
     <div class="av-content" id="availabilityContent"></div>
   </section>
 
-  <!-- Checkout -->
   <section class="checkout-section" id="checkoutSection" style="display:none;">
     <div class="checkout-container">
       <button type="button" class="back-btn" id="backToCart" style="margin-bottom:16px;">← Back to Cart</button>
