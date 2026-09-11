@@ -230,51 +230,55 @@ button { font-family: inherit; }
 }
 .callout-btn:hover { background: var(--purple); color: white; }
 
+/* Vertical fulfillment: one toggle per line + text under each */
 .fulfillment-bar {
-  max-width: 640px;
-  margin: 20px auto 0;
+  max-width: 420px;
+  margin: 24px auto 0;
   padding: 0 16px;
-  text-align: center;
 }
 .fulfillment-label {
-  font-size: 0.85rem;
-  color: var(--muted);
-  margin-bottom: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 14px;
+  text-align: center;
 }
-.fulfillment-toggles {
+.fulfillment-stack {
   display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.fulfill-item {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
-  justify-content: center;
-  margin-bottom: 10px;
 }
 .fulfill-toggle {
+  width: 100%;
   border: 1.5px solid var(--border);
   background: white;
-  padding: 10px 18px;
-  border-radius: 999px;
+  padding: 12px 16px;
+  border-radius: 12px;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--text);
   cursor: pointer;
   transition: 0.2s;
+  text-align: center;
 }
 .fulfill-toggle.active {
   background: var(--purple);
   color: white;
   border-color: var(--purple);
 }
-.fulfillment-hints {
-  max-width: 420px;
-  margin: 0 auto;
-}
 .fulfill-hint {
   font-size: 0.8rem;
   color: var(--muted);
   line-height: 1.4;
   margin: 0;
-  display: none;
+  padding: 0 4px;
+  text-align: center;
 }
-.fulfill-hint.show { display: block; }
 
 .main {
   max-width: 900px;
@@ -318,7 +322,20 @@ button { font-family: inherit; }
   width: 140px;
 }
 
-.guided { margin-top: 8px; }
+/* Full-screen guided menu — covers hero */
+.guided-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: var(--bg);
+  overflow-y: auto;
+  padding: 16px 16px 100px;
+  padding-top: 72px; /* below sticky header */
+}
+.guided-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
 .steps-bar {
   display: flex;
   align-items: center;
@@ -393,17 +410,24 @@ button { font-family: inherit; }
 }
 
 .availability-view {
-  max-width: 900px;
-  margin: 0 auto;
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: var(--bg);
+  overflow-y: auto;
   padding: 16px 16px 80px;
+  padding-top: 72px;
+  max-width: 100%;
 }
 .av-header {
+  max-width: 900px;
+  margin: 0 auto 20px;
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 20px;
 }
 .av-header h2 { font-size: 1.2rem; }
+.av-content { max-width: 900px; margin: 0 auto; }
 .av-section-title {
   font-size: 1.05rem;
   font-weight: 700;

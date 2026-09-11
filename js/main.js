@@ -1,45 +1,46 @@
 const PAYSTACK_PUBLIC_KEY = "pk_test_9d6a3822fd55c2eecbf5a42591775679e0b1d49a";
 
+const LOGO = "https://i.ibb.co/rfKhD4nY/1000605467-removebg-preview.png";
+
 const menu = {
   rice: [
-    { id: 1, name: "Jollof Rice", price: 1500, img: "https://i.postimg.cc/W3vFfqGJ/images-(34).jpg" },
-    { id: 2, name: "Asun Rice", price: 2000, img: "https://i.postimg.cc/RFB6bJ73/images-(35).jpg" },
-    { id: 3, name: "Oil Rice", price: 1500, img: "https://i.postimg.cc/G2C8STFD/njanga-rice-jollof-rice-with-palm-oil.jpg" },
-    { id: 4, name: "Fried Rice", price: 1500, img: "https://i.postimg.cc/4dg7FH6H/images-(38).jpg" },
-    { id: 5, name: "White Rice & Stew", price: 1500, img: "https://i.postimg.cc/mDsz61YM/images-(39).jpg" }
+    { id: 1, name: "Jollof Rice", price: 1500, img: "https://i.ibb.co/nNmqrsWq/images-34.jpg" },
+    { id: 2, name: "Asun Rice", price: 2000, img: "https://i.ibb.co/spMJDv3k/images-35.jpg" },
+    { id: 3, name: "Oil Rice", price: 1500, img: "https://i.ibb.co/hFZfcgfr/njanga-rice-jollof-rice-with-palm-oil.jpg" },
+    { id: 4, name: "Fried Rice", price: 1500, img: "https://i.ibb.co/q3MknDRC/images-38.jpg" },
+    { id: 5, name: "White Rice & Stew", price: 1500, img: "https://i.ibb.co/kg4vQQzt/images-39.jpg" }
   ],
   swallow: [
-    { id: 6, name: "Eba (Garri)", price: 500, img: "https://i.postimg.cc/nzJjw94B/images-(40).jpg" },
-    { id: 7, name: "Fufu", price: 500, img: "https://i.postimg.cc/Nf8LnjJt/images-(41).jpg" },
-    { id: 8, name: "Semo", price: 700, img: "https://i.postimg.cc/pXQySLGt/images-(42).jpg" }
+    { id: 6, name: "Eba (Garri)", price: 500, img: "https://i.ibb.co/9HhkCVzS/images-40.jpg" },
+    { id: 7, name: "Fufu", price: 500, img: "https://i.ibb.co/kgZcBc2C/images-41.jpg" },
+    { id: 8, name: "Semo", price: 700, img: "https://i.ibb.co/HfGb1Dgm/images-42.jpg" }
   ],
   soup: [
-    { id: 9, name: "Pepper Soup", price: 1500, img: "https://i.postimg.cc/Fsb16HWr/images-(43).jpg", isPepperSoup: true },
-    { id: 10, name: "Egusi Soup", price: 2000, img: "https://i.postimg.cc/L6khW8Cm/78ac1c561170aa182f9cf73ad7302c1c.jpg" },
-    { id: 11, name: "Vegetable Soup", price: 2000, img: "https://i.postimg.cc/fT7kPR2T/images-(45).jpg" },
-    { id: 12, name: "Afang Soup", price: 2500, img: "https://i.postimg.cc/9QWzHHKf/images-(46).jpg" }
+    { id: 9, name: "Pepper Soup", price: 1500, img: "https://i.ibb.co/6RSq9KL5/images-43.jpg", isPepperSoup: true },
+    { id: 10, name: "Egusi Soup", price: 2000, img: "https://i.ibb.co/QF0yJcsD/78ac1c561170aa182f9cf73ad7302c1c.jpg" },
+    { id: 11, name: "Vegetable Soup", price: 2000, img: "https://i.ibb.co/C332W0Xr/images-45.jpg" },
+    { id: 12, name: "Afang Soup", price: 2500, img: "https://i.ibb.co/JRPBWR90/images-46.jpg" }
   ],
   proteins: [
-    { id: 13, name: "Beef", price: 1000, img: "https://i.postimg.cc/QxgVzd4t/images-(47).jpg" },
-    { id: 14, name: "Chicken", price: 3000, img: "https://i.postimg.cc/qMcgFvb7/images-(48).jpg" },
-    { id: 15, name: "Turkey", price: 3500, img: "https://i.postimg.cc/PrbN753J/images-(49).jpg" },
-    { id: 16, name: "Goat Meat", price: 2500, img: "https://i.postimg.cc/YqNjPCnh/images-(50).jpg" },
-    { id: 17, name: "Catfish", price: 2500, img: "https://i.postimg.cc/dtRDfVHk/images-(51).jpg" },
-    { id: 18, name: "Boiled Egg", price: 500, img: "https://i.postimg.cc/PxbBj9BD/images-(52).jpg" }
+    { id: 13, name: "Beef", price: 1000, img: "https://i.ibb.co/Rpnyc9kN/images-47.jpg" },
+    { id: 14, name: "Chicken", price: 3000, img: "https://i.ibb.co/NdTxkt79/images-48.jpg" },
+    { id: 15, name: "Turkey", price: 3500, img: "https://i.ibb.co/b5F023D4/images-49.jpg" },
+    { id: 16, name: "Goat Meat", price: 2500, img: "https://i.ibb.co/6RDqkgNF/images-50.jpg" },
+    { id: 17, name: "Catfish", price: 2500, img: "https://i.ibb.co/spchM5mJ/images-51.jpg" },
+    { id: 18, name: "Boiled Egg", price: 500, img: "https://i.ibb.co/DfmtFzJ9/images-52.jpg" }
   ],
   sides: [
-    { id: 20, name: "Fried Plantain", price: 500, img: "https://i.postimg.cc/LXkrpwrz/images-(53).jpg" },
-    { id: 21, name: "Coleslaw", price: 500, img: "https://i.postimg.cc/FRb24823/images-(54).jpg" }
+    { id: 20, name: "Fried Plantain", price: 500, img: "https://i.ibb.co/5XwkNyZB/images-53.jpg" },
+    { id: 21, name: "Coleslaw", price: 500, img: "https://i.ibb.co/sfKJJJt/images-54.jpg" }
   ],
   drinks: [
-    { id: 22, name: "Bottled Water", price: 300, img: "https://i.postimg.cc/bJ0KhWKR/images-(57).jpg" },
-    { id: 23, name: "Fanta", price: 500, img: "https://i.postimg.cc/fL76Np6K/images-(58).jpg" },
-    { id: 24, name: "Coke", price: 500, img: "https://i.postimg.cc/761pkdp9/images-(59).jpg" }
+    { id: 22, name: "Bottled Water", price: 300, img: "https://i.ibb.co/Kckc38bF/images-57.jpg" },
+    { id: 23, name: "Fanta", price: 500, img: "https://i.ibb.co/0y5mkpDC/images-58.jpg" },
+    { id: 24, name: "Coke", price: 500, img: "https://i.ibb.co/hRFTpGmQ/images-59.jpg" }
   ],
   pastries: [
-    { id: 25, name: "Burger", price: 3500, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop" },
-    { id: 26, name: "Hotdog", price: 2500, img: "https://i.postimg.cc/26dPDMPn/images-(55).jpg" },
-    { id: 27, name: "Ice Cream", price: 2000, img: "https://i.postimg.cc/cH7VS2VM/images-(56).jpg", isIceCream: true }
+    { id: 25, name: "Hotdog", price: 2500, img: "https://i.ibb.co/YFYsnKG5/images-55.jpg" },
+    { id: 26, name: "Ice Cream", price: 2000, img: "https://i.ibb.co/WNc1Jj8D/images-56.jpg", isIceCream: true }
   ]
 };
 
@@ -95,7 +96,7 @@ function renderCard(item, { showAdd = true } = {}) {
   return `
     <article class="card ${available ? "" : "unavailable"}">
       <div class="card-img">
-        <img src="${item.img}" alt="${item.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/400?text=VMK'" />
+        <img src="${item.img}" alt="${item.name}" loading="lazy" />
         <span class="badge ${available ? "available" : "unavailable"}">${available ? "Available" : "Unavailable"}</span>
       </div>
       <div class="card-body">
@@ -116,18 +117,6 @@ function renderCompactPreviews() {
     menu.pastries.slice(0, 3).map(i => renderCard(i)).join("");
 }
 
-function updateFulfillmentHints() {
-  const hintPickup = document.getElementById("hintPickup");
-  const hintDelivery = document.getElementById("hintDelivery");
-  hintPickup.classList.toggle("show", preferredFulfillment === "pickup");
-  hintDelivery.classList.toggle("show", preferredFulfillment === "delivery");
-  // If nothing selected, show both briefly as context under the toggles
-  if (!preferredFulfillment) {
-    hintPickup.classList.add("show");
-    hintDelivery.classList.add("show");
-  }
-}
-
 function setFulfillmentToggle(type) {
   if (preferredFulfillment === type) {
     preferredFulfillment = null;
@@ -136,14 +125,15 @@ function setFulfillmentToggle(type) {
   }
   document.getElementById("togglePickup").classList.toggle("active", preferredFulfillment === "pickup");
   document.getElementById("toggleDelivery").classList.toggle("active", preferredFulfillment === "delivery");
-  updateFulfillmentHints();
 }
 
 function startPath(path) {
   currentPath = path;
   currentStep = 1;
-  document.getElementById("compactPreviews").style.display = "none";
+  document.getElementById("homeView").style.display = "none";
   document.getElementById("guided").style.display = "block";
+  document.body.style.overflow = "hidden";
+  window.scrollTo(0, 0);
 
   if (path === "rice") {
     renderStepCards(menu.rice, "Step 1 • Choose your Rice");
@@ -186,7 +176,8 @@ function nextStep() {
 function goBack() {
   if (currentStep <= 1) {
     document.getElementById("guided").style.display = "none";
-    document.getElementById("compactPreviews").style.display = "block";
+    document.getElementById("homeView").style.display = "block";
+    document.body.style.overflow = "";
     currentPath = null;
     currentStep = 0;
   } else {
@@ -198,9 +189,11 @@ function goBack() {
 function showAvailability() {
   closeMobileMenu();
   document.getElementById("homeView").style.display = "none";
+  document.getElementById("guided").style.display = "none";
   document.getElementById("checkoutSection").style.display = "none";
   document.getElementById("successSection").style.display = "none";
   document.getElementById("availabilityView").style.display = "block";
+  document.body.style.overflow = "hidden";
   window.scrollTo(0, 0);
   renderAvailabilityView();
 }
@@ -208,6 +201,7 @@ function showAvailability() {
 function hideAvailability() {
   document.getElementById("availabilityView").style.display = "none";
   document.getElementById("homeView").style.display = "block";
+  document.body.style.overflow = "";
 }
 
 function renderAvailabilityView() {
@@ -311,10 +305,12 @@ function closeCart() {
 function showCheckout() {
   closeCart();
   document.getElementById("homeView").style.display = "none";
+  document.getElementById("guided").style.display = "none";
   document.getElementById("availabilityView").style.display = "none";
   document.getElementById("successSection").style.display = "none";
   document.getElementById("checkoutSection").style.display = "block";
   document.getElementById("cartBar").classList.remove("show");
+  document.body.style.overflow = "";
   window.scrollTo(0, 0);
 
   const pickupRadio = document.getElementById("fulfillmentPickup");
@@ -328,7 +324,12 @@ function showCheckout() {
 
 function backToCart() {
   document.getElementById("checkoutSection").style.display = "none";
-  document.getElementById("homeView").style.display = "block";
+  if (currentPath) {
+    document.getElementById("guided").style.display = "block";
+    document.body.style.overflow = "hidden";
+  } else {
+    document.getElementById("homeView").style.display = "block";
+  }
   openCart();
 }
 
@@ -425,13 +426,14 @@ function saveOrder(order) {
   preferredFulfillment = null;
   document.getElementById("togglePickup").classList.remove("active");
   document.getElementById("toggleDelivery").classList.remove("active");
-  updateFulfillmentHints();
   updateCartUI();
 }
 
 function showSuccess(orderId) {
   document.getElementById("checkoutSection").style.display = "none";
+  document.getElementById("guided").style.display = "none";
   document.getElementById("successSection").style.display = "block";
+  document.body.style.overflow = "";
   document.getElementById("orderIdDisplay").textContent = orderId;
   window.scrollTo(0, 0);
 }
@@ -482,7 +484,6 @@ function closeMobileMenu() {
   document.getElementById("menuOverlay").classList.remove("show");
 }
 
-// Events
 document.querySelectorAll(".view-all").forEach(btn => {
   btn.addEventListener("click", () => startPath(btn.dataset.path));
 });
@@ -514,5 +515,4 @@ document.getElementById("trackBtn").addEventListener("click", trackOrder);
 
 updateStatusPill();
 renderCompactPreviews();
-updateFulfillmentHints();
 updateCartUI();
