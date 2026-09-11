@@ -30,24 +30,43 @@
 
     <div class="tabs">
       <button type="button" class="tab active" data-tab="orders">Orders</button>
-      <button type="button" class="tab" data-tab="menu">Menu Availability</button>
-      <button type="button" class="tab" data-tab="status">Shop Status</button>
+      <button type="button" class="tab" data-tab="menu">Menu</button>
+      <button type="button" class="tab" data-tab="status">Shop</button>
     </div>
 
     <section class="tab-content active" id="ordersTab">
-      <div class="section-header">
-        <h2>Incoming Orders</h2>
-        <button type="button" class="refresh-btn" onclick="loadOrders()">Refresh</button>
+      <div class="totals-bar" id="totalsBar">
+        <div class="total-pills">
+          <button type="button" class="range-btn active" data-range="daily">Today</button>
+          <button type="button" class="range-btn" data-range="monthly">Month</button>
+          <button type="button" class="range-btn" data-range="yearly">Year</button>
+          <button type="button" class="range-btn" data-range="overall">All time</button>
+        </div>
+        <div class="totals-stats">
+          <span><strong id="totalCount">0</strong> orders</span>
+          <span>₦<strong id="totalRevenue">0</strong></span>
+        </div>
       </div>
+
+      <div class="section-header">
+        <h2>Orders</h2>
+        <button type="button" class="refresh-btn" id="refreshOrdersBtn">Refresh</button>
+      </div>
+
+      <div class="search-row">
+        <input type="search" id="orderSearch" placeholder="Search ID, phone, or name..." />
+        <button type="button" class="refresh-btn" id="searchBtn">Search</button>
+      </div>
+
       <div class="orders-list" id="ordersList">
-        <p class="empty">No orders yet</p>
+        <p class="empty">Loading...</p>
       </div>
     </section>
 
     <section class="tab-content" id="menuTab">
       <div class="section-header">
         <h2>Menu Availability</h2>
-        <p class="hint">Toggle items Available / Unavailable</p>
+        <p class="hint">Synced for all customers (D1)</p>
       </div>
       <div class="menu-controls" id="menuControls"></div>
     </section>
