@@ -49,7 +49,7 @@
     <section class="hero">
       <div class="hero-content">
         <h1>Welcome to Victorious Mega Kitchen</h1>
-        <p class="hero-sub">Fresh meals around BIU & Ugbor</p>
+        <p class="hero-sub">Fresh meals around BIU &amp; Ugbor</p>
         <div class="features">
           <div class="feature">
             <div class="feature-icon">1</div>
@@ -69,7 +69,7 @@
             <div class="feature-icon">3</div>
             <div>
               <strong>Delivery</strong>
-              <p>Get your meal delivered around BIU & Ugbor.</p>
+              <p>Get your meal delivered around BIU &amp; Ugbor.</p>
             </div>
           </div>
         </div>
@@ -113,14 +113,14 @@
         </div>
         <div class="compact-block">
           <div class="compact-head">
-            <span>Swallow & Soup</span>
+            <span>Swallow &amp; Soup</span>
             <button type="button" class="view-all" data-path="swallow">View All →</button>
           </div>
           <div class="compact-row" id="previewSwallow"></div>
         </div>
         <div class="compact-block">
           <div class="compact-head">
-            <span>Pastries & Snacks</span>
+            <span>Pastries &amp; Snacks</span>
             <button type="button" class="view-all" data-path="pastries">View All →</button>
           </div>
           <div class="compact-row" id="previewPastries"></div>
@@ -173,26 +173,33 @@
     <div class="checkout-container">
       <button type="button" class="back-btn" id="backToCart" style="margin-bottom:16px;">← Back to Cart</button>
       <h2>Checkout</h2>
+
+      <p class="checkout-required-note">Choose Pickup or Delivery (required)</p>
       <div class="order-type-select">
         <label class="radio-card">
-          <input type="radio" name="fulfillment" value="pickup" id="fulfillmentPickup" />
+          <input type="radio" name="fulfillment" value="pickup" id="fulfillmentPickup" required />
           <div>
             <strong>Pickup</strong>
             <span>Pay now • Skip the queue</span>
           </div>
         </label>
         <label class="radio-card">
-          <input type="radio" name="fulfillment" value="delivery" id="fulfillmentDelivery" />
+          <input type="radio" name="fulfillment" value="delivery" id="fulfillmentDelivery" required />
           <div>
             <strong>Delivery</strong>
-            <span>BIU & Ugbor area</span>
+            <span>BIU &amp; Ugbor area</span>
           </div>
         </label>
       </div>
+
       <form id="checkoutForm">
         <div class="form-group">
           <label>Full Name *</label>
           <input type="text" id="customerName" required placeholder="Your full name" />
+        </div>
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" id="customerEmail" required placeholder="you@example.com" />
         </div>
         <div class="form-group">
           <label>Phone Number *</label>
