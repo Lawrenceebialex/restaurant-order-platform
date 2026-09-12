@@ -67,9 +67,26 @@ body {
   position: sticky;
   top: 0;
   z-index: 10;
+  gap: 10px;
 }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; }
 .brand img { width: 36px; height: 36px; }
+.header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.sound-toggle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.kds-link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--purple);
+  text-decoration: none;
+}
 .logout-btn {
   background: #fee2e2;
   color: #991b1b;
@@ -80,6 +97,7 @@ body {
   font-size: 0.85rem;
   cursor: pointer;
 }
+.poll-hint { font-size: 0.75rem; font-weight: 500; color: var(--muted); }
 
 .tabs {
   display: flex;
@@ -155,6 +173,7 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
+  gap: 8px;
 }
 .section-header h2 { font-size: 1.15rem; }
 .hint { font-size: 0.85rem; color: var(--muted); }
@@ -225,6 +244,7 @@ body {
 .btn-ready { background: #dcfce7; color: #166534; }
 .btn-complete { background: #f3f4f6; color: #374151; }
 .btn-cancel { background: #fee2e2; color: #991b1b; }
+.btn-print { background: var(--purple-light); color: var(--purple); }
 
 .menu-item-row {
   display: flex;
@@ -271,3 +291,5 @@ input:checked + .slider:before { transform: translateX(22px); }
   border-radius: 14px;
   padding: 20px;
 }
+
+.print-root { display: none; }

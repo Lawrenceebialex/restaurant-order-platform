@@ -1,0 +1,108 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: Inter, system-ui, sans-serif;
+  background: #0f172a;
+  color: #f8fafc;
+  min-height: 100vh;
+}
+.kds-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.kds-login .card {
+  background: #1e293b;
+  padding: 32px;
+  border-radius: 16px;
+  width: min(360px, 92vw);
+  text-align: center;
+}
+.kds-login input {
+  width: 100%;
+  padding: 12px;
+  margin: 12px 0;
+  border-radius: 10px;
+  border: none;
+  font-size: 1rem;
+}
+.kds-login button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #7c3aed;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+.kds-login a { color: #a78bfa; display: inline-block; margin-top: 14px; }
+.err { color: #f87171; margin-top: 10px; }
+
+.kds { display: flex; flex-direction: column; min-height: 100vh; }
+.kds-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+}
+.kds-header .right { display: flex; gap: 14px; align-items: center; }
+.kds-header a, .kds-header button {
+  color: #e2e8f0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+}
+.columns {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 12px;
+}
+.col {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 10px;
+  min-height: 70vh;
+  overflow-y: auto;
+}
+.col h2 {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+.kds-card {
+  background: #0f172a;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-left: 4px solid #7c3aed;
+}
+.kds-card.status-Pending { border-left-color: #f59e0b; }
+.kds-card.status-Confirmed { border-left-color: #3b82f6; }
+.kds-card.status-Preparing { border-left-color: #8b5cf6; }
+.kds-card.status-Ready { border-left-color: #22c55e; }
+.kds-id { font-weight: 800; font-size: 1.15rem; }
+.kds-meta, .kds-name { font-size: 0.85rem; color: #94a3b8; margin-top: 2px; }
+.kds-items { margin: 8px 0; font-size: 0.95rem; line-height: 1.4; }
+.kds-total { font-weight: 700; margin-bottom: 8px; }
+.kds-next {
+  width: 100%;
+  border: none;
+  background: #7c3aed;
+  color: white;
+  font-weight: 700;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+@media (max-width: 900px) {
+  .columns { grid-template-columns: 1fr; }
+}

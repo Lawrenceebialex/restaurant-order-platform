@@ -1,0 +1,24 @@
+{
+  "name": "Victorious Mega Kitchen",
+  "short_name": "VMK",
+  "description": "Order meals from Victorious Mega Kitchen near BIU",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8f7fc",
+  "theme_color": "#6d28d9",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "https://i.ibb.co/rfKhD4nY/1000605467-removebg-preview.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://i.ibb.co/rfKhD4nY/1000605467-removebg-preview.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

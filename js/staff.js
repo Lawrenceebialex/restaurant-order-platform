@@ -22,6 +22,9 @@ const allMenuItems = [
 ];
 
 let currentRange = "daily";
+let knownOrderIds = new Set();
+let pollTimer = null;
+let firstPollDone = false;
 
 document.getElementById("loginBtn").addEventListener("click", tryLogin);
 document.getElementById("passwordInput").addEventListener("keypress", (e) => {
@@ -56,10 +59,13 @@ async function tryLogin() {
 function showDashboard() {
   document.getElementById("loginScreen").style.display = "none";
   document.getElementById("dashboard").style.display = "block";
+  firstPollDone = false;
+  knownOrderIds = new Set();
   loadOrders();
   loadTotals();
   loadMenuControls();
   loadShopStatus();
+  startPolling();
 }
 
 if (getToken()) {
@@ -67,6 +73,7 @@ if (getToken()) {
 }
 
 document.getElementById("logoutBtn").addEventListener("click", () => {
+  stopPolling();
   sessionStorage.removeItem("vmk_staff_token");
   location.reload();
 });
@@ -99,6 +106,45 @@ document.getElementById("orderSearch").addEventListener("keypress", (e) => {
   if (e.key === "Enter") loadOrders();
 });
 
+function startPolling() {
+  stopPolling();
+  pollTimer = setInterval(() => {
+    if (!document.getElementById("orderSearch").value.trim()) {
+      loadOrders({ silent: true });
+    }
+  }, 15000);
+}
+
+function stopPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = null;
+}
+
+function playNewOrderSound() {
+  const enabled = document.getElementById("soundEnabled");
+  if (enabled && !enabled.checked) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const beep = (freq, start, dur) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = "square";
+      o.frequency.value = freq;
+      g.gain.value = 0.08;
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start(ctx.currentTime + start);
+      o.stop(ctx.currentTime + start + dur);
+    };
+    beep(880, 0, 0.15);
+    beep(1175, 0.18, 0.2);
+    beep(880, 0.42, 0.25);
+    setTimeout(() => ctx.close(), 1200);
+  } catch {
+    /* ignore */
+  }
+}
+
 async function loadTotals() {
   try {
     const res = await fetch(`${API}/totals?range=${currentRange}`, {
@@ -113,10 +159,10 @@ async function loadTotals() {
   }
 }
 
-async function loadOrders() {
+async function loadOrders(opts = {}) {
   const list = document.getElementById("ordersList");
   const q = document.getElementById("orderSearch").value.trim();
-  list.innerHTML = `<p class="empty">Loading...</p>`;
+  if (!opts.silent) list.innerHTML = `<p class="empty">Loading...</p>`;
 
   try {
     const url = q
@@ -127,6 +173,17 @@ async function loadOrders() {
     const data = await res.json();
     const orders = data.orders || [];
 
+    // New-order detection (only when not searching)
+    if (!q) {
+      const incoming = orders.filter((o) => o.status === "Pending");
+      if (firstPollDone) {
+        const fresh = incoming.filter((o) => !knownOrderIds.has(o.id));
+        if (fresh.length) playNewOrderSound();
+      }
+      knownOrderIds = new Set(orders.map((o) => o.id));
+      firstPollDone = true;
+    }
+
     if (!orders.length) {
       list.innerHTML = `<p class="empty">No orders found</p>`;
       return;
@@ -135,7 +192,7 @@ async function loadOrders() {
     list.innerHTML = orders
       .map(
         (order) => `
-      <div class="order-card">
+      <div class="order-card" data-id="${order.id}">
         <div class="order-top">
           <div>
             <div class="order-id">${order.id}</div>
@@ -151,7 +208,11 @@ async function loadOrders() {
           ${(order.items || []).map((i) => `${i.name} × ${i.qty}`).join("<br/>")}
           <div style="margin-top:6px;font-weight:700;">Total: ₦${Number(order.total || 0).toLocaleString()}</div>
           ${order.note ? `<div style="margin-top:4px;font-size:0.85rem;color:#6b7280;">Note: ${order.note}</div>` : ""}
-          <div style="margin-top:4px;font-size:0.85rem;">Payment: ${order.paymentMethod === "paystack" ? "Paid Online" : "Pay on Delivery"}</div>
+          <div style="margin-top:4px;font-size:0.85rem;">Payment: ${
+            order.paymentMethod === "paystack"
+              ? (order.paymentStatus === "Paid" ? "Paid Online" : "Paystack (pending confirm)")
+              : "Pay on Delivery"
+          }</div>
         </div>
         <div class="order-actions">
           ${order.status === "Pending" ? `<button type="button" class="action-btn btn-confirm" onclick="updateStatus('${order.id}', 'Confirmed')">Confirm</button>` : ""}
@@ -159,13 +220,51 @@ async function loadOrders() {
           ${["Confirmed", "Preparing"].includes(order.status) ? `<button type="button" class="action-btn btn-ready" onclick="updateStatus('${order.id}', 'Ready')">Ready</button>` : ""}
           ${["Ready", "Preparing"].includes(order.status) ? `<button type="button" class="action-btn btn-complete" onclick="updateStatus('${order.id}', 'Completed')">Complete</button>` : ""}
           ${!["Completed", "Cancelled"].includes(order.status) ? `<button type="button" class="action-btn btn-cancel" onclick="updateStatus('${order.id}', 'Cancelled')">Cancel</button>` : ""}
+          <button type="button" class="action-btn btn-print" onclick='printTicket(${JSON.stringify(order).replace(/'/g, "&#39;")})'>Print Ticket</button>
         </div>
       </div>`
       )
       .join("");
   } catch {
-    list.innerHTML = `<p class="empty">Failed to load orders. Check D1 binding.</p>`;
+    if (!opts.silent) list.innerHTML = `<p class="empty">Failed to load orders. Check D1 binding.</p>`;
   }
+}
+
+function printTicket(order) {
+  const items = (order.items || [])
+    .map((i) => `<tr><td>${i.name}</td><td style="text-align:right">×${i.qty}</td><td style="text-align:right">₦${Number(i.price * i.qty).toLocaleString()}</td></tr>`)
+    .join("");
+  const html = `
+<!DOCTYPE html><html><head><title>${order.id}</title>
+<style>
+  @page { size: 80mm auto; margin: 4mm; }
+  body { font-family: monospace; width: 72mm; margin: 0 auto; font-size: 12px; color: #000; }
+  h1 { font-size: 14px; text-align: center; margin: 0 0 6px; }
+  .muted { text-align: center; font-size: 11px; margin-bottom: 8px; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 2px 0; vertical-align: top; }
+  .total { font-weight: bold; border-top: 1px dashed #000; margin-top: 8px; padding-top: 6px; }
+  .foot { text-align: center; margin-top: 10px; font-size: 11px; }
+</style></head><body>
+  <h1>Victorious Mega Kitchen</h1>
+  <div class="muted">${order.id}<br/>${order.createdAt ? new Date(order.createdAt).toLocaleString() : ""}</div>
+  <div>${order.name} · ${order.phone}</div>
+  <div>${(order.fulfillment || "").toUpperCase()}${order.location ? " · " + order.location : ""}</div>
+  <hr/>
+  <table>${items}</table>
+  <div class="total">TOTAL: ₦${Number(order.total || 0).toLocaleString()}</div>
+  <div>Pay: ${order.paymentMethod === "paystack" ? (order.paymentStatus || "Pending") : "On Delivery/Pickup"}</div>
+  ${order.note ? `<div>Note: ${order.note}</div>` : ""}
+  <div class="foot">Thank you · VMK Ugbor</div>
+  <script>window.onload=function(){window.print();}</script>
+</body></html>`;
+  const w = window.open("", "_blank", "width=320,height=600");
+  if (!w) {
+    alert("Allow pop-ups to print tickets");
+    return;
+  }
+  w.document.write(html);
+  w.document.close();
 }
 
 async function updateStatus(orderId, newStatus) {
@@ -254,10 +353,11 @@ document.getElementById("toggleShopBtn").addEventListener("click", async () => {
 });
 
 function logout() {
+  stopPolling();
   sessionStorage.removeItem("vmk_staff_token");
   location.reload();
 }
 
-// Expose for inline handlers
 window.updateStatus = updateStatus;
 window.toggleItem = toggleItem;
+window.printTicket = printTicket;

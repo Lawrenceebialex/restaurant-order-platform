@@ -19,8 +19,8 @@ export async function onRequestGet(context) {
   const phone = url.searchParams.get("phone");
   const q = (url.searchParams.get("q") || "").trim();
   const publicTrack = url.searchParams.get("track");
+  const status = url.searchParams.get("status"); // for KDS filtering
 
-  // Public track: by order id or phone only (rate limited)
   if (publicTrack) {
     const ip = clientIp(request);
     const ok = await rateLimit(env, `track:${ip}`, 30, 60);
@@ -36,7 +36,6 @@ export async function onRequestGet(context) {
     return json({ orders: (rows.results || []).map(mapOrder) });
   }
 
-  // Staff list / search
   const authed = await verifyStaffToken(request, env);
   if (!authed) return json({ error: "Unauthorized" }, 401);
 
@@ -68,6 +67,15 @@ export async function onRequestGet(context) {
     return json({ orders: (rows.results || []).map(mapOrder) });
   }
 
+  if (status) {
+    const rows = await env.DB.prepare(
+      `SELECT * FROM orders WHERE status = ? ORDER BY created_at ASC LIMIT 100`
+    )
+      .bind(status)
+      .all();
+    return json({ orders: (rows.results || []).map(mapOrder) });
+  }
+
   const rows = await env.DB.prepare(
     `SELECT * FROM orders ORDER BY created_at DESC LIMIT 200`
   ).all();
@@ -94,7 +102,11 @@ export async function onRequestPost(context) {
     const note = body.note || "";
     const paymentMethod = body.paymentMethod || "paystack";
     const paymentRef = body.paymentRef || null;
-    const paymentStatus = body.paymentStatus || (paymentMethod === "paystack" ? "Paid" : "Pending");
+    // Never trust client "Paid" for paystack — webhook marks Paid
+    let paymentStatus = body.paymentStatus || "Pending";
+    if (paymentMethod === "paystack") {
+      paymentStatus = paymentRef ? "Paid" : "Pending";
+    }
     const items = body.items || [];
     const total = Number(body.total) || 0;
     const status = body.status || "Pending";
@@ -129,6 +141,13 @@ export async function onRequestPost(context) {
       )
       .run();
 
+    // Fire-and-forget kitchen Telegram alert
+    const orderPayload = {
+      id, name, phone, email, fulfillment, location, note,
+      paymentMethod, paymentStatus, items, total, status, createdAt,
+    };
+    context.waitUntil(notifyTelegram(env, orderPayload));
+
     return json({ ok: true, id });
   } catch (e) {
     return json({ error: e.message || "Failed to save order" }, 500);
@@ -155,6 +174,42 @@ export async function onRequestPatch(context) {
     return json({ ok: true });
   } catch (e) {
     return json({ error: e.message || "Update failed" }, 500);
+  }
+}
+
+async function notifyTelegram(env, order) {
+  const token = env.TELEGRAM_BOT_TOKEN;
+  const chatId = env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+
+  const items = (order.items || [])
+    .map((i) => `• ${i.name} × ${i.qty}`)
+    .join("\n");
+  const text = [
+    `🍽️ *New VMK Order*`,
+    `*${order.id}*`,
+    `${order.fulfillment?.toUpperCase()}${order.location ? " · " + order.location : ""}`,
+    `${order.name} · ${order.phone}`,
+    items,
+    `*Total: ₦${Number(order.total || 0).toLocaleString()}*`,
+    `Payment: ${order.paymentMethod === "paystack" ? order.paymentStatus || "Pending" : "Pay on Delivery"}`,
+    order.note ? `Note: ${order.note}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: "Markdown",
+      }),
+    });
+  } catch {
+    /* non-fatal */
   }
 }
 

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kitchen Display | VMK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/kds.css" />
+</head>
+<body>
+  <div class="kds-login" id="kdsLogin">
+    <div class="card">
+      <h1>Kitchen Display</h1>
+      <p>Enter staff password</p>
+      <input type="password" id="kdsPassword" placeholder="Password" />
+      <button type="button" id="kdsLoginBtn">Open KDS</button>
+      <p class="err" id="kdsErr" style="display:none">Incorrect password</p>
+      <a href="staff.html">← Staff dashboard</a>
+    </div>
+  </div>
+
+  <div class="kds" id="kdsApp" style="display:none">
+    <header class="kds-header">
+      <div class="left">
+        <strong>VMK Kitchen</strong>
+        <span id="kdsClock"></span>
+      </div>
+      <div class="right">
+        <label><input type="checkbox" id="kdsSound" checked /> Sound</label>
+        <a href="staff.html">Dashboard</a>
+        <button type="button" id="kdsLogout">Logout</button>
+      </div>
+    </header>
+    <div class="columns">
+      <section class="col" data-status="Pending">
+        <h2>Pending <span id="countPending">0</span></h2>
+        <div class="cards" id="colPending"></div>
+      </section>
+      <section class="col" data-status="Preparing">
+        <h2>Preparing <span id="countPreparing">0</span></h2>
+        <div class="cards" id="colPreparing"></div>
+      </section>
+      <section class="col" data-status="Ready">
+        <h2>Ready <span id="countReady">0</span></h2>
+        <div class="cards" id="colReady"></div>
+      </section>
+    </div>
+  </div>
+  <script src="js/kds.js"></script>
+</body>
+</html>
