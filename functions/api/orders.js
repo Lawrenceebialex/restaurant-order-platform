@@ -19,7 +19,7 @@ export async function onRequestGet(context) {
   const phone = url.searchParams.get("phone");
   const q = (url.searchParams.get("q") || "").trim();
   const publicTrack = url.searchParams.get("track");
-  const status = url.searchParams.get("status"); // for KDS filtering
+  const status = url.searchParams.get("status");
 
   if (publicTrack) {
     const ip = clientIp(request);
@@ -102,7 +102,6 @@ export async function onRequestPost(context) {
     const note = body.note || "";
     const paymentMethod = body.paymentMethod || "paystack";
     const paymentRef = body.paymentRef || null;
-    // Never trust client "Paid" for paystack — webhook marks Paid
     let paymentStatus = body.paymentStatus || "Pending";
     if (paymentMethod === "paystack") {
       paymentStatus = paymentRef ? "Paid" : "Pending";
@@ -141,14 +140,13 @@ export async function onRequestPost(context) {
       )
       .run();
 
-    // Fire-and-forget kitchen Telegram alert
     const orderPayload = {
       id, name, phone, email, fulfillment, location, note,
       paymentMethod, paymentStatus, items, total, status, createdAt,
     };
-    context.waitUntil(notifyTelegram(env, orderPayload));
+    const tg = await notifyTelegram(env, orderPayload);
 
-    return json({ ok: true, id });
+    return json({ ok: true, id, telegram: tg });
   } catch (e) {
     return json({ error: e.message || "Failed to save order" }, 500);
   }
@@ -180,18 +178,20 @@ export async function onRequestPatch(context) {
 async function notifyTelegram(env, order) {
   const token = env.TELEGRAM_BOT_TOKEN;
   const chatId = env.TELEGRAM_CHAT_ID;
-  if (!token || !chatId) return;
+  if (!token || !chatId) {
+    return { sent: false, reason: "missing_env" };
+  }
 
   const items = (order.items || [])
-    .map((i) => `• ${i.name} × ${i.qty}`)
+    .map((i) => `- ${i.name} x${i.qty}`)
     .join("\n");
   const text = [
-    `🍽️ *New VMK Order*`,
-    `*${order.id}*`,
-    `${order.fulfillment?.toUpperCase()}${order.location ? " · " + order.location : ""}`,
+    "New VMK Order",
+    String(order.id),
+    `${(order.fulfillment || "").toUpperCase()}${order.location ? " · " + order.location : ""}`,
     `${order.name} · ${order.phone}`,
     items,
-    `*Total: ₦${Number(order.total || 0).toLocaleString()}*`,
+    `Total: NGN ${Number(order.total || 0).toLocaleString()}`,
     `Payment: ${order.paymentMethod === "paystack" ? order.paymentStatus || "Pending" : "Pay on Delivery"}`,
     order.note ? `Note: ${order.note}` : null,
   ]
@@ -199,17 +199,21 @@ async function notifyTelegram(env, order) {
     .join("\n");
 
   try {
-    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        chat_id: chatId,
+        chat_id: String(chatId),
         text,
-        parse_mode: "Markdown",
       }),
     });
-  } catch {
-    /* non-fatal */
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.ok === false) {
+      return { sent: false, reason: "telegram_api", detail: data.description || res.status };
+    }
+    return { sent: true };
+  } catch (e) {
+    return { sent: false, reason: "network", detail: String(e.message || e) };
   }
 }
 
