@@ -176,8 +176,9 @@ export async function onRequestPatch(context) {
 }
 
 async function notifyTelegram(env, order) {
-  const token = env.TELEGRAM_BOT_TOKEN;
-  const chatId = env.TELEGRAM_CHAT_ID;
+  // Strip all whitespace — mobile paste often inserts a line break in the token
+  const token = String(env.TELEGRAM_BOT_TOKEN || "").replace(/\s+/g, "").trim();
+  const chatId = String(env.TELEGRAM_CHAT_ID || "").replace(/\s+/g, "").trim();
   if (!token || !chatId) {
     return { sent: false, reason: "missing_env" };
   }
@@ -203,7 +204,7 @@ async function notifyTelegram(env, order) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        chat_id: String(chatId),
+        chat_id: chatId,
         text,
       }),
     });
