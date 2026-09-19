@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Order via Leva</title>
+  <title>Leva Food</title>
   <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#6d28d9" />
+  <meta name="theme-color" content="#0d9488" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="description" content="Order food online — powered by Leva." />
+  <meta name="description" content="Order food online — powered by Leva Food." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -18,9 +18,9 @@
   <header class="header">
     <div class="header-inner">
       <div class="brand">
-        <img id="tenantLogo" src="https://i.ibb.co/rfKhD4nY/1000605467-removebg-preview.png" alt="Restaurant" class="logo" />
+        <img id="tenantLogo" src="" alt="" class="logo" />
         <div class="brand-text">
-          <span class="name" id="tenantName">Restaurant</span>
+          <span class="name" id="tenantName">Loading…</span>
           <span class="tag" id="tenantTag"></span>
         </div>
       </div>
@@ -50,61 +50,24 @@
   <div class="menu-overlay" id="menuOverlay"></div>
 
   <div id="homeView">
-    <section class="hero">
+    <section class="hero hero-slim">
       <div class="hero-content">
-        <h1 id="heroTitle">Welcome</h1>
+        <h1 id="heroTitle">Restaurant</h1>
         <p class="hero-sub" id="heroSub"></p>
-        <div class="features">
-          <div class="feature">
-            <div class="feature-icon">1</div>
-            <div>
-              <strong>Check Availability</strong>
-              <p>See what’s available before you visit.</p>
-            </div>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">2</div>
-            <div>
-              <strong>Pre-order for Pickup</strong>
-              <p>Order now, skip the queue when you arrive.</p>
-            </div>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">3</div>
-            <div>
-              <strong>Delivery</strong>
-              <p>Get your meal delivered nearby.</p>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
 
     <section class="availability-callout">
       <div class="callout-inner">
-        <p id="avCalloutText">Check available meals before you visit</p>
+        <p id="avCalloutText">Check what’s available</p>
         <button class="callout-btn" onclick="showAvailability()">Check Availability</button>
-      </div>
-    </section>
-
-    <section class="fulfillment-bar">
-      <p class="fulfillment-label">How do you want your order?</p>
-      <div class="fulfillment-stack">
-        <div class="fulfill-item">
-          <button type="button" class="fulfill-toggle" data-type="pickup" id="togglePickup">Pre-order Pickup</button>
-          <p class="fulfill-hint">Pay ahead and we’ll pack your food — pick it up ready when you arrive.</p>
-        </div>
-        <div class="fulfill-item">
-          <button type="button" class="fulfill-toggle" data-type="delivery" id="toggleDelivery">Delivery</button>
-          <p class="fulfill-hint">We’ll bring your order to the locations listed at checkout.</p>
-        </div>
       </div>
     </section>
 
     <main class="main" id="orderSection">
       <div class="section-title">
-        <h2>What would you like?</h2>
-        <p>Browse a quick preview, then View All to order</p>
+        <h2>Menu</h2>
+        <p>Tap View All to order</p>
       </div>
 
       <div class="compact-previews" id="compactPreviews">
@@ -117,14 +80,14 @@
         </div>
         <div class="compact-block">
           <div class="compact-head">
-            <span>Swallow & Soup</span>
+            <span>Swallow &amp; Soup</span>
             <button type="button" class="view-all" data-path="swallow">View All →</button>
           </div>
           <div class="compact-row" id="previewSwallow"></div>
         </div>
         <div class="compact-block">
           <div class="compact-head">
-            <span>Pastries & Snacks</span>
+            <span>Pastries &amp; Snacks</span>
             <button type="button" class="view-all" data-path="pastries">View All →</button>
           </div>
           <div class="compact-row" id="previewPastries"></div>
@@ -135,7 +98,7 @@
     <footer class="footer">
       <div class="footer-inner">
         <div class="footer-brand">
-          <img id="footerLogo" src="https://i.ibb.co/rfKhD4nY/1000605467-removebg-preview.png" alt="" />
+          <img id="footerLogo" src="" alt="" />
           <div>
             <strong id="footerName">Restaurant</strong>
             <span id="footerArea"></span>
@@ -152,9 +115,7 @@
           <button type="button" onclick="openMyOrders()">My Orders</button>
         </div>
         <p class="footer-copy" id="footerCopy">Powered by Leva</p>
-        <p class="powered-by" style="text-align:center;margin-top:8px;font-size:0.8rem;color:#6b7280;">
-          <strong>Powered by Leva</strong>
-        </p>
+        <p class="powered-by-leva"><span class="leva-mark">Leva</span> Food</p>
       </div>
     </footer>
   </div>
@@ -182,13 +143,13 @@
       <button type="button" class="back-btn" id="backToCart" style="margin-bottom:16px;">← Back to Cart</button>
       <h2>Checkout</h2>
 
-      <p class="checkout-required-note">Choose Pickup or Delivery (required)</p>
+      <p class="checkout-required-note">Choose how you want your order</p>
       <div class="order-type-select">
         <label class="radio-card">
           <input type="radio" name="fulfillment" value="pickup" id="fulfillmentPickup" required />
           <div>
-            <strong>Pickup</strong>
-            <span>Pay now • Skip the queue</span>
+            <strong>Pre-order Pickup</strong>
+            <span>+₦600 · Skip the queue</span>
           </div>
         </label>
         <label class="radio-card">
@@ -246,7 +207,15 @@
           </div>
         </div>
         <div class="checkout-summary">
-          <div class="summary-row">
+          <div class="summary-row muted-row">
+            <span>Subtotal</span>
+            <span id="subtotalRow">₦0</span>
+          </div>
+          <div class="summary-row muted-row" id="preorderFeeRow" style="display:none;">
+            <span>Pre-order fee</span>
+            <span id="preorderFeeAmount">₦600</span>
+          </div>
+          <div class="summary-row total-line">
             <span>Total</span>
             <strong id="checkoutTotal">₦0</strong>
           </div>
@@ -275,7 +244,7 @@
         <p class="save-note">Please save your Order ID</p>
       </div>
       <button type="button" class="hero-cta" onclick="location.reload()">Back to Home</button>
-      <p style="margin-top:16px;font-size:0.8rem;color:#6b7280;text-align:center;">Powered by Leva</p>
+      <p class="powered-by-leva" style="margin-top:16px;"><span class="leva-mark">Leva</span> Food</p>
     </div>
   </section>
 
@@ -336,7 +305,9 @@
         const t = await window.LEVA.loadTenant();
         if (t) window.LEVA.applyBranding(t);
         else if (window.LEVA.slug !== "vmk") {
-          document.body.innerHTML = "<div style=\"font-family:system-ui;padding:40px;text-align:center\"><h1>Restaurant not found</h1><p>Powered by Leva</p></div>";
+          document.body.innerHTML =
+            '<div style="font-family:system-ui;padding:40px;text-align:center">' +
+            "<h1>Restaurant not found</h1><p class=\"powered-by-leva\"><span class=\"leva-mark\">Leva</span> Food</p></div>";
         }
       }
     })();

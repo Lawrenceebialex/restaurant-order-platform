@@ -1,2 +1,3 @@
-# SPA routes for Leva restaurant pages
-/restaurant/*  /index.html  200
+# Leva Food SPA routes
+/food/*         /index.html  200
+/restaurant/*   /index.html  200

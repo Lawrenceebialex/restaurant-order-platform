@@ -1,22 +1,35 @@
 /**
- * Leva multi-tenant bootstrap
- * URL: /restaurant/{slug}  e.g. /restaurant/vmk
+ * Leva Food multi-tenant bootstrap
+ * URL: /food/{slug}  e.g. /food/vmk
+ * Leva brand accent (platform): teal — not tied to any restaurant theme
  */
 (function () {
   const DEFAULT_SLUG = "vmk";
 
+  /** Strict restaurant colour presets (safe on light UI) */
+  window.LEVA_COLOR_PRESETS = {
+    teal: { primary: "#0d9488", soft: "#ccfbf1", name: "Teal" },
+    green: { primary: "#047857", soft: "#d1fae5", name: "Green" },
+    navy: { primary: "#1e3a8a", soft: "#dbeafe", name: "Navy" },
+    charcoal: { primary: "#1f2937", soft: "#e5e7eb", name: "Charcoal" },
+    burgundy: { primary: "#9f1239", soft: "#fce7f3", name: "Burgundy" },
+    orange: { primary: "#c2410c", soft: "#ffedd5", name: "Orange" },
+    brown: { primary: "#78350f", soft: "#fef3c7", name: "Brown" },
+    blue: { primary: "#2563eb", soft: "#dbeafe", name: "Blue" },
+  };
+
   function getSlugFromPath() {
     const parts = window.location.pathname.replace(/\/+$/, "").split("/").filter(Boolean);
-    // /restaurant/vmk
-    if (parts[0] === "restaurant" && parts[1]) {
+    if ((parts[0] === "food" || parts[0] === "restaurant") && parts[1]) {
       return parts[1].toLowerCase();
     }
-    // Root still serves the app for backward compatibility → default VMK
     return DEFAULT_SLUG;
   }
 
   window.LEVA = {
     platform: "Leva",
+    product: "Leva Food",
+    accent: "#0d9488",
     slug: getSlugFromPath(),
     tenant: null,
   };
@@ -40,7 +53,8 @@
           whatsapp: "2348107350932",
           location_text: "Ugbor, Benin City (near BIU)",
           logo_url: "https://i.ibb.co/rfKhD4nY/1000605467-removebg-preview.png",
-          primary_color: "#6d28d9",
+          color_key: "green",
+          primary_color: "#047857",
           is_active: true,
         };
       } else {
@@ -53,7 +67,7 @@
   window.LEVA.applyBranding = function (tenant) {
     if (!tenant) return;
 
-    document.title = tenant.name + " | Order via Leva";
+    document.title = tenant.name + " · Leva Food";
 
     const logo = document.getElementById("tenantLogo");
     const name = document.getElementById("tenantName");
@@ -72,12 +86,18 @@
       logo.alt = tenant.name;
     }
     if (name) name.textContent = tenant.name;
-    if (tag) tag.textContent = (tenant.short_name || "") + (tenant.location_text ? " · " + tenant.location_text.split(",")[0] : "");
-    if (heroTitle) heroTitle.textContent = "Welcome to " + tenant.name;
-    if (heroSub) heroSub.textContent = tenant.tagline || "";
+    if (tag) {
+      tag.textContent =
+        (tenant.short_name || "") +
+        (tenant.location_text ? " · " + tenant.location_text.split(",")[0] : "");
+    }
+    if (heroTitle) heroTitle.textContent = tenant.name;
+    if (heroSub) heroSub.textContent = tenant.tagline || "Order online";
     if (footerLogo && tenant.logo_url) footerLogo.src = tenant.logo_url;
     if (footerName) footerName.textContent = tenant.name;
-    if (footerLoc) footerLoc.innerHTML = "<strong>Location:</strong> " + (tenant.location_text || "");
+    if (footerLoc)
+      footerLoc.innerHTML =
+        "<strong>Location:</strong> " + (tenant.location_text || "");
     if (footerPhone && tenant.whatsapp) {
       footerPhone.innerHTML =
         "<strong>Phone / WhatsApp:</strong> <a href=\"https://wa.me/" +
@@ -86,11 +106,31 @@
         (tenant.phone || tenant.whatsapp) +
         "</a>";
     }
-    if (footerCopy) footerCopy.textContent = "© " + tenant.name + " · Powered by Leva";
-    if (avCallout) avCallout.textContent = "Check available meals before you visit " + (tenant.short_name || tenant.name);
+    if (footerCopy)
+      footerCopy.textContent = "© " + tenant.name + " · Powered by Leva";
+    if (avCallout)
+      avCallout.textContent =
+        "Check what’s available at " + (tenant.short_name || tenant.name);
 
-    if (tenant.primary_color) {
-      document.documentElement.style.setProperty("--purple", tenant.primary_color);
+    // Restaurant theme from preset or primary_color (test tenant only)
+    let primary = tenant.primary_color;
+    let soft = null;
+    const key = tenant.color_key;
+    if (key && window.LEVA_COLOR_PRESETS[key]) {
+      primary = window.LEVA_COLOR_PRESETS[key].primary;
+      soft = window.LEVA_COLOR_PRESETS[key].soft;
+    }
+    if (primary) {
+      document.documentElement.style.setProperty("--brand", primary);
+      document.documentElement.style.setProperty("--purple", primary);
+      document.documentElement.style.setProperty(
+        "--purple-dark",
+        primary
+      );
+      document.documentElement.style.setProperty(
+        "--purple-light",
+        soft || "#e5e7eb"
+      );
     }
   };
 })();
