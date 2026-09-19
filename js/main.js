@@ -58,9 +58,20 @@ let currentPath = null;
 let currentStep = 0;
 let availabilityCache = {};
 
-function formatPrice(n) { return "₦" + n.toLocaleString(); }
-function generateOrderId() { return "VMK-" + Math.floor(1000 + Math.random() * 9000); }
-function getTotal() { return cart.reduce((s, i) => s + i.price * i.qty, 0); }
+const PREORDER_FEE = 600;
+
+function formatPrice(n) { return "₦" + Number(n).toLocaleString(); }
+function generateOrderId() {
+  const prefix = (window.LEVA && window.LEVA.tenant && window.LEVA.tenant.short_name)
+    ? String(window.LEVA.tenant.short_name).replace(/[^a-zA-Z0-9]/g, "").toUpperCase().slice(0, 6) || "ORD"
+    : "ORD";
+  return prefix + "-" + Math.floor(1000 + Math.random() * 9000);
+}
+function getSubtotal() { return cart.reduce((s, i) => s + i.price * i.qty, 0); }
+function getFulfillmentFee() {
+  return preferredFulfillment === "pickup" ? PREORDER_FEE : 0;
+}
+function getTotal() { return getSubtotal() + getFulfillmentFee(); }
 
 function isAvailable(name) {
   return availabilityCache[name] !== false;
@@ -125,8 +136,10 @@ function renderCompactPreviews() {
 
 function setFulfillmentToggle(type) {
   preferredFulfillment = type;
-  document.getElementById("togglePickup").classList.toggle("active", preferredFulfillment === "pickup");
-  document.getElementById("toggleDelivery").classList.toggle("active", preferredFulfillment === "delivery");
+  const tp = document.getElementById("togglePickup");
+  const td = document.getElementById("toggleDelivery");
+  if (tp) tp.classList.toggle("active", preferredFulfillment === "pickup");
+  if (td) td.classList.toggle("active", preferredFulfillment === "delivery");
 }
 
 function startPath(path) {
@@ -249,15 +262,30 @@ function changeQty(id, delta) {
   updateCartUI();
 }
 
+function updateCheckoutSummary() {
+  const sub = getSubtotal();
+  const fee = getFulfillmentFee();
+  const total = sub + fee;
+  const ct = document.getElementById("checkoutTotal");
+  const feeRow = document.getElementById("preorderFeeRow");
+  const subRow = document.getElementById("subtotalRow");
+  if (subRow) subRow.textContent = formatPrice(sub);
+  if (feeRow) {
+    feeRow.style.display = fee ? "flex" : "none";
+    const feeAmt = document.getElementById("preorderFeeAmount");
+    if (feeAmt) feeAmt.textContent = formatPrice(fee);
+  }
+  if (ct) ct.textContent = formatPrice(total);
+}
+
 function updateCartUI() {
   const totalItems = cart.reduce((s, i) => s + i.qty, 0);
-  const totalPrice = getTotal();
+  const totalPrice = getSubtotal();
   document.getElementById("cartCount").textContent = totalItems;
   document.getElementById("barCount").textContent = totalItems + (totalItems === 1 ? " item" : " items");
   document.getElementById("barTotal").textContent = formatPrice(totalPrice);
   document.getElementById("drawerTotal").textContent = formatPrice(totalPrice);
-  const ct = document.getElementById("checkoutTotal");
-  if (ct) ct.textContent = formatPrice(totalPrice);
+  updateCheckoutSummary();
   document.getElementById("cartBar").classList.toggle("show", totalItems > 0);
   document.getElementById("checkoutBtn").disabled = totalItems === 0;
   const cartItems = document.getElementById("cartItems");
@@ -297,6 +325,7 @@ function showCheckout() {
   document.getElementById("fulfillmentDelivery").checked = preferredFulfillment === "delivery";
   updateFulfillmentUI();
   updateCartUI();
+  updateCheckoutSummary();
 }
 
 function backToCart() {
@@ -315,11 +344,8 @@ function updateFulfillmentUI() {
   document.getElementById("locationGroup").style.display = isDelivery ? "block" : "none";
   document.getElementById("payOnDeliveryOption").style.display = isDelivery ? "flex" : "none";
   if (isPickup) document.querySelector('input[name="payment"][value="paystack"]').checked = true;
-  if (selected) {
-    preferredFulfillment = selected.value;
-    document.getElementById("togglePickup").classList.toggle("active", preferredFulfillment === "pickup");
-    document.getElementById("toggleDelivery").classList.toggle("active", preferredFulfillment === "delivery");
-  }
+  if (selected) preferredFulfillment = selected.value;
+  updateCheckoutSummary();
 }
 
 function handleLocationChange() {
@@ -339,7 +365,7 @@ function placeOrder(e) {
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     alert("Please enter a valid email address (required for payment)"); return;
   }
-  if (!fulfillmentEl) { alert("Please select Pickup or Delivery"); return; }
+  if (!fulfillmentEl) { alert("Please select Pre-order Pickup or Delivery"); return; }
   const fulfillment = fulfillmentEl.value;
   const paymentMethod = paymentEl ? paymentEl.value : "paystack";
   let location = "";
@@ -352,11 +378,16 @@ function placeOrder(e) {
     }
   }
   if (fulfillment === "pickup" && paymentMethod !== "paystack") {
-    alert("Pickup orders require Pay Now"); return;
+    alert("Pre-order pickup requires Pay Now"); return;
   }
+  const fee = fulfillment === "pickup" ? PREORDER_FEE : 0;
   const order = {
     id: generateOrderId(), name, email, phone, fulfillment, location, note, paymentMethod,
-    items: [...cart], total: getTotal(), status: "Pending", createdAt: new Date().toISOString()
+    items: [...cart],
+    subtotal: getSubtotal(),
+    preorderFee: fee,
+    total: getSubtotal() + fee,
+    status: "Pending", createdAt: new Date().toISOString()
   };
   if (paymentMethod === "paystack") payWithPaystack(order);
   else saveOrder(order).then(() => showSuccess(order.id)).catch(() => {});
@@ -431,6 +462,7 @@ function openTrack() {
   closeMobileMenu();
   document.getElementById("trackModal").classList.add("show");
   document.getElementById("trackResult").style.display = "none";
+  document.getElementById("trackInput").value = "";
 }
 function closeTrack() {
   document.getElementById("trackModal").classList.remove("show");
@@ -438,100 +470,75 @@ function closeTrack() {
 
 async function trackOrder() {
   const input = document.getElementById("trackInput").value.trim();
-  if (!input) return;
-  const resultDiv = document.getElementById("trackResult");
-  resultDiv.style.display = "block";
-  resultDiv.innerHTML = `<p style="color:#6b7280;">Searching...</p>`;
+  const result = document.getElementById("trackResult");
+  if (!input) { alert("Enter an Order ID or phone number"); return; }
+  result.style.display = "block";
+  result.innerHTML = "<p style='color:var(--muted)'>Looking up…</p>";
   try {
-    const res = await fetch(`/api/orders?track=${encodeURIComponent(input)}`);
+    const res = await fetch("/api/orders?track=" + encodeURIComponent(input));
     const data = await res.json();
-    const found = (data.orders || [])[0];
-    if (found) {
-      resultDiv.innerHTML = `
-        <div style="text-align:left;background:#f8f7fc;padding:16px;border-radius:12px;">
-          <p><strong>Order ID:</strong> ${found.id}</p>
-          <p><strong>Status:</strong> ${found.status}</p>
-          <p><strong>Type:</strong> ${found.fulfillment}</p>
-          <p><strong>Total:</strong> ${formatPrice(found.total)}</p>
-          <p style="margin-top:8px;font-size:0.85rem;color:#6b7280;">Items: ${(found.items || []).map(i => i.name + " ×" + i.qty).join(", ")}</p>
-        </div>`;
-    } else {
-      resultDiv.innerHTML = `<p style="color:#991b1b;">No order found. Please check your Order ID or phone number.</p>`;
+    const orders = data.orders || [];
+    if (!orders.length) {
+      result.innerHTML = "<p style='color:var(--muted)'>No order found.</p>";
+      return;
     }
+    result.innerHTML = orders.map(o => `
+      <div class="history-card">
+        <div class="hid">${o.id}</div>
+        <div class="hmeta">${o.status} · ${o.fulfillment || ""} · ₦${Number(o.total||0).toLocaleString()}</div>
+        <div class="hitems">${(o.items||[]).map(i => i.name + " ×" + i.qty).join(", ")}</div>
+      </div>`).join("");
   } catch {
-    resultDiv.innerHTML = `<p style="color:#991b1b;">Could not reach server. Try again.</p>`;
+    result.innerHTML = "<p style='color:#991b1b'>Could not track order. Try again.</p>";
   }
 }
 
-function getMyOrders() {
+function getHistory() {
   try {
     return JSON.parse(localStorage.getItem("vmk_my_orders") || "[]");
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 
 function openMyOrders() {
   closeMobileMenu();
-  renderMyOrders();
   document.getElementById("myOrdersModal").classList.add("show");
+  renderMyOrders();
 }
-
 function closeMyOrders() {
   document.getElementById("myOrdersModal").classList.remove("show");
 }
 
 function renderMyOrders() {
   const list = document.getElementById("myOrdersList");
-  const orders = getMyOrders();
-  if (!orders.length) {
-    list.innerHTML = `<p class="empty-cart">No past orders on this device yet.<br/>Place an order and it will show up here.</p>`;
+  const hist = getHistory();
+  if (!hist.length) {
+    list.innerHTML = `<p class="empty-cart">No past orders on this device yet.</p>`;
     return;
   }
-  list.innerHTML = orders.map((o, idx) => {
-    const items = (o.items || []).map(i => `${i.name} × ${i.qty}`).join(", ");
-    const when = o.createdAt ? new Date(o.createdAt).toLocaleString() : "";
-    return `
-      <div class="history-card">
-        <div class="hid">${o.id}</div>
-        <div class="hmeta">${when} · ${formatPrice(o.total || 0)}</div>
-        <div class="hitems">${items || "—"}</div>
-        <div class="history-actions">
-          <button type="button" class="btn-reorder" onclick="reorderFromHistory(${idx})">Reorder</button>
-          <button type="button" class="btn-track-hist" onclick="trackFromHistory('${String(o.id).replace(/'/g, "")}')">Track</button>
-        </div>
-      </div>`;
-  }).join("");
+  list.innerHTML = hist.map(o => `
+    <div class="history-card">
+      <div class="hid">${o.id}</div>
+      <div class="hmeta">₦${Number(o.total||0).toLocaleString()} · ${o.createdAt ? new Date(o.createdAt).toLocaleString() : ""}</div>
+      <div class="hitems">${(o.items||[]).map(i => i.name + " ×" + i.qty).join(", ")}</div>
+      <div class="history-actions">
+        <button type="button" class="btn-reorder" onclick="reorderFromHistory('${o.id}')">Reorder</button>
+        <button type="button" class="btn-track-hist" onclick="closeMyOrders(); openTrack(); document.getElementById('trackInput').value='${o.id}'">Track</button>
+      </div>
+    </div>`).join("");
 }
 
-function reorderFromHistory(index) {
-  const orders = getMyOrders();
-  const o = orders[index];
+async function reorderFromHistory(orderId) {
+  const hist = getHistory();
+  const o = hist.find(x => x.id === orderId);
   if (!o || !o.items) return;
-  let added = 0;
-  let skipped = 0;
-  o.items.forEach(item => {
-    if (!isAvailable(item.name)) { skipped++; return; }
-    const existing = cart.find(c => c.id === item.id);
-    if (existing) existing.qty += item.qty;
-    else cart.push({ id: item.id, name: item.name, price: item.price, qty: item.qty });
-    added += item.qty;
+  await loadAvailability();
+  cart = [];
+  o.items.forEach(i => {
+    if (isAvailable(i.name)) cart.push({ id: i.id, name: i.name, price: i.price, qty: i.qty });
   });
   updateCartUI();
   closeMyOrders();
-  if (added === 0) {
-    alert("None of those items are available right now.");
-    return;
-  }
-  if (skipped) alert(skipped + " item(s) unavailable and were skipped.");
   openCart();
-}
-
-function trackFromHistory(orderId) {
-  closeMyOrders();
-  openTrack();
-  document.getElementById("trackInput").value = orderId;
-  trackOrder();
 }
 
 function closeMobileMenu() {
@@ -543,8 +550,10 @@ document.querySelectorAll(".view-all").forEach(btn => {
   btn.addEventListener("click", () => startPath(btn.dataset.path));
 });
 document.getElementById("backBtn").addEventListener("click", goBack);
-document.getElementById("togglePickup").addEventListener("click", () => setFulfillmentToggle("pickup"));
-document.getElementById("toggleDelivery").addEventListener("click", () => setFulfillmentToggle("delivery"));
+const _tp = document.getElementById("togglePickup");
+const _td = document.getElementById("toggleDelivery");
+if (_tp) _tp.addEventListener("click", () => setFulfillmentToggle("pickup"));
+if (_td) _td.addEventListener("click", () => setFulfillmentToggle("delivery"));
 document.getElementById("cartBtn").addEventListener("click", openCart);
 document.getElementById("viewCartBtn").addEventListener("click", openCart);
 document.getElementById("closeCart").addEventListener("click", closeCart);
@@ -564,10 +573,17 @@ document.getElementById("menuOverlay").addEventListener("click", closeMobileMenu
 document.getElementById("closeTrack").addEventListener("click", closeTrack);
 document.getElementById("trackBtn").addEventListener("click", trackOrder);
 document.getElementById("closeMyOrders").addEventListener("click", closeMyOrders);
-window.openMyOrders = openMyOrders;
-window.reorderFromHistory = reorderFromHistory;
-window.trackFromHistory = trackFromHistory;
 
+window.addToCart = addToCart;
+window.changeQty = changeQty;
+window.nextStep = nextStep;
+window.openMyOrders = openMyOrders;
+window.openTrack = openTrack;
+window.showAvailability = showAvailability;
+window.hideAvailability = hideAvailability;
+window.copyOrderId = copyOrderId;
+window.reorderFromHistory = reorderFromHistory;
+
+loadAvailability();
 updateStatusPill();
-loadAvailability().then(() => updateCartUI());
-updateCartUI();
+setInterval(updateStatusPill, 60000);
