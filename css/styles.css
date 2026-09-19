@@ -49,6 +49,15 @@ button { font-family: inherit; }
 .brand-text { display: flex; flex-direction: column; }
 .brand-text .name { font-weight: 700; font-size: 0.95rem; }
 .brand-text .tag { font-size: 0.72rem; color: var(--muted); }
+.leva-byline {
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-top: 1px;
+}
+.leva-byline strong {
+  font-weight: 700;
+  color: #374151;
+}
 .header-actions { display: flex; align-items: center; gap: 8px; }
 
 .status-pill {
@@ -148,6 +157,15 @@ button { font-family: inherit; }
   max-width: 640px;
   margin: 0 auto;
   text-align: left;
+}
+.hero-leva {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0 0 6px;
+}
+.hero-leva strong {
+  font-weight: 700;
+  color: #374151;
 }
 .hero h1 {
   font-size: clamp(1.25rem, 4vw, 1.5rem);
@@ -417,26 +435,15 @@ button { font-family: inherit; }
   cursor: pointer;
   text-decoration: none;
 }
-.footer-copy { font-size: 0.78rem; color: var(--muted); }
+.footer-copy { font-size: 0.78rem; color: var(--muted); margin-bottom: 8px; }
 
-.powered-by-leva {
+.powered-by-line {
+  display: block;
   text-align: center;
-  margin-top: 12px;
+  margin-top: 4px;
   font-size: 0.8rem;
   color: var(--muted);
   font-weight: 500;
-}
-.leva-mark {
-  display: inline-block;
-  background: var(--leva-black);
-  color: #fff;
-  font-weight: 800;
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
-  padding: 3px 8px;
-  border-radius: 4px;
-  margin-right: 4px;
-  vertical-align: middle;
 }
 
 .checkout-section {
