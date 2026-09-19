@@ -1,3 +1,6 @@
-# Leva Food SPA routes
-/food/*         /index.html  200
-/restaurant/*   /index.html  200
+# Leva marketing home
+/              /home.html  200
+
+# Restaurant SPA
+/food/*        /index.html  200
+/restaurant/*  /index.html  200

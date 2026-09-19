@@ -1,7 +1,16 @@
+/* Leva join — black / cream brand (not restaurant teal) */
+:root {
+  --join-ink: #0a0a0a;
+  --join-bg: #f7f6f3;
+  --join-muted: #6b7280;
+  --join-border: #e8e6e1;
+}
+
 .join-body {
-  background: #f8fafc;
+  background: var(--join-bg);
   min-height: 100vh;
   padding-bottom: 40px;
+  color: var(--join-ink);
 }
 .join-header {
   max-width: 520px;
@@ -12,15 +21,22 @@
   justify-content: space-between;
 }
 .join-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-weight: 800;
-  font-size: 1.25rem;
-  color: #0a0a0a;
+  font-size: 1.1rem;
+  letter-spacing: 0.06em;
+  color: var(--join-ink);
   text-decoration: none;
-  letter-spacing: -0.02em;
+}
+.join-logo img {
+  height: 28px;
+  width: auto;
 }
 .join-header-note {
   font-size: 0.8rem;
-  color: var(--muted);
+  color: var(--join-muted);
 }
 .join-main {
   max-width: 520px;
@@ -29,17 +45,17 @@
 }
 .join-card {
   background: #fff;
-  border: 1px solid var(--border);
+  border: 1px solid var(--join-border);
   border-radius: 16px;
   padding: 24px 20px 28px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.04);
 }
 .join-card h1 {
   font-size: 1.35rem;
   margin-bottom: 6px;
 }
 .join-lead {
-  color: var(--muted);
+  color: var(--join-muted);
   font-size: 0.92rem;
   margin-bottom: 18px;
 }
@@ -55,7 +71,7 @@
   background: #e5e7eb;
 }
 .join-steps .dot.active {
-  background: #0d9488;
+  background: var(--join-ink);
 }
 .join-panel { display: none; }
 .join-panel.active { display: block; }
@@ -66,7 +82,7 @@
 .slug-row {
   display: flex;
   align-items: center;
-  border: 1px solid var(--border);
+  border: 1px solid var(--join-border);
   border-radius: 10px;
   overflow: hidden;
   background: #fff;
@@ -75,7 +91,7 @@
   padding: 11px 10px;
   background: #f3f4f6;
   font-size: 0.85rem;
-  color: var(--muted);
+  color: var(--join-muted);
   white-space: nowrap;
 }
 .slug-row input {
@@ -84,7 +100,7 @@
 }
 .hint {
   font-size: 0.78rem;
-  color: var(--muted);
+  color: var(--join-muted);
   margin-top: 6px;
 }
 .join-nav {
@@ -95,14 +111,26 @@
 .btn-secondary {
   flex: 0 0 auto;
   background: #f3f4f6;
-  color: var(--text);
+  color: var(--join-ink);
   border: none;
   padding: 14px 18px;
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
 }
-.join-nav .checkout-btn { flex: 1; }
+.join-nav .checkout-btn,
+.join-panel .checkout-btn {
+  flex: 1;
+  width: 100%;
+  background: var(--join-ink) !important;
+  color: #fff !important;
+  border: none;
+  padding: 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+}
 .color-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -125,8 +153,8 @@
   margin: 0 auto 6px;
 }
 .color-swatch.selected {
-  border-color: #0d9488;
-  background: #f0fdfa;
+  border-color: var(--join-ink);
+  background: #f3f4f6;
 }
 .join-error {
   color: #991b1b;
@@ -141,7 +169,7 @@
   align-items: center;
   gap: 8px;
   background: #f8fafc;
-  border: 1px solid var(--border);
+  border: 1px solid var(--join-border);
   border-radius: 12px;
   padding: 12px;
   margin: 14px 0;
@@ -150,8 +178,51 @@
 }
 .link-box a {
   flex: 1;
-  color: #0d9488;
+  color: var(--join-ink);
   font-weight: 600;
   font-size: 0.9rem;
 }
 .join-foot { margin-top: 20px; }
+.form-group { margin-bottom: 14px; }
+.form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.88rem;
+  margin-bottom: 5px;
+}
+.form-group input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--join-border);
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+.copy-btn {
+  background: #f3f4f6;
+  color: var(--join-ink);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.powered-by-line {
+  display: block;
+  text-align: center;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: var(--join-muted);
+  font-weight: 500;
+}
+.success-icon {
+  width: 60px; height: 60px;
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 1.8rem;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto;
+}
