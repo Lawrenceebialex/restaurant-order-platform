@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Leva Food</title>
+  <title>Order via Leva</title>
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#0d9488" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="description" content="Order food online — powered by Leva Food." />
+  <meta name="description" content="Order food online — powered by Leva." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -22,6 +22,7 @@
         <div class="brand-text">
           <span class="name" id="tenantName">Loading…</span>
           <span class="tag" id="tenantTag"></span>
+          <span class="leva-byline">via <strong>Leva</strong></span>
         </div>
       </div>
       <div class="header-actions">
@@ -52,6 +53,7 @@
   <div id="homeView">
     <section class="hero hero-slim">
       <div class="hero-content">
+        <p class="hero-leva">Ordering on <strong>Leva</strong></p>
         <h1 id="heroTitle">Restaurant</h1>
         <p class="hero-sub" id="heroSub"></p>
       </div>
@@ -114,8 +116,8 @@
           <button type="button" onclick="openTrack()">Track Order</button>
           <button type="button" onclick="openMyOrders()">My Orders</button>
         </div>
-        <p class="footer-copy" id="footerCopy">Powered by Leva</p>
-        <p class="powered-by-leva"><span class="leva-mark">Leva</span> Food</p>
+        <p class="footer-copy" id="footerCopy"></p>
+        <p class="powered-by-line">Powered by Leva</p>
       </div>
     </footer>
   </div>
@@ -244,7 +246,7 @@
         <p class="save-note">Please save your Order ID</p>
       </div>
       <button type="button" class="hero-cta" onclick="location.reload()">Back to Home</button>
-      <p class="powered-by-leva" style="margin-top:16px;"><span class="leva-mark">Leva</span> Food</p>
+      <p class="powered-by-line" style="margin-top:16px;">Powered by Leva</p>
     </div>
   </section>
 
@@ -307,7 +309,7 @@
         else if (window.LEVA.slug !== "vmk") {
           document.body.innerHTML =
             '<div style="font-family:system-ui;padding:40px;text-align:center">' +
-            "<h1>Restaurant not found</h1><p class=\"powered-by-leva\"><span class=\"leva-mark\">Leva</span> Food</p></div>";
+            "<h1>Restaurant not found</h1><p class=\"powered-by-line\">Powered by Leva</p></div>";
         }
       }
     })();

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join Leva — Create your ordering page</title>
+  <meta name="description" content="Create your restaurant ordering page on Leva in minutes." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/join.css" />
+</head>
+<body class="join-body">
+  <header class="join-header">
+    <a href="/" class="join-logo">Leva</a>
+    <span class="join-header-note">For restaurants</span>
+  </header>
+
+  <main class="join-main">
+    <div class="join-card">
+      <h1>Create your page on Leva</h1>
+      <p class="join-lead">A few simple details. You’ll get a link to share with customers.</p>
+
+      <div class="join-steps" id="stepDots">
+        <span class="dot active" data-step="1"></span>
+        <span class="dot" data-step="2"></span>
+        <span class="dot" data-step="3"></span>
+      </div>
+
+      <form id="joinForm" novalidate>
+        <!-- Step 1: Business -->
+        <div class="join-panel active" data-panel="1">
+          <h2>Your restaurant</h2>
+          <div class="form-group">
+            <label for="bizName">Business name *</label>
+            <input type="text" id="bizName" required placeholder="e.g. Mama Nkechi Kitchen" autocomplete="organization" />
+          </div>
+          <div class="form-group">
+            <label for="slug">Your link on Leva *</label>
+            <div class="slug-row">
+              <span class="slug-prefix">/food/</span>
+              <input type="text" id="slug" required placeholder="mama-nkechi" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" />
+            </div>
+            <p class="hint">Letters, numbers, hyphens only. Example: mama-nkechi</p>
+          </div>
+          <div class="form-group">
+            <label for="tagline">Short tagline (optional)</label>
+            <input type="text" id="tagline" placeholder="e.g. Fresh meals near BIU" maxlength="80" />
+          </div>
+          <button type="button" class="checkout-btn" id="next1">Continue</button>
+        </div>
+
+        <!-- Step 2: Contact & place -->
+        <div class="join-panel" data-panel="2">
+          <h2>Contact &amp; location</h2>
+          <div class="form-group">
+            <label for="phone">Phone *</label>
+            <input type="tel" id="phone" required placeholder="0810 000 0000" />
+          </div>
+          <div class="form-group">
+            <label for="whatsapp">WhatsApp (if different)</label>
+            <input type="tel" id="whatsapp" placeholder="Same as phone if empty" />
+          </div>
+          <div class="form-group">
+            <label for="location">Area / address *</label>
+            <input type="text" id="location" required placeholder="e.g. Ugbor, Benin City" />
+          </div>
+          <div class="form-group">
+            <label for="ownerEmail">Your email *</label>
+            <input type="email" id="ownerEmail" required placeholder="you@gmail.com" autocomplete="email" />
+            <p class="hint">We’ll use this for your owner login (Google sign-in can be added next).</p>
+          </div>
+          <div class="form-group">
+            <label for="ownerPassword">Staff password *</label>
+            <input type="password" id="ownerPassword" required minlength="6" placeholder="At least 6 characters" autocomplete="new-password" />
+            <p class="hint">For the staff dashboard. Keep it private.</p>
+          </div>
+          <div class="join-nav">
+            <button type="button" class="btn-secondary" id="back2">Back</button>
+            <button type="button" class="checkout-btn" id="next2">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Look -->
+        <div class="join-panel" data-panel="3">
+          <h2>Page colour</h2>
+          <p class="hint" style="margin-bottom:12px;">Pick one. All options already look good on the menu.</p>
+          <div class="color-grid" id="colorGrid"></div>
+          <input type="hidden" id="colorKey" value="teal" />
+
+          <div class="form-group" style="margin-top:18px;">
+            <label for="logoUrl">Logo image link (optional)</label>
+            <input type="url" id="logoUrl" placeholder="https://…" />
+            <p class="hint">Paste a direct image URL. You can add this later.</p>
+          </div>
+
+          <div class="join-nav">
+            <button type="button" class="btn-secondary" id="back3">Back</button>
+            <button type="submit" class="checkout-btn" id="submitJoin">Create my page</button>
+          </div>
+          <p id="joinError" class="join-error" style="display:none;"></p>
+        </div>
+
+        <!-- Success -->
+        <div class="join-panel" data-panel="done" id="donePanel">
+          <div class="join-success">
+            <div class="success-icon">✓</div>
+            <h2>Your page is ready</h2>
+            <p>Share this link with customers:</p>
+            <div class="link-box">
+              <a id="liveLink" href="#" target="_blank" rel="noopener"></a>
+              <button type="button" class="copy-btn" id="copyLink">Copy</button>
+            </div>
+            <p class="hint">Staff dashboard: open your page, then go to <strong>/staff</strong> (password you set).</p>
+            <a class="checkout-btn" id="openPageBtn" href="#" style="display:inline-block;text-align:center;text-decoration:none;margin-top:12px;">Open my page</a>
+          </div>
+        </div>
+      </form>
+    </div>
+    <p class="powered-by-line join-foot">Powered by Leva</p>
+  </main>
+
+  <script src="/js/join.js"></script>
+</body>
+</html>
