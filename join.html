@@ -13,9 +13,8 @@
 </head>
 <body class="join-body">
   <header class="join-header">
-    <a href="/" class="join-logo">
+    <a href="/" class="join-logo" aria-label="Leva home">
       <img src="https://i.ibb.co/zWsztQW9/1000622412-removebg-preview.png" alt="Leva" />
-      <span>LEVA</span>
     </a>
     <span class="join-header-note">For restaurants</span>
   </header>
@@ -23,7 +22,7 @@
   <main class="join-main">
     <div class="join-card">
       <h1>Create your page on Leva</h1>
-      <p class="join-lead">A few simple details. You’ll get a link to share with customers.</p>
+      <p class="join-lead">A few simple details. You will get a link to share with customers.</p>
 
       <div class="join-steps" id="stepDots">
         <span class="dot active" data-step="1"></span>
@@ -54,7 +53,7 @@
         </div>
 
         <div class="join-panel" data-panel="2">
-          <h2>Contact & location</h2>
+          <h2>Contact and location</h2>
           <div class="form-group">
             <label for="phone">Phone *</label>
             <input type="tel" id="phone" required placeholder="0810 000 0000" />
@@ -70,7 +69,7 @@
           <div class="form-group">
             <label for="ownerEmail">Your email *</label>
             <input type="email" id="ownerEmail" required placeholder="you@gmail.com" autocomplete="email" />
-            <p class="hint">For your owner login. Google sign-in can be added later.</p>
+            <p class="hint">For your owner login. Google sign in can be added later.</p>
           </div>
           <div class="form-group">
             <label for="ownerPassword">Staff password *</label>
@@ -85,7 +84,7 @@
 
         <div class="join-panel" data-panel="3">
           <h2>Page colour</h2>
-          <p class="hint" style="margin-bottom:12px;">Pick one. These only affect the restaurant menu page — not the Leva site.</p>
+          <p class="hint" style="margin-bottom:12px;">Pick one. These only affect the restaurant menu page, not the Leva site.</p>
           <div class="color-grid" id="colorGrid"></div>
           <input type="hidden" id="colorKey" value="charcoal" />
 
@@ -111,13 +110,18 @@
               <a id="liveLink" href="#" target="_blank" rel="noopener"></a>
               <button type="button" class="copy-btn" id="copyLink">Copy</button>
             </div>
-            <p class="hint">Staff dashboard: open your page, then go to <strong>/staff.html</strong> (password you set).</p>
+            <p class="hint">Staff dashboard: open your page, then go to staff.html (password you set).</p>
             <a class="checkout-btn" id="openPageBtn" href="#" style="display:inline-block;text-align:center;text-decoration:none;margin-top:12px;">Open my page</a>
           </div>
         </div>
       </form>
     </div>
-    <p class="powered-by-line join-foot">Powered by Leva</p>
+    <p class="join-powered">
+      <span>Powered by</span>
+      <a href="/" class="join-powered-logo" aria-label="Leva">
+        <img src="https://i.ibb.co/zWsztQW9/1000622412-removebg-preview.png" alt="Leva" />
+      </a>
+    </p>
   </main>
 
   <script src="/js/join.js"></script>

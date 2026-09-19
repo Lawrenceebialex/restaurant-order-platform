@@ -1,4 +1,3 @@
-/* Leva join — black / cream brand (not restaurant teal) */
 :root {
   --join-ink: #0a0a0a;
   --join-bg: #f7f6f3;
@@ -11,6 +10,7 @@
   min-height: 100vh;
   padding-bottom: 40px;
   color: var(--join-ink);
+  font-family: 'Inter', system-ui, sans-serif;
 }
 .join-header {
   max-width: 520px;
@@ -23,16 +23,13 @@
 .join-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-weight: 800;
-  font-size: 1.1rem;
-  letter-spacing: 0.06em;
-  color: var(--join-ink);
   text-decoration: none;
 }
 .join-logo img {
-  height: 28px;
+  height: 40px;
   width: auto;
+  display: block;
+  object-fit: contain;
 }
 .join-header-note {
   font-size: 0.8rem;
@@ -182,7 +179,6 @@
   font-weight: 600;
   font-size: 0.9rem;
 }
-.join-foot { margin-top: 20px; }
 .form-group { margin-bottom: 14px; }
 .form-group label {
   display: block;
@@ -208,14 +204,6 @@
   font-size: 0.85rem;
   cursor: pointer;
 }
-.powered-by-line {
-  display: block;
-  text-align: center;
-  margin-top: 4px;
-  font-size: 0.8rem;
-  color: var(--join-muted);
-  font-weight: 500;
-}
 .success-icon {
   width: 60px; height: 60px;
   background: #ecfdf5;
@@ -225,4 +213,26 @@
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   margin: 0 auto;
+}
+.join-powered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+  font-size: 0.85rem;
+  color: var(--join-muted);
+  font-weight: 500;
+}
+.join-powered-logo {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.85;
+}
+.join-powered-logo:hover { opacity: 1; }
+.join-powered-logo img {
+  height: 20px;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
