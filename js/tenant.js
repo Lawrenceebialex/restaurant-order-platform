@@ -1,12 +1,10 @@
 /**
- * Leva Food multi-tenant bootstrap
- * URL: /food/{slug}  e.g. /food/vmk
- * Leva brand accent (platform): teal — not tied to any restaurant theme
+ * Leva multi-tenant bootstrap
+ * URL: /food/{slug}
  */
 (function () {
   const DEFAULT_SLUG = "vmk";
 
-  /** Strict restaurant colour presets (safe on light UI) */
   window.LEVA_COLOR_PRESETS = {
     teal: { primary: "#0d9488", soft: "#ccfbf1", name: "Teal" },
     green: { primary: "#047857", soft: "#d1fae5", name: "Green" },
@@ -28,7 +26,6 @@
 
   window.LEVA = {
     platform: "Leva",
-    product: "Leva Food",
     accent: "#0d9488",
     slug: getSlugFromPath(),
     tenant: null,
@@ -67,7 +64,7 @@
   window.LEVA.applyBranding = function (tenant) {
     if (!tenant) return;
 
-    document.title = tenant.name + " · Leva Food";
+    document.title = tenant.name + " · Leva";
 
     const logo = document.getElementById("tenantLogo");
     const name = document.getElementById("tenantName");
@@ -106,13 +103,11 @@
         (tenant.phone || tenant.whatsapp) +
         "</a>";
     }
-    if (footerCopy)
-      footerCopy.textContent = "© " + tenant.name + " · Powered by Leva";
+    if (footerCopy) footerCopy.textContent = "© " + tenant.name;
     if (avCallout)
       avCallout.textContent =
         "Check what’s available at " + (tenant.short_name || tenant.name);
 
-    // Restaurant theme from preset or primary_color (test tenant only)
     let primary = tenant.primary_color;
     let soft = null;
     const key = tenant.color_key;
@@ -123,14 +118,8 @@
     if (primary) {
       document.documentElement.style.setProperty("--brand", primary);
       document.documentElement.style.setProperty("--purple", primary);
-      document.documentElement.style.setProperty(
-        "--purple-dark",
-        primary
-      );
-      document.documentElement.style.setProperty(
-        "--purple-light",
-        soft || "#e5e7eb"
-      );
+      document.documentElement.style.setProperty("--purple-dark", primary);
+      document.documentElement.style.setProperty("--purple-light", soft || "#e5e7eb");
     }
   };
 })();
