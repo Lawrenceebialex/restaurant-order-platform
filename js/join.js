@@ -1,16 +1,14 @@
 (function () {
   const PRESETS = {
-    teal: { primary: "#0d9488", name: "Teal" },
-    green: { primary: "#047857", name: "Green" },
-    navy: { primary: "#1e3a8a", name: "Navy" },
     charcoal: { primary: "#1f2937", name: "Charcoal" },
+    navy: { primary: "#1e3a8a", name: "Navy" },
+    green: { primary: "#047857", name: "Green" },
+    teal: { primary: "#0d9488", name: "Teal" },
     burgundy: { primary: "#9f1239", name: "Burgundy" },
     orange: { primary: "#c2410c", name: "Orange" },
     brown: { primary: "#78350f", name: "Brown" },
     blue: { primary: "#2563eb", name: "Blue" },
   };
-
-  let step = 1;
 
   function slugify(s) {
     return String(s || "")
@@ -22,7 +20,6 @@
   }
 
   function showStep(n) {
-    step = n;
     document.querySelectorAll(".join-panel").forEach((p) => {
       p.classList.toggle("active", p.dataset.panel === String(n));
     });
@@ -33,10 +30,11 @@
 
   function renderColors() {
     const grid = document.getElementById("colorGrid");
+    const current = document.getElementById("colorKey").value || "charcoal";
     grid.innerHTML = Object.entries(PRESETS)
       .map(
         ([key, v]) =>
-          `<button type="button" class="color-swatch${key === "teal" ? " selected" : ""}" data-key="${key}">
+          `<button type="button" class="color-swatch${key === current ? " selected" : ""}" data-key="${key}">
             <div class="chip" style="background:${v.primary}"></div>
             ${v.name}
           </button>`
@@ -109,7 +107,7 @@
       location_text: document.getElementById("location").value.trim(),
       owner_email: document.getElementById("ownerEmail").value.trim(),
       owner_password: document.getElementById("ownerPassword").value,
-      color_key: document.getElementById("colorKey").value || "teal",
+      color_key: document.getElementById("colorKey").value || "charcoal",
       logo_url: document.getElementById("logoUrl").value.trim(),
     };
 
