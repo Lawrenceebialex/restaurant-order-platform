@@ -1,5 +1,5 @@
-# Cloudflare Pages + D1
-# Binding name in Functions: DB
+# Cloudflare Pages + D1 + R2
+# Bindings: DB (D1), UPLOADS (R2)
 
 name = "restaurant-order-platform"
 compatibility_date = "2024-09-23"
@@ -9,3 +9,7 @@ pages_build_output_dir = "."
 binding = "DB"
 database_name = "restaurant-platform-db"
 database_id = "7e1d99a2-4d23-4faf-9d27-aa1bc0cfa7f1"
+
+[[r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "leva-uploads"
