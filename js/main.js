@@ -1,6 +1,6 @@
 const PAYSTACK_PUBLIC_KEY = "pk_test_9d6a3822fd55c2eecbf5a42591775679e0b1d49a";
 
-const menu = {
+let menu = {
   rice: [
     { id: 1, name: "Jollof Rice", price: 1500, img: "https://i.ibb.co/nNmqrsWq/images-34.jpg" },
     { id: 2, name: "Asun Rice", price: 2000, img: "https://i.ibb.co/spMJDv3k/images-35.jpg" },
@@ -42,10 +42,13 @@ const menu = {
   ]
 };
 
-const ALL_ITEMS = [
-  ...menu.rice, ...menu.swallow, ...menu.soup, ...menu.proteins,
-  ...menu.sides, ...menu.drinks, ...menu.pastries
-];
+function getAllItems() {
+  return [
+    ...menu.rice, ...menu.swallow, ...menu.soup, ...menu.proteins,
+    ...menu.sides, ...menu.drinks, ...menu.pastries
+  ];
+}
+let ALL_ITEMS = getAllItems();
 
 const CATEGORY_LABELS = {
   rice: "Rice Meals", swallow: "Swallow", soup: "Soup", proteins: "Proteins",
@@ -57,6 +60,43 @@ let preferredFulfillment = null;
 let currentPath = null;
 let currentStep = 0;
 let availabilityCache = {};
+
+const CAT_MAP = {
+  rice: "rice", "rice meals": "rice",
+  swallow: "swallow",
+  soup: "soup",
+  protein: "proteins", proteins: "proteins",
+  sides: "sides", side: "sides",
+  drinks: "drinks", drink: "drinks",
+  pastries: "pastries", pastry: "pastries", snacks: "pastries",
+  other: "pastries"
+};
+
+async function loadTenantMenuFromApi() {
+  const slug = (window.LEVA && window.LEVA.slug) || "vmk";
+  try {
+    const res = await fetch("/api/menu?slug=" + encodeURIComponent(slug));
+    const data = await res.json();
+    if (!data.items || !data.items.length) return false;
+    Object.keys(menu).forEach((k) => { menu[k] = []; });
+    let n = 1;
+    data.items.forEach((it) => {
+      const key = CAT_MAP[String(it.category || "other").toLowerCase()] || "pastries";
+      if (!menu[key]) menu[key] = [];
+      menu[key].push({
+        id: n++,
+        name: it.name,
+        price: it.price,
+        img: it.img || "",
+        dbId: it.id
+      });
+    });
+    ALL_ITEMS = getAllItems();
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 const PREORDER_FEE = 600;
 
@@ -110,10 +150,13 @@ async function updateStatusPill() {
 function renderCard(item, { showAdd = true } = {}) {
   const available = isAvailable(item.name);
   const safeName = item.name.replace(/'/g, "\\'");
+  const img = item.img
+    ? `<img src="${item.img}" alt="${item.name}" loading="lazy" />`
+    : `<div style="width:100%;height:100%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#9ca3af">No photo</div>`;
   return `
     <article class="card ${available ? "" : "unavailable"}">
       <div class="card-img">
-        <img src="${item.img}" alt="${item.name}" loading="lazy" />
+        ${img}
         <span class="badge ${available ? "available" : "unavailable"}">${available ? "Available" : "Unavailable"}</span>
       </div>
       <div class="card-body">
@@ -129,9 +172,12 @@ function renderCompactPreviews() {
   const elS = document.getElementById("previewSwallow");
   const elP = document.getElementById("previewPastries");
   if (!elR) return;
-  elR.innerHTML = menu.rice.slice(0, 3).map(i => renderCard(i)).join("");
-  elS.innerHTML = [...menu.soup.slice(0, 2), ...menu.swallow.slice(0, 1)].map(i => renderCard(i)).join("");
-  elP.innerHTML = menu.pastries.slice(0, 3).map(i => renderCard(i)).join("");
+  const rice = menu.rice.slice(0, 3);
+  const swallow = [...menu.soup.slice(0, 2), ...menu.swallow.slice(0, 1)];
+  const past = menu.pastries.slice(0, 3);
+  elR.innerHTML = rice.length ? rice.map(i => renderCard(i)).join("") : "<p class=\"hint\">No rice items yet</p>";
+  elS.innerHTML = swallow.length ? swallow.map(i => renderCard(i)).join("") : "<p class=\"hint\">No swallow/soup yet</p>";
+  elP.innerHTML = past.length ? past.map(i => renderCard(i)).join("") : "<p class=\"hint\">No pastries yet</p>";
 }
 
 function setFulfillmentToggle(type) {
@@ -156,6 +202,10 @@ function startPath(path) {
 
 function renderStepCards(items, label) {
   document.getElementById("stepLabel").textContent = label;
+  if (!items.length) {
+    document.getElementById("stepContent").innerHTML = "<p style=\"text-align:center;color:var(--muted);padding:24px\">No items in this category yet.</p>";
+    return;
+  }
   document.getElementById("stepContent").innerHTML = `
     <div class="grid">${items.map(i => renderCard(i)).join("")}</div>
     <div style="margin-top:18px;text-align:center;">
@@ -212,8 +262,8 @@ function hideAvailability() {
 }
 
 function renderAvailabilityView() {
-  const available = ALL_ITEMS.filter(i => isAvailable(i.name));
-  const unavailable = ALL_ITEMS.filter(i => !isAvailable(i.name));
+  const available = getAllItems().filter(i => isAvailable(i.name));
+  const unavailable = getAllItems().filter(i => !isAvailable(i.name));
   const byCat = (items) => {
     const g = {};
     items.forEach(i => {
@@ -584,6 +634,12 @@ window.hideAvailability = hideAvailability;
 window.copyOrderId = copyOrderId;
 window.reorderFromHistory = reorderFromHistory;
 
-loadAvailability();
-updateStatusPill();
-setInterval(updateStatusPill, 60000);
+(async function initMenuAndUi() {
+  if (window.LEVA && window.LEVA.loadTenant) {
+    try { await window.LEVA.loadTenant(); } catch (e) {}
+  }
+  await loadTenantMenuFromApi();
+  await loadAvailability();
+  updateStatusPill();
+  setInterval(updateStatusPill, 60000);
+})();
