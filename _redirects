@@ -1,6 +1,8 @@
-# Leva marketing home
-/              /home.html  200
+# Leva marketing home (exact)
+/                 /home.html   200
+/join             /join.html   200
 
-# Restaurant SPA
-/food/*        /index.html  200
-/restaurant/*  /index.html  200
+# Restaurant ordering SPA — use :splat form to avoid CF infinite-loop warning
+/food/:slug       /index.html  200
+/food/:slug/*     /index.html  200
+/restaurant/:slug /index.html  200
