@@ -10,6 +10,21 @@
     blue: { primary: "#2563eb", name: "Blue" },
   };
 
+  const CATEGORIES = [
+    "Rice",
+    "Swallow",
+    "Soup",
+    "Protein",
+    "Sides",
+    "Drinks",
+    "Pastries",
+    "Other",
+  ];
+
+  /** @type {{category:string,name:string,price:number,image_url:string}[]} */
+  let draftMenu = [];
+  let logoUrl = "";
+
   function slugify(s) {
     return String(s || "")
       .toLowerCase()
@@ -24,12 +39,14 @@
       p.classList.toggle("active", p.dataset.panel === String(n));
     });
     document.querySelectorAll(".join-steps .dot").forEach((d) => {
-      d.classList.toggle("active", Number(d.dataset.step) <= n);
+      const s = Number(d.dataset.step);
+      d.classList.toggle("active", !Number.isNaN(s) && s <= n);
     });
   }
 
   function renderColors() {
     const grid = document.getElementById("colorGrid");
+    if (!grid) return;
     const current = document.getElementById("colorKey").value || "charcoal";
     grid.innerHTML = Object.entries(PRESETS)
       .map(
@@ -49,6 +66,44 @@
     });
   }
 
+  function renderDraftMenu() {
+    const list = document.getElementById("menuDraftList");
+    if (!list) return;
+    if (!draftMenu.length) {
+      list.innerHTML = `<p class="hint">No items yet. Add at least one dish so customers can order.</p>`;
+      return;
+    }
+    list.innerHTML = draftMenu
+      .map(
+        (item, i) =>
+          `<div class="menu-draft-row">
+            ${item.image_url ? `<img src="${item.image_url}" alt="" />` : `<div class="menu-draft-ph"></div>`}
+            <div class="menu-draft-meta">
+              <strong>${item.name}</strong>
+              <span>${item.category} · ₦${Number(item.price).toLocaleString()}</span>
+            </div>
+            <button type="button" class="btn-remove" data-i="${i}">Remove</button>
+          </div>`
+      )
+      .join("");
+    list.querySelectorAll(".btn-remove").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        draftMenu.splice(Number(btn.dataset.i), 1);
+        renderDraftMenu();
+      });
+    });
+  }
+
+  async function uploadFile(file, folder) {
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("folder", folder || "uploads");
+    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Upload failed");
+    return data.url;
+  }
+
   document.getElementById("bizName").addEventListener("input", (e) => {
     const slug = document.getElementById("slug");
     if (!slug.dataset.touched) slug.value = slugify(e.target.value);
@@ -56,6 +111,61 @@
   document.getElementById("slug").addEventListener("input", () => {
     document.getElementById("slug").dataset.touched = "1";
     document.getElementById("slug").value = slugify(document.getElementById("slug").value);
+  });
+
+  const logoInput = document.getElementById("logoFile");
+  if (logoInput) {
+    logoInput.addEventListener("change", async () => {
+      const file = logoInput.files && logoInput.files[0];
+      const status = document.getElementById("logoStatus");
+      if (!file) return;
+      status.textContent = "Uploading logo…";
+      try {
+        logoUrl = await uploadFile(file, "logos");
+        status.textContent = "Logo uploaded";
+        const prev = document.getElementById("logoPreview");
+        if (prev) {
+          prev.src = logoUrl;
+          prev.style.display = "block";
+        }
+      } catch (e) {
+        status.textContent = e.message || "Upload failed";
+        logoUrl = "";
+      }
+    });
+  }
+
+  const catSelect = document.getElementById("itemCategory");
+  if (catSelect) {
+    catSelect.innerHTML = CATEGORIES.map((c) => `<option value="${c}">${c}</option>`).join("");
+  }
+
+  document.getElementById("addMenuItem")?.addEventListener("click", async () => {
+    const name = document.getElementById("itemName").value.trim();
+    const price = parseInt(document.getElementById("itemPrice").value, 10);
+    const category = document.getElementById("itemCategory").value;
+    const fileInput = document.getElementById("itemImage");
+    if (!name || !Number.isFinite(price) || price < 0) {
+      alert("Enter item name and price");
+      return;
+    }
+    let image_url = "";
+    const file = fileInput.files && fileInput.files[0];
+    const btn = document.getElementById("addMenuItem");
+    btn.disabled = true;
+    btn.textContent = file ? "Uploading…" : "Adding…";
+    try {
+      if (file) image_url = await uploadFile(file, "menu");
+      draftMenu.push({ category, name, price, image_url });
+      document.getElementById("itemName").value = "";
+      document.getElementById("itemPrice").value = "";
+      fileInput.value = "";
+      renderDraftMenu();
+    } catch (e) {
+      alert(e.message || "Could not add item");
+    }
+    btn.disabled = false;
+    btn.textContent = "Add item";
   });
 
   document.getElementById("next1").addEventListener("click", () => {
@@ -85,6 +195,8 @@
     showStep(3);
   });
   document.getElementById("back3").addEventListener("click", () => showStep(2));
+  document.getElementById("next3").addEventListener("click", () => showStep(4));
+  document.getElementById("back4").addEventListener("click", () => showStep(3));
 
   document.getElementById("joinForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -97,18 +209,20 @@
     const phone = document.getElementById("phone").value.trim();
     const waRaw = document.getElementById("whatsapp").value.trim() || phone;
     const whatsapp = waRaw.replace(/\D/g, "").replace(/^0/, "234");
+    const password = document.getElementById("ownerPassword").value;
+    const slug = document.getElementById("slug").value.trim();
 
     const payload = {
       name: document.getElementById("bizName").value.trim(),
-      slug: document.getElementById("slug").value.trim(),
+      slug,
       tagline: document.getElementById("tagline").value.trim(),
       phone,
       whatsapp,
       location_text: document.getElementById("location").value.trim(),
       owner_email: document.getElementById("ownerEmail").value.trim(),
-      owner_password: document.getElementById("ownerPassword").value,
+      owner_password: password,
       color_key: document.getElementById("colorKey").value || "charcoal",
-      logo_url: document.getElementById("logoUrl").value.trim(),
+      logo_url: logoUrl || document.getElementById("logoUrl")?.value?.trim() || "",
     };
 
     try {
@@ -120,7 +234,23 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not create page");
 
-      const path = "/food/" + payload.slug;
+      // Save menu items
+      for (const item of draftMenu) {
+        await fetch("/api/menu", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            slug,
+            owner_password: password,
+            category: item.category,
+            name: item.name,
+            price: item.price,
+            image_url: item.image_url,
+          }),
+        });
+      }
+
+      const path = "/food/" + slug;
       const url = window.location.origin + path;
       document.getElementById("liveLink").textContent = url;
       document.getElementById("liveLink").href = path;
@@ -145,4 +275,5 @@
   });
 
   renderColors();
+  renderDraftMenu();
 })();
