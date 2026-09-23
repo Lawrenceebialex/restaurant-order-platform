@@ -4,10 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Join Leva — Create your ordering page</title>
-  <meta name="description" content="Create your restaurant ordering page on Leva in minutes." />
   <meta name="theme-color" content="#0a0a0a" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/join.css" />
 </head>
@@ -28,6 +25,7 @@
         <span class="dot active" data-step="1"></span>
         <span class="dot" data-step="2"></span>
         <span class="dot" data-step="3"></span>
+        <span class="dot" data-step="4"></span>
       </div>
 
       <form id="joinForm" novalidate>
@@ -41,9 +39,9 @@
             <label for="slug">Your link on Leva *</label>
             <div class="slug-row">
               <span class="slug-prefix">/food/</span>
-              <input type="text" id="slug" required placeholder="mama-nkechi" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" />
+              <input type="text" id="slug" required placeholder="mama-nkechi" />
             </div>
-            <p class="hint">Letters, numbers, hyphens only. Example: mama-nkechi</p>
+            <p class="hint">Letters, numbers, hyphens only.</p>
           </div>
           <div class="form-group">
             <label for="tagline">Short tagline (optional)</label>
@@ -69,12 +67,11 @@
           <div class="form-group">
             <label for="ownerEmail">Your email *</label>
             <input type="email" id="ownerEmail" required placeholder="you@gmail.com" autocomplete="email" />
-            <p class="hint">For your owner login. Google sign in can be added later.</p>
           </div>
           <div class="form-group">
             <label for="ownerPassword">Staff password *</label>
             <input type="password" id="ownerPassword" required minlength="6" placeholder="At least 6 characters" autocomplete="new-password" />
-            <p class="hint">For the staff dashboard. Keep it private.</p>
+            <p class="hint">Used for the staff dashboard.</p>
           </div>
           <div class="join-nav">
             <button type="button" class="btn-secondary" id="back2">Back</button>
@@ -83,19 +80,50 @@
         </div>
 
         <div class="join-panel" data-panel="3">
-          <h2>Page colour</h2>
-          <p class="hint" style="margin-bottom:12px;">Pick one. These only affect the restaurant menu page, not the Leva site.</p>
+          <h2>Look and logo</h2>
+          <p class="hint" style="margin-bottom:12px;">Pick a page colour. Upload your logo (or skip).</p>
           <div class="color-grid" id="colorGrid"></div>
           <input type="hidden" id="colorKey" value="charcoal" />
 
           <div class="form-group" style="margin-top:18px;">
-            <label for="logoUrl">Logo image link (optional)</label>
-            <input type="url" id="logoUrl" placeholder="https://…" />
-            <p class="hint">Paste a direct image URL. You can add this later.</p>
+            <label for="logoFile">Logo (optional)</label>
+            <input type="file" id="logoFile" accept="image/jpeg,image/png,image/webp,image/gif" />
+            <p class="hint" id="logoStatus">JPEG, PNG, WebP or GIF. Max 2.5 MB.</p>
+            <img id="logoPreview" alt="" style="display:none;max-height:64px;margin-top:10px;" />
           </div>
 
           <div class="join-nav">
             <button type="button" class="btn-secondary" id="back3">Back</button>
+            <button type="button" class="checkout-btn" id="next3">Continue</button>
+          </div>
+        </div>
+
+        <div class="join-panel" data-panel="4">
+          <h2>Your menu</h2>
+          <p class="hint" style="margin-bottom:12px;">Add dishes with price and optional photo. You can add more later from staff tools.</p>
+
+          <div class="form-group">
+            <label for="itemName">Item name</label>
+            <input type="text" id="itemName" placeholder="e.g. Jollof Rice" />
+          </div>
+          <div class="form-group">
+            <label for="itemPrice">Price (₦)</label>
+            <input type="number" id="itemPrice" min="0" step="50" placeholder="1500" />
+          </div>
+          <div class="form-group">
+            <label for="itemCategory">Category</label>
+            <select id="itemCategory"></select>
+          </div>
+          <div class="form-group">
+            <label for="itemImage">Photo (optional)</label>
+            <input type="file" id="itemImage" accept="image/jpeg,image/png,image/webp,image/gif" />
+          </div>
+          <button type="button" class="btn-secondary" id="addMenuItem" style="width:100%;margin-bottom:14px;">Add item</button>
+
+          <div id="menuDraftList"></div>
+
+          <div class="join-nav" style="margin-top:16px;">
+            <button type="button" class="btn-secondary" id="back4">Back</button>
             <button type="submit" class="checkout-btn" id="submitJoin">Create my page</button>
           </div>
           <p id="joinError" class="join-error" style="display:none;"></p>
@@ -110,7 +138,7 @@
               <a id="liveLink" href="#" target="_blank" rel="noopener"></a>
               <button type="button" class="copy-btn" id="copyLink">Copy</button>
             </div>
-            <p class="hint">Staff dashboard: open your page, then go to staff.html (password you set).</p>
+            <p class="hint">Staff: open /staff.html and use the password you set.</p>
             <a class="checkout-btn" id="openPageBtn" href="#" style="display:inline-block;text-align:center;text-decoration:none;margin-top:12px;">Open my page</a>
           </div>
         </div>
