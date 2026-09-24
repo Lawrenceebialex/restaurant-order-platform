@@ -1,48 +1,69 @@
-const cors = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
+import { cors, json, sha256 } from "./_utils.js";
 
-async function sha256(text) {
-  const data = new TextEncoder().encode(text);
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("");
+async function hashPassword(password) {
+  const data = new TextEncoder().encode(String(password) + "leva-salt-v1");
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 export async function onRequestOptions() {
   return new Response(null, { headers: cors });
 }
 
+/**
+ * POST { password, slug? }
+ * - With slug: check tenants.password_hash for that restaurant
+ * - Without slug / vmk fallback: STAFF_PASSWORD env (legacy VMK)
+ */
 export async function onRequestPost(context) {
   const { request, env } = context;
 
   try {
     const body = await request.json();
-    const password = (body.password || "").trim();
-    const expected = env.STAFF_PASSWORD || "";
+    const password = String(body.password || "").trim();
+    const slug = String(body.slug || "")
+      .toLowerCase()
+      .trim();
 
-    if (!expected) {
-      return json({ error: "Staff password not configured on server" }, 500);
+    if (!password) return json({ error: "Password required" }, 400);
+
+    let ok = false;
+    let tokenScope = "vmk";
+
+    if (slug && env.DB) {
+      try {
+        const row = await env.DB.prepare(
+          `SELECT password_hash FROM tenants WHERE slug = ? AND is_active = 1 LIMIT 1`
+        )
+          .bind(slug)
+          .first();
+        if (row?.password_hash) {
+          const h = await hashPassword(password);
+          ok = h === row.password_hash;
+          tokenScope = slug;
+        }
+      } catch {
+        /* ignore */
+      }
     }
 
-    if (password !== expected) {
-      return json({ error: "Incorrect password" }, 401);
+    // Legacy / platform staff password (VMK)
+    if (!ok) {
+      const expected = env.STAFF_PASSWORD || "";
+      if (expected && password === expected) {
+        ok = true;
+        tokenScope = slug || "vmk";
+      }
     }
 
-    const secret = env.STAFF_TOKEN_SECRET || expected;
+    if (!ok) return json({ error: "Incorrect password" }, 401);
+
+    const secret = env.STAFF_TOKEN_SECRET || env.STAFF_PASSWORD || "leva-staff";
     const day = new Date().toISOString().slice(0, 10);
-    const token = await sha256(`${secret}:${day}:vmk-staff`);
+    const token = await sha256(`${secret}:${day}:staff:${tokenScope}`);
 
-    return json({ ok: true, token });
+    return json({ ok: true, token, slug: tokenScope });
   } catch {
     return json({ error: "Bad request" }, 400);
   }
-}
-
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { "Content-Type": "application/json", ...cors },
-  });
 }
