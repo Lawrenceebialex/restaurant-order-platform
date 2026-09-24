@@ -3,18 +3,16 @@ import { cors, json, sha256 } from "./_utils.js";
 async function hashPassword(password) {
   const data = new TextEncoder().encode(String(password) + "leva-salt-v1");
   const buf = await crypto.subtle.digest("SHA-256", data);
-  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  return [...new Uint8Array(buf)]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 export async function onRequestOptions() {
   return new Response(null, { headers: cors });
 }
 
-/**
- * POST { password, slug? }
- * - With slug: check tenants.password_hash for that restaurant
- * - Without slug / vmk fallback: STAFF_PASSWORD env (legacy VMK)
- */
+/** POST { password, slug? } */
 export async function onRequestPost(context) {
   const { request, env } = context;
 
@@ -28,7 +26,7 @@ export async function onRequestPost(context) {
     if (!password) return json({ error: "Password required" }, 400);
 
     let ok = false;
-    let tokenScope = "vmk";
+    let tokenScope = slug || "vmk";
 
     if (slug && env.DB) {
       try {
@@ -47,7 +45,6 @@ export async function onRequestPost(context) {
       }
     }
 
-    // Legacy / platform staff password (VMK)
     if (!ok) {
       const expected = env.STAFF_PASSWORD || "";
       if (expected && password === expected) {

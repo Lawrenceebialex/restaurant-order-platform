@@ -14,16 +14,9 @@ export function json(data, status = 200) {
 export async function sha256(text) {
   const data = new TextEncoder().encode(text);
   const hash = await crypto.subtle.digest("SHA-256", data);
-  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("").join
-    ? [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("")
-    : [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-// fix: clean sha256
-export async function sha256Clean(text) {
-  const data = new TextEncoder().encode(text);
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  return [...new Uint8Array(hash)]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 export async function verifyStaffToken(request, env, expectedSlug) {
@@ -38,11 +31,8 @@ export async function verifyStaffToken(request, env, expectedSlug) {
     return d.toISOString().slice(0, 10);
   });
 
-  const scopes = expectedSlug
-    ? [expectedSlug, "vmk"]
-    : ["vmk"];
-
-  // Also try slug from query if present
+  const scopes = [];
+  if (expectedSlug) scopes.push(String(expectedSlug).toLowerCase());
   try {
     const url = new URL(request.url);
     const qs = (url.searchParams.get("slug") || "").toLowerCase();
@@ -50,14 +40,14 @@ export async function verifyStaffToken(request, env, expectedSlug) {
   } catch {
     /* ignore */
   }
+  if (!scopes.includes("vmk")) scopes.push("vmk");
 
   for (const day of days) {
     for (const scope of scopes) {
-      const expected = await sha256Clean(`${secret}:${day}:staff:${scope}`);
+      const expected = await sha256(`${secret}:${day}:staff:${scope}`);
       if (token === expected) return true;
     }
-    // Legacy token format
-    const legacy = await sha256Clean(`${secret}:${day}:vmk-staff`);
+    const legacy = await sha256(`${secret}:${day}:vmk-staff`);
     if (token === legacy) return true;
   }
   return false;
