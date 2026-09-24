@@ -59,38 +59,38 @@
       </div>
     </section>
 
-    <section class="availability-callout">
+    <div class="availability-callout">
       <div class="callout-inner">
-        <p id="avCalloutText">Check what’s available</p>
-        <button class="callout-btn" onclick="showAvailability()">Check Availability</button>
+        <p id="avCalloutText">Check available meals before you visit</p>
+        <button type="button" class="callout-btn" onclick="showAvailability()">Check Availability</button>
       </div>
-    </section>
+    </div>
 
-    <main class="main" id="orderSection">
+    <main class="main">
       <div class="section-title">
         <h2>Menu</h2>
-        <p>Tap View All to order</p>
+        <p>Tap a category to order</p>
       </div>
 
-      <div class="compact-previews" id="compactPreviews">
+      <div class="compact-previews">
         <div class="compact-block">
           <div class="compact-head">
             <span>Rice Meals</span>
-            <button type="button" class="view-all" data-path="rice">View All →</button>
+            <button type="button" class="view-all" data-path="rice">View all</button>
           </div>
           <div class="compact-row" id="previewRice"></div>
         </div>
         <div class="compact-block">
           <div class="compact-head">
             <span>Swallow &amp; Soup</span>
-            <button type="button" class="view-all" data-path="swallow">View All →</button>
+            <button type="button" class="view-all" data-path="swallow">View all</button>
           </div>
           <div class="compact-row" id="previewSwallow"></div>
         </div>
         <div class="compact-block">
           <div class="compact-head">
             <span>Pastries &amp; Snacks</span>
-            <button type="button" class="view-all" data-path="pastries">View All →</button>
+            <button type="button" class="view-all" data-path="pastries">View all</button>
           </div>
           <div class="compact-row" id="previewPastries"></div>
         </div>
@@ -109,77 +109,84 @@
         <div class="footer-info">
           <p id="footerLoc"><strong>Location:</strong></p>
           <p id="footerPhone"><strong>Phone / WhatsApp:</strong></p>
-          <p><strong>Hours:</strong> Open daily</p>
         </div>
         <div class="footer-links">
-          <button type="button" onclick="showAvailability()">Check Availability</button>
-          <button type="button" onclick="openTrack()">Track Order</button>
-          <button type="button" onclick="openMyOrders()">My Orders</button>
+          <button type="button" onclick="showAvailability()">Availability</button>
+          <button type="button" onclick="openTrack()">Track order</button>
+          <button type="button" onclick="openMyOrders()">My orders</button>
         </div>
         <p class="footer-copy" id="footerCopy"></p>
-        <p class="powered-by-line">Powered by Leva</p>
+        <p class="powered-by-line">
+          <span>Powered by</span>
+          <a href="/" class="powered-by-logo" aria-label="Leva">
+            <img src="https://i.ibb.co/1GSR9HNV/1000622428-removebg-preview.png" alt="Leva" width="90" height="28" />
+          </a>
+        </p>
       </div>
     </footer>
   </div>
 
-  <section class="guided-fullscreen" id="guided" style="display:none;">
+  <!-- Guided ordering fullscreen -->
+  <div id="guided" class="guided-fullscreen" style="display:none;">
     <div class="guided-inner">
       <div class="steps-bar">
         <button type="button" class="back-btn" id="backBtn">← Back</button>
-        <span class="step-label" id="stepLabel">Step 1</span>
+        <span class="step-label" id="stepLabel">Step</span>
+        <span style="width:72px"></span>
       </div>
-      <div class="step-content" id="stepContent"></div>
+      <div id="stepContent"></div>
     </div>
-  </section>
+  </div>
 
-  <section class="availability-view" id="availabilityView" style="display:none;">
+  <!-- Availability fullscreen -->
+  <div id="availabilityView" class="availability-view" style="display:none;">
     <div class="av-header">
       <button type="button" class="back-btn" onclick="hideAvailability()">← Back</button>
-      <h2>What’s Available</h2>
+      <h2>What's available</h2>
     </div>
     <div class="av-content" id="availabilityContent"></div>
-  </section>
+  </div>
 
-  <section class="checkout-section" id="checkoutSection" style="display:none;">
+  <!-- Checkout -->
+  <section id="checkoutSection" class="checkout-section" style="display:none;">
     <div class="checkout-container">
-      <button type="button" class="back-btn" id="backToCart" style="margin-bottom:16px;">← Back to Cart</button>
       <h2>Checkout</h2>
-
       <p class="checkout-required-note">Choose how you want your order</p>
-      <div class="order-type-select">
-        <label class="radio-card">
-          <input type="radio" name="fulfillment" value="pickup" id="fulfillmentPickup" required />
-          <div>
-            <strong>Pre-order Pickup</strong>
-            <span>+₦600 · Skip the queue</span>
-          </div>
-        </label>
-        <label class="radio-card">
-          <input type="radio" name="fulfillment" value="delivery" id="fulfillmentDelivery" required />
-          <div>
-            <strong>Delivery</strong>
-            <span>Nearby area</span>
-          </div>
-        </label>
-      </div>
-
       <form id="checkoutForm">
+        <div class="order-type-select">
+          <label class="radio-card">
+            <input type="radio" name="fulfillment" id="fulfillmentPickup" value="pickup" required />
+            <div>
+              <strong>Pre-order pickup</strong>
+              <span>Pay now · +₦600 · skip the queue</span>
+            </div>
+          </label>
+          <label class="radio-card">
+            <input type="radio" name="fulfillment" id="fulfillmentDelivery" value="delivery" required />
+            <div>
+              <strong>Delivery</strong>
+              <span>We bring it to you</span>
+            </div>
+          </label>
+        </div>
+
         <div class="form-group">
-          <label>Full Name *</label>
-          <input type="text" id="customerName" required placeholder="Your full name" />
+          <label for="customerName">Full name *</label>
+          <input type="text" id="customerName" required autocomplete="name" />
         </div>
         <div class="form-group">
-          <label>Email *</label>
-          <input type="email" id="customerEmail" required placeholder="you@example.com" />
+          <label for="customerEmail">Email *</label>
+          <input type="email" id="customerEmail" required autocomplete="email" />
         </div>
         <div class="form-group">
-          <label>Phone Number *</label>
-          <input type="tel" id="customerPhone" required placeholder="0810 000 0000" />
+          <label for="customerPhone">Phone *</label>
+          <input type="tel" id="customerPhone" required autocomplete="tel" />
         </div>
+
         <div class="form-group" id="locationGroup" style="display:none;">
-          <label>Delivery Location *</label>
+          <label for="deliveryLocation">Delivery area *</label>
           <select id="deliveryLocation">
-            <option value="">Select location</option>
+            <option value="">Select area</option>
             <option value="BIU Front Gate">BIU Front Gate</option>
             <option value="BIU Back Gate">BIU Back Gate</option>
             <option value="Delano Hotel">Delano Hotel</option>
@@ -188,65 +195,69 @@
           </select>
         </div>
         <div class="form-group" id="otherLocationGroup" style="display:none;">
-          <label>Specify Location</label>
-          <input type="text" id="otherLocation" placeholder="Enter your exact location" />
+          <label for="otherLocation">Describe location *</label>
+          <input type="text" id="otherLocation" placeholder="Landmark or street" />
         </div>
+
         <div class="form-group">
-          <label>Note (optional)</label>
-          <textarea id="orderNote" rows="2" placeholder="Any special request?"></textarea>
-        </div>
-        <div class="form-group" id="paymentGroup">
-          <label>Payment Method</label>
+          <label>Payment</label>
           <div class="payment-options">
             <label class="radio-card small">
               <input type="radio" name="payment" value="paystack" checked />
-              <span>Pay Now (Paystack)</span>
+              <div><strong>Pay now</strong><span>Card / transfer via Paystack</span></div>
             </label>
-            <label class="radio-card small" id="payOnDeliveryOption" style="display:none;">
+            <label class="radio-card small" id="payOnDeliveryOption">
               <input type="radio" name="payment" value="pod" />
-              <span>Pay on Delivery</span>
+              <div><strong>Pay on delivery</strong><span>Cash or transfer when it arrives</span></div>
             </label>
           </div>
         </div>
-        <div class="checkout-summary">
-          <div class="summary-row muted-row">
-            <span>Subtotal</span>
-            <span id="subtotalRow">₦0</span>
-          </div>
-          <div class="summary-row muted-row" id="preorderFeeRow" style="display:none;">
-            <span>Pre-order fee</span>
-            <span id="preorderFeeAmount">₦600</span>
-          </div>
-          <div class="summary-row total-line">
-            <span>Total</span>
-            <strong id="checkoutTotal">₦0</strong>
-          </div>
+
+        <div class="form-group">
+          <label for="orderNote">Note (optional)</label>
+          <textarea id="orderNote" rows="2" placeholder="Extra pepper, no onions…"></textarea>
         </div>
-        <button type="submit" class="checkout-btn" id="placeOrderBtn">Place Order</button>
+
+        <div class="checkout-summary">
+          <div class="summary-row"><span>Subtotal</span><span id="subtotalRow">₦0</span></div>
+          <div class="summary-row muted-row" id="preorderFeeRow" style="display:none;">
+            <span>Pre-order fee</span><span id="preorderFeeAmount">₦600</span>
+          </div>
+          <div class="summary-row total-line"><span>Total</span><strong id="checkoutTotal">₦0</strong></div>
+        </div>
+
+        <button type="button" class="checkout-btn" style="background:#e5e7eb;color:#111;margin-bottom:10px;" id="backToCart">Back to cart</button>
+        <button type="submit" class="checkout-btn">Place order</button>
       </form>
+      <p class="powered-by-line" style="margin-top:20px;">
+        <span>Powered by</span>
+        <a href="/" class="powered-by-logo" aria-label="Leva">
+          <img src="https://i.ibb.co/1GSR9HNV/1000622428-removebg-preview.png" alt="Leva" width="90" height="28" />
+        </a>
+      </p>
     </div>
   </section>
 
-  <section class="success-section" id="successSection" style="display:none;">
+  <!-- Success -->
+  <section id="successSection" class="success-section" style="display:none;">
     <div class="success-card">
       <div class="success-icon">✓</div>
-      <h2>Order Placed Successfully!</h2>
-      <p class="order-id-label">Your Order ID</p>
+      <h2>Order placed</h2>
+      <p class="order-id-label">Your order ID</p>
       <div class="order-id-row">
-        <div class="order-id" id="orderIdDisplay">ORD-0000</div>
+        <span class="order-id" id="orderIdDisplay">—</span>
         <button type="button" class="copy-btn" id="copyOrderIdBtn" onclick="copyOrderId()">Copy</button>
       </div>
       <div class="track-guide">
-        <h3>How to Track Your Order</h3>
+        <h3>Track your order</h3>
         <ol>
-          <li>Tap the <strong>menu icon</strong> (☰) at the top right</li>
-          <li>Select <strong>Track Order</strong></li>
-          <li>Enter your <strong>Order ID</strong> or Phone Number</li>
+          <li>Tap the menu (☰) → Track Order</li>
+          <li>Enter this Order ID or your phone number</li>
+          <li>See status updates from the kitchen</li>
         </ol>
-        <p class="save-note">Please save your Order ID</p>
+        <p class="save-note">This order is also saved under My Orders on this phone.</p>
       </div>
-      <button type="button" class="hero-cta" onclick="location.reload()">Back to Home</button>
-      <p class="powered-by-line" style="margin-top:16px;">Powered by Leva</p>
+      <button type="button" class="checkout-btn" onclick="location.reload()">Back to menu</button>
     </div>
   </section>
 
@@ -255,13 +266,13 @@
       <span id="barCount">0 items</span>
       <strong id="barTotal">₦0</strong>
     </div>
-    <button type="button" class="cart-bar-btn" id="viewCartBtn">View Cart</button>
+    <button type="button" class="cart-bar-btn" id="viewCartBtn">View cart</button>
   </div>
 
   <div class="overlay" id="overlay"></div>
   <aside class="cart-drawer" id="cartDrawer">
     <div class="drawer-header">
-      <h2>Your Order</h2>
+      <h2>Your cart</h2>
       <button type="button" class="close-btn" id="closeCart">&times;</button>
     </div>
     <div class="drawer-body" id="cartItems">
@@ -309,7 +320,7 @@
         else if (window.LEVA.slug !== "vmk") {
           document.body.innerHTML =
             '<div style="font-family:system-ui;padding:40px;text-align:center">' +
-            "<h1>Restaurant not found</h1><p class=\"powered-by-line\">Powered by Leva</p></div>";
+            '<h1>Restaurant not found</h1><p class="powered-by-line"><span>Powered by</span> <a href="/"><img src="https://i.ibb.co/1GSR9HNV/1000622428-removebg-preview.png" alt="Leva" height="28" style="vertical-align:middle"/></a></p></div>';
         }
       }
     })();
