@@ -410,7 +410,7 @@ button { font-family: inherit; }
   gap: 12px;
   margin-bottom: 14px;
 }
-.footer-brand img { width: 40px; height: 40px; }
+.footer-brand img { width: 40px; height: 40px; object-fit: contain; }
 .footer-brand strong { display: block; font-size: 0.95rem; }
 .footer-brand span { font-size: 0.8rem; color: var(--muted); }
 .footer-info {
@@ -435,15 +435,31 @@ button { font-family: inherit; }
   cursor: pointer;
   text-decoration: none;
 }
-.footer-copy { font-size: 0.78rem; color: var(--muted); margin-bottom: 8px; }
+.footer-copy { font-size: 0.78rem; color: var(--muted); margin-bottom: 12px; }
 
+/* Match Leva marketing footer */
 .powered-by-line {
-  display: block;
-  text-align: center;
-  margin-top: 4px;
-  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+  font-size: 0.9rem;
   color: var(--muted);
   font-weight: 500;
+}
+.powered-by-logo {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.9;
+  text-decoration: none;
+}
+.powered-by-logo:hover { opacity: 1; }
+.powered-by-logo img {
+  height: 28px;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
 
 .checkout-section {

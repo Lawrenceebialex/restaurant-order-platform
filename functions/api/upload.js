@@ -1,7 +1,25 @@
 import { cors, json, clientIp, rateLimit } from "./_utils.js";
 
 const MAX_BYTES = 2.5 * 1024 * 1024; // 2.5 MB
-const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const ALLOWED = new Set([
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+]);
+
+function guessType(file) {
+  let type = (file.type || "").toLowerCase();
+  if (ALLOWED.has(type)) return type === "image/jpg" ? "image/jpeg" : type;
+
+  const name = String(file.name || "").toLowerCase();
+  if (name.endsWith(".png")) return "image/png";
+  if (name.endsWith(".jpg") || name.endsWith(".jpeg")) return "image/jpeg";
+  if (name.endsWith(".webp")) return "image/webp";
+  if (name.endsWith(".gif")) return "image/gif";
+  return type;
+}
 
 export async function onRequestOptions() {
   return new Response(null, { headers: cors });
@@ -36,9 +54,15 @@ export async function onRequestPost(context) {
     return json({ error: "Missing file field" }, 400);
   }
 
-  const type = file.type || "application/octet-stream";
-  if (!ALLOWED.has(type)) {
-    return json({ error: "Only JPEG, PNG, WebP, or GIF images allowed" }, 400);
+  const type = guessType(file);
+  if (!ALLOWED.has(type) && type !== "image/jpeg") {
+    return json(
+      {
+        error:
+          "Use a JPEG, PNG, WebP, or GIF image. iPhone HEIC is not supported — convert to JPEG first.",
+      },
+      400
+    );
   }
 
   const buf = await file.arrayBuffer();
@@ -49,22 +73,24 @@ export async function onRequestPost(context) {
     return json({ error: "File too small" }, 400);
   }
 
+  const resolved = type === "image/jpg" ? "image/jpeg" : type;
   const ext =
-    type === "image/png"
+    resolved === "image/png"
       ? "png"
-      : type === "image/webp"
+      : resolved === "image/webp"
         ? "webp"
-        : type === "image/gif"
+        : resolved === "image/gif"
           ? "gif"
           : "jpg";
 
-  const folder = String(form.get("folder") || "uploads")
-    .replace(/[^a-z0-9_-]/gi, "")
-    .slice(0, 32) || "uploads";
+  const folder =
+    String(form.get("folder") || "uploads")
+      .replace(/[^a-z0-9_-]/gi, "")
+      .slice(0, 32) || "uploads";
   const key = `${folder}/${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
   await env.UPLOADS.put(key, buf, {
-    httpMetadata: { contentType: type },
+    httpMetadata: { contentType: resolved || "image/jpeg" },
   });
 
   const url = new URL(request.url);
