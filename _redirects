@@ -1,9 +1,9 @@
-# Leva marketing home
+# Home: explicit rewrite is OK (no /home.html pretty-url loop on "/")
 /                 /home.html   200
 
-# Join / onboarding (both with and without trailing slash)
-/join             /join.html   200
-/join/            /join.html   200
+# Do NOT rewrite /join -> /join.html or /home -> /home.html
+# Cloudflare Pages pretty URLs already serve join.html at /join and
+# 308-redirect *.html -> extensionless. Rewriting back causes an infinite loop.
 
 # Restaurant ordering SPA
 /food/:slug       /index.html  200
