@@ -15,19 +15,37 @@
   <header class="lh-nav">
     <div class="lh-nav-inner">
       <a href="/" class="lh-brand" aria-label="Leva home">
-        <img src="https://i.ibb.co/1GSR9HNV/1000622428-removebg-preview.png" alt="Leva" class="lh-logo" width="140" height="44" />
+        <img src="https://i.ibb.co/1GSR9HNV/1000622428-removebg-preview.png" alt="Leva" class="lh-logo" width="100" height="32" />
       </a>
-      <nav class="lh-links">
+      <nav class="lh-links" id="lhDesktopNav">
         <a href="#features">Features</a>
         <a href="#pricing">Pricing</a>
-        <a href="/food/vmk">Restaurants</a>
+        <a href="/food/vmk">Live demo</a>
         <a href="#support">Support</a>
       </nav>
       <div class="lh-actions">
-        <a href="/join" class="lh-btn-primary">Get Started</a>
+        <a href="/join" class="lh-btn-primary lh-btn-desktop">Get Started</a>
+        <button type="button" class="lh-burger" id="lhBurger" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </div>
   </header>
+
+  <div class="lh-drawer-overlay" id="lhOverlay" hidden></div>
+  <aside class="lh-drawer" id="lhDrawer" aria-hidden="true">
+    <div class="lh-drawer-head">
+      <span class="lh-drawer-title">Menu</span>
+      <button type="button" class="lh-drawer-close" id="lhClose" aria-label="Close menu">&times;</button>
+    </div>
+    <nav class="lh-drawer-nav">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="/food/vmk">Live demo</a>
+      <a href="#support">Support</a>
+      <a href="/join" class="lh-btn-primary lh-drawer-cta">Get Started</a>
+    </nav>
+  </aside>
 
   <main>
     <section class="lh-hero">
@@ -76,9 +94,45 @@
     <p class="lh-powered">
       <span>Powered by</span>
       <a href="/" class="lh-powered-logo" aria-label="Leva">
-        <img src="https://i.ibb.co/1GSR9HNV/1000622428-removebg-preview.png" alt="Leva" width="90" height="28" />
+        <img src="https://i.ibb.co/1GSR9HNV/1000622428-removebg-preview.png" alt="Leva" width="72" height="22" />
       </a>
     </p>
   </footer>
+
+  <script>
+    (function () {
+      var burger = document.getElementById("lhBurger");
+      var drawer = document.getElementById("lhDrawer");
+      var overlay = document.getElementById("lhOverlay");
+      var closeBtn = document.getElementById("lhClose");
+
+      function openMenu() {
+        drawer.classList.add("open");
+        overlay.hidden = false;
+        overlay.classList.add("show");
+        drawer.setAttribute("aria-hidden", "false");
+        burger.setAttribute("aria-expanded", "true");
+        document.body.style.overflow = "hidden";
+      }
+      function closeMenu() {
+        drawer.classList.remove("open");
+        overlay.classList.remove("show");
+        overlay.hidden = true;
+        drawer.setAttribute("aria-hidden", "true");
+        burger.setAttribute("aria-expanded", "false");
+        document.body.style.overflow = "";
+      }
+
+      burger.addEventListener("click", function () {
+        if (drawer.classList.contains("open")) closeMenu();
+        else openMenu();
+      });
+      closeBtn.addEventListener("click", closeMenu);
+      overlay.addEventListener("click", closeMenu);
+      drawer.querySelectorAll("a").forEach(function (a) {
+        a.addEventListener("click", closeMenu);
+      });
+    })();
+  </script>
 </body>
 </html>
