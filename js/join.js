@@ -104,6 +104,18 @@
     return data.url;
   }
 
+  function wirePasswordToggle(inputId, btnId) {
+    const input = document.getElementById(inputId);
+    const btn = document.getElementById(btnId);
+    if (!input || !btn) return;
+    btn.addEventListener("click", () => {
+      const show = input.type === "password";
+      input.type = show ? "text" : "password";
+      btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+      btn.textContent = show ? "Hide" : "Show";
+    });
+  }
+
   document.getElementById("bizName").addEventListener("input", (e) => {
     const slug = document.getElementById("slug");
     if (!slug.dataset.touched) slug.value = slugify(e.target.value);
@@ -143,9 +155,9 @@
   document.getElementById("addMenuItem")?.addEventListener("click", async () => {
     const name = document.getElementById("itemName").value.trim();
     const price = parseInt(document.getElementById("itemPrice").value, 10);
-    const category = document.getElementById("itemCategory").value;
+    const category = document.getElementById("itemCategory").value || "Other";
     const fileInput = document.getElementById("itemImage");
-    if (!name || !Number.isFinite(price) || price < 0) {
+    if (!name || !price || price < 0) {
       alert("Enter item name and price");
       return;
     }
@@ -188,8 +200,13 @@
     const loc = document.getElementById("location").value.trim();
     const email = document.getElementById("ownerEmail").value.trim();
     const pass = document.getElementById("ownerPassword").value;
+    const pass2 = document.getElementById("ownerPasswordConfirm").value;
     if (!phone || !loc || !email || pass.length < 6) {
       alert("Fill phone, location, email, and a password (6+ characters)");
+      return;
+    }
+    if (pass !== pass2) {
+      alert("Passwords do not match");
       return;
     }
     showStep(3);
@@ -197,6 +214,9 @@
   document.getElementById("back3").addEventListener("click", () => showStep(2));
   document.getElementById("next3").addEventListener("click", () => showStep(4));
   document.getElementById("back4").addEventListener("click", () => showStep(3));
+
+  wirePasswordToggle("ownerPassword", "togglePass");
+  wirePasswordToggle("ownerPasswordConfirm", "togglePass2");
 
   document.getElementById("joinForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -210,19 +230,39 @@
     const waRaw = document.getElementById("whatsapp").value.trim() || phone;
     const whatsapp = waRaw.replace(/\D/g, "").replace(/^0/, "234");
     const password = document.getElementById("ownerPassword").value;
+    const password2 = document.getElementById("ownerPasswordConfirm").value;
     const slug = document.getElementById("slug").value.trim();
+    const name = document.getElementById("bizName").value.trim();
 
+    if (!name || !phone || password.length < 6) {
+      err.textContent = "Go back and complete name, phone, and password (6+ characters)";
+      err.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Create my page";
+      return;
+    }
+    if (password !== password2) {
+      err.textContent = "Passwords do not match. Go back to step 2.";
+      err.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Create my page";
+      return;
+    }
+
+    // API expects password (not owner_password)
     const payload = {
-      name: document.getElementById("bizName").value.trim(),
+      name,
       slug,
+      short_name: name,
       tagline: document.getElementById("tagline").value.trim(),
       phone,
       whatsapp,
       location_text: document.getElementById("location").value.trim(),
       owner_email: document.getElementById("ownerEmail").value.trim(),
-      owner_password: password,
+      password,
       color_key: document.getElementById("colorKey").value || "charcoal",
-      logo_url: logoUrl || document.getElementById("logoUrl")?.value?.trim() || "",
+      logo_url: logoUrl || "",
+      menu_items: draftMenu,
     };
 
     try {
@@ -234,27 +274,19 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not create page");
 
-      // Save menu items
-      for (const item of draftMenu) {
-        await fetch("/api/menu", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            slug,
-            owner_password: password,
-            category: item.category,
-            name: item.name,
-            price: item.price,
-            image_url: item.image_url,
-          }),
-        });
-      }
-
-      const path = "/food/" + slug;
+      const finalSlug = (data.tenant && data.tenant.slug) || slug;
+      const path = "/food/" + finalSlug;
       const url = window.location.origin + path;
       document.getElementById("liveLink").textContent = url;
       document.getElementById("liveLink").href = path;
       document.getElementById("openPageBtn").href = path;
+
+      const staffHint = document.getElementById("staffHint");
+      if (staffHint) {
+        staffHint.textContent =
+          "Staff login: /staff.html?slug=" + finalSlug + " with the password you set.";
+      }
+
       showStep("done");
       document.querySelectorAll(".join-steps .dot").forEach((d) => d.classList.add("active"));
     } catch (ex) {
