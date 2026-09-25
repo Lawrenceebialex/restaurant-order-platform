@@ -1,6 +1,8 @@
-# Marketing home at /
+# Marketing home
 /                 /home.html   200
 
-# Restaurant SPA — must NOT use index.html (Cloudflare maps index.html to /)
-/food/*           /order.html  200
-/restaurant/*     /order.html  200
+# /food/* is handled by functions/food/[[slug]].js (do not rewrite to .html)
+# Pretty URLs break /food/x → /order when rewritten to order.html
+
+# Optional legacy alias
+/restaurant/*     /food/:splat  302
