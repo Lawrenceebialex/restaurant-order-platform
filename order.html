@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Order via Leva</title>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0d9488" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="description" content="Order food online — powered by Leva." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+</head>
+<body>
+  <div id="app-root">
+    <p style="padding:2rem;text-align:center;font-family:system-ui">Loading order page…</p>
+  </div>
+  <script>
+    // Bootstrap: load the full SPA from /js/main.js after shell
+    // Full markup injected by main.js / existing app scripts
+  </script>
+  <script src="/js/tenant.js"></script>
+  <script src="/js/main.js"></script>
+  <script>
+    // If main.js expects body structure, redirect failsafe
+    if (!window.LEVA && !document.querySelector('.header')) {
+      console.warn('SPA shell minimal — ensure main.js renders UI');
+    }
+  </script>
+</body>
+</html>
