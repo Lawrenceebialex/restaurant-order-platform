@@ -13,6 +13,8 @@ const FALLBACK_VMK = {
   color_key: "green",
   primary_color: "#047857",
   is_active: true,
+  is_verified: false,
+  verification_status: "none",
 };
 
 const COLOR_MAP = {
@@ -41,6 +43,29 @@ async function hashPassword(password) {
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+function mapTenant(row) {
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    short_name: row.short_name || row.name,
+    tagline: row.tagline || "",
+    phone: row.phone || "",
+    whatsapp: row.whatsapp || "",
+    location_text: row.location_text || "",
+    logo_url: row.logo_url || "",
+    color_key: row.color_key || "teal",
+    primary_color: row.primary_color || COLOR_MAP.teal,
+    is_active: true,
+    is_verified: Number(row.is_verified) === 1,
+    verification_status: row.verification_status || (Number(row.is_verified) === 1 ? "verified" : "none"),
+    bank_name: row.bank_name || "",
+    account_number: row.account_number || "",
+    account_name: row.account_name || "",
+    delivery_places: row.delivery_places || "",
+  };
+}
+
 export async function onRequestOptions() {
   return new Response(null, { headers: cors });
 }
@@ -63,22 +88,7 @@ export async function onRequestGet(context) {
         .first();
 
       if (row) {
-        return json({
-          tenant: {
-            id: row.id,
-            slug: row.slug,
-            name: row.name,
-            short_name: row.short_name || row.name,
-            tagline: row.tagline || "",
-            phone: row.phone || "",
-            whatsapp: row.whatsapp || "",
-            location_text: row.location_text || "",
-            logo_url: row.logo_url || "",
-            color_key: row.color_key || "teal",
-            primary_color: row.primary_color || COLOR_MAP.teal,
-            is_active: true,
-          },
-        });
+        return json({ tenant: mapTenant(row) });
       }
     } catch {
       /* table may not exist yet */
@@ -99,86 +109,91 @@ export async function onRequestPost(context) {
     return json({ error: "Database not configured. Run schema-tenants.sql in D1." }, 503);
   }
 
-  let body;
   try {
-    body = await request.json();
-  } catch {
-    return json({ error: "Invalid JSON" }, 400);
-  }
+    const body = await request.json();
+    const name = String(body.name || "").trim();
+    const phone = String(body.phone || "").trim();
+    const password = String(body.password || "").trim();
+    let slug = slugify(body.slug || name);
 
-  const name = String(body.name || "").trim();
-  const slug = slugify(body.slug || name);
-  const tagline = String(body.tagline || "").trim().slice(0, 80);
-  const phone = String(body.phone || "").trim();
-  const whatsapp = String(body.whatsapp || "").trim();
-  const location_text = String(body.location_text || "").trim();
-  const owner_email = String(body.owner_email || "").trim().toLowerCase();
-  const owner_password = String(body.owner_password || "");
-  const color_key = COLOR_MAP[body.color_key] ? body.color_key : "teal";
-  const primary_color = COLOR_MAP[color_key];
-  const logo_url = String(body.logo_url || "").trim();
+    if (!name || !phone || !password || password.length < 6) {
+      return json({ error: "name, phone, and password (6+ chars) required" }, 400);
+    }
+    if (!slug) return json({ error: "Invalid business name for URL" }, 400);
 
-  if (!name || !slug || !phone || !location_text || !owner_email) {
-    return json({ error: "Name, link, phone, location, and email are required" }, 400);
-  }
-  if (owner_password.length < 6) {
-    return json({ error: "Password must be at least 6 characters" }, 400);
-  }
-  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
-    return json({ error: "Invalid link format" }, 400);
-  }
-  if (slug === "vmk" || slug === "admin" || slug === "join" || slug === "api") {
-    return json({ error: "That link is reserved. Choose another." }, 400);
-  }
-
-  try {
-    const existing = await env.DB.prepare(`SELECT id FROM tenants WHERE slug = ? LIMIT 1`)
+    const existing = await env.DB.prepare(`SELECT id FROM tenants WHERE slug = ?`)
       .bind(slug)
       .first();
     if (existing) {
-      return json({ error: "That link is already taken. Try another." }, 409);
+      slug = slug + "-" + Math.random().toString(36).slice(2, 6);
     }
 
-    const id = "tenant_" + slug.replace(/-/g, "_").slice(0, 24) + "_" + Date.now().toString(36);
-    const password_hash = await hashPassword(owner_password);
-    const short_name = name.split(/\s+/).slice(0, 2).join(" ").slice(0, 24);
+    const id = "tenant_" + slug;
+    const colorKey = String(body.color_key || "teal");
+    const primary = COLOR_MAP[colorKey] || COLOR_MAP.teal;
+    const passwordHash = await hashPassword(password);
+    const now = new Date().toISOString();
 
     await env.DB.prepare(
       `INSERT INTO tenants (
         id, slug, name, short_name, tagline, phone, whatsapp, location_text,
-        logo_url, primary_color, color_key, owner_email, password_hash,
-        is_active, paid_until, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, date('now', '+14 days'), datetime('now'))`
+        logo_url, color_key, primary_color, password_hash, is_active, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)`
     )
       .bind(
         id,
         slug,
         name,
-        short_name,
-        tagline,
+        body.short_name || name,
+        body.tagline || "",
         phone,
-        whatsapp,
-        location_text,
-        logo_url,
-        primary_color,
-        color_key,
-        owner_email,
-        password_hash
+        body.whatsapp || phone.replace(/^\+/, "").replace(/^0/, "234"),
+        body.location_text || "",
+        body.logo_url || "",
+        colorKey,
+        primary,
+        passwordHash,
+        now
       )
       .run();
 
+    if (Array.isArray(body.menu_items) && body.menu_items.length) {
+      for (let i = 0; i < body.menu_items.length; i++) {
+        const m = body.menu_items[i];
+        const mid = "mi_" + slug + "_" + i + "_" + Date.now().toString(36);
+        try {
+          await env.DB.prepare(
+            `INSERT INTO menu_items (id, tenant_slug, category, name, price, image_url, sort_order, is_active)
+             VALUES (?, ?, ?, ?, ?, ?, ?, 1)`
+          )
+            .bind(
+              mid,
+              slug,
+              m.category || "Other",
+              m.name,
+              Number(m.price) || 0,
+              m.image_url || "",
+              i
+            )
+            .run();
+        } catch {
+          /* menu table optional */
+        }
+      }
+    }
+
     return json({
       ok: true,
-      tenant: { id, slug, name, path: "/food/" + slug },
+      tenant: {
+        id,
+        slug,
+        name,
+        url_path: "/food/" + slug,
+        staff_path: "/staff.html?slug=" + slug,
+        is_verified: false,
+      },
     });
   } catch (e) {
-    const msg = String(e.message || e);
-    if (msg.includes("no such table")) {
-      return json({ error: "Database tables missing. Run schema-tenants.sql in D1." }, 503);
-    }
-    if (msg.includes("UNIQUE") || msg.includes("unique")) {
-      return json({ error: "That link is already taken." }, 409);
-    }
-    return json({ error: "Could not create restaurant: " + msg }, 500);
+    return json({ error: e.message || "Failed to create restaurant" }, 500);
   }
 }

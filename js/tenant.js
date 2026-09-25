@@ -53,6 +53,7 @@
           color_key: "green",
           primary_color: "#047857",
           is_active: true,
+          is_verified: false,
         };
       } else {
         window.LEVA.tenant = null;
@@ -82,7 +83,24 @@
       logo.src = tenant.logo_url;
       logo.alt = tenant.name;
     }
-    if (name) name.textContent = tenant.name;
+    if (name) {
+      name.textContent = tenant.name;
+      // Verified badge next to name
+      let badge = document.getElementById("levaVerifiedBadge");
+      if (tenant.is_verified) {
+        if (!badge) {
+          badge = document.createElement("span");
+          badge.id = "levaVerifiedBadge";
+          badge.className = "leva-verified-badge";
+          badge.title = "Verified by Leva";
+          badge.textContent = "Verified";
+          name.insertAdjacentElement("afterend", badge);
+        }
+        badge.style.display = "inline-flex";
+      } else if (badge) {
+        badge.style.display = "none";
+      }
+    }
     if (tag) {
       tag.textContent =
         (tenant.short_name || "") +
@@ -106,7 +124,7 @@
     if (footerCopy) footerCopy.textContent = "© " + tenant.name;
     if (avCallout)
       avCallout.textContent =
-        "Check what’s available at " + (tenant.short_name || tenant.name);
+        "Check what's available at " + (tenant.short_name || tenant.name);
 
     let primary = tenant.primary_color;
     let soft = null;
