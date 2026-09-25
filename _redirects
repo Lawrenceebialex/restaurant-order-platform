@@ -1,8 +1,11 @@
-# Leva marketing home (exact)
+# Leva marketing home
 /                 /home.html   200
-/join             /join.html   200
 
-# Restaurant ordering SPA — use :splat form to avoid CF infinite-loop warning
+# Join / onboarding (both with and without trailing slash)
+/join             /join.html   200
+/join/            /join.html   200
+
+# Restaurant ordering SPA
 /food/:slug       /index.html  200
 /food/:slug/*     /index.html  200
 /restaurant/:slug /index.html  200
