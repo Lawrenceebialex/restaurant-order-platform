@@ -1,11 +1,6 @@
-# Home: explicit rewrite is OK (no /home.html pretty-url loop on "/")
+# Marketing home at /
 /                 /home.html   200
 
-# Do NOT rewrite /join -> /join.html or /home -> /home.html
-# Cloudflare Pages pretty URLs already serve join.html at /join and
-# 308-redirect *.html -> extensionless. Rewriting back causes an infinite loop.
-
-# Restaurant ordering SPA
-/food/:slug       /index.html  200
-/food/:slug/*     /index.html  200
-/restaurant/:slug /index.html  200
+# Restaurant SPA — must NOT use index.html (Cloudflare maps index.html to /)
+/food/*           /order.html  200
+/restaurant/*     /order.html  200
