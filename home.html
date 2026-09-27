@@ -3,34 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Leva Food — Direct ordering websites for restaurants</title>
-  <meta name="description" content="Leva Food: branded ordering pages, staff dashboard, pickup and delivery. Flat fee, zero commission on food sales. Built for Nigerian restaurants." />
-  <meta name="theme-color" content="#0a0a0a" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <title>Leva Food — Your restaurant. Your ordering website.</title>
+  <meta name="description" content="Give your restaurant a branded ordering page. Customers order for pickup or delivery. You keep 100% of food sales. Flat fee, zero commission." />
+  <meta name="theme-color" content="#1a4d3e" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/leva-home.css" />
-  <style>
-    .lh-eyebrow { font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#6b7280;margin-bottom:12px; }
-    .lh-section-lead { text-align:center;color:#6b7280;max-width:560px;margin:-6px auto 28px;font-size:0.95rem;line-height:1.55; }
-    .lh-steps { display:grid;gap:12px;max-width:580px;margin:0 auto; }
-    .lh-step { display:flex;gap:14px;background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:16px 18px;align-items:flex-start; }
-    .lh-step span { flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#0a0a0a;color:#fff;font-size:0.85rem;font-weight:700;display:flex;align-items:center;justify-content:center; }
-    .lh-step p { margin:0;font-size:0.92rem;color:#374151;line-height:1.45; }
-    .lh-step strong { color:#0a0a0a; }
-    .lh-grid-6 { display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px; }
-    .lh-card h3 { font-size:1.02rem;margin-bottom:8px;font-weight:700; }
-    .lh-card p { font-size:0.9rem;color:#6b7280;line-height:1.5;margin:0; }
-    .lh-price-list { list-style:none;max-width:360px;margin:0 auto 20px;text-align:left;padding:0; }
-    .lh-price-list li { padding:8px 0;border-bottom:1px solid #e8e6e1;font-size:0.92rem;color:#374151;display:flex;gap:10px;align-items:flex-start; }
-    .lh-price-list li:last-child { border-bottom:none; }
-    .lh-price-list li::before { content:"✓";font-weight:700;color:#0a0a0a; }
-    .lh-compare { display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:640px;margin:24px auto 0; }
-    .lh-compare-card { background:#fff;border:1px solid #e8e6e1;border-radius:14px;padding:16px;text-align:left; }
-    .lh-compare-card h4 { font-size:0.85rem;text-transform:uppercase;letter-spacing:0.04em;color:#6b7280;margin-bottom:8px; }
-    .lh-compare-card p { font-size:0.9rem;color:#374151;margin:0;line-height:1.45; }
-    .lh-compare-card.good { border-color:#0a0a0a;background:#fafafa; }
-    .lh-support code { font-size:0.8rem;background:#f3f4f6;padding:2px 6px;border-radius:6px; }
-    @media (max-width:560px){ .lh-compare { grid-template-columns:1fr; } }
-  </style>
 </head>
 <body>
   <header class="lh-nav">
@@ -38,14 +17,14 @@
       <a href="/" class="lh-brand" aria-label="Leva home">
         <img src="https://i.ibb.co/1GSR9HNV/1000622428-removebg-preview.png" alt="Leva" class="lh-logo" width="100" height="32" />
       </a>
-      <nav class="lh-links" id="lhDesktopNav">
-        <a href="#features">Features</a>
-        <a href="#how">How it works</a>
+      <nav class="lh-links">
+        <a href="#features">Product</a>
+        <a href="#showcase">Examples</a>
         <a href="#pricing">Pricing</a>
         <a href="/food/vmk">Live demo</a>
       </nav>
       <div class="lh-actions">
-        <a href="/join" class="lh-btn-primary lh-btn-desktop">Get Started</a>
+        <a href="/join" class="lh-btn-primary lh-btn-desktop">Start free</a>
         <button type="button" class="lh-burger" id="lhBurger" aria-label="Open menu" aria-expanded="false">
           <span></span><span></span><span></span>
         </button>
@@ -57,100 +36,172 @@
   <aside class="lh-drawer" id="lhDrawer" aria-hidden="true">
     <div class="lh-drawer-head">
       <span class="lh-drawer-title">Menu</span>
-      <button type="button" class="lh-drawer-close" id="lhClose" aria-label="Close menu">&times;</button>
+      <button type="button" class="lh-drawer-close" id="lhClose" aria-label="Close">&times;</button>
     </div>
     <nav class="lh-drawer-nav">
-      <a href="#features">Features</a>
-      <a href="#how">How it works</a>
+      <a href="#features">Product</a>
+      <a href="#showcase">Examples</a>
       <a href="#pricing">Pricing</a>
       <a href="/food/vmk">Live demo</a>
-      <a href="/join" class="lh-btn-primary lh-drawer-cta">Get Started</a>
+      <a href="/join" class="lh-btn-primary lh-drawer-cta">Start free</a>
     </nav>
   </aside>
 
   <main>
-    <section class="lh-hero">
-      <p class="lh-eyebrow">Leva Food</p>
-      <h1>Your restaurant.<br />Your ordering website.<br />Zero commission.</h1>
-      <p class="lh-hero-sub">A branded page where customers order for pickup or delivery. You keep 100% of food sales and run your own riders. Flat monthly fee — not a marketplace cut.</p>
-      <div class="lh-hero-cta">
-        <a href="/join" class="lh-btn-primary lh-btn-lg">Create your page</a>
-        <a href="/food/vmk" class="lh-btn-ghost lh-btn-lg">See a live page</a>
-      </div>
-    </section>
+    <div class="lh-hero-wrap">
+      <section class="lh-hero">
+        <div class="lh-hero-copy">
+          <p class="lh-eyebrow">Direct ordering for restaurants</p>
+          <h1>Own the order.<br />Keep every naira.</h1>
+          <p class="lh-hero-sub">A polished ordering page under your name and brand. Customers order for pickup or delivery. You run the kitchen and the riders — Leva never takes a cut of food sales.</p>
+          <div class="lh-hero-cta">
+            <a href="/join" class="lh-btn-primary lh-btn-accent lh-btn-lg">Create your page</a>
+            <a href="/food/vmk" class="lh-btn-ghost lh-btn-lg">View live demo</a>
+          </div>
+          <p class="lh-hero-note">Flat ₦30,000 / month · Zero commission · Live in minutes</p>
+        </div>
+        <div class="lh-mock">
+          <div class="lh-mock-glow" aria-hidden="true"></div>
+          <div class="lh-mock-frame" aria-hidden="true">
+            <div class="lh-mock-bar">
+              <div class="lh-mock-logo">VM</div>
+              <div class="lh-mock-meta">
+                <div class="lh-mock-name">Victorious Mega Kitchen</div>
+                <div class="lh-mock-status"><i></i>Open · via Leva</div>
+              </div>
+            </div>
+            <div class="lh-mock-body">
+              <div class="lh-mock-toggle">
+                <span class="on">Pickup</span>
+                <span>Delivery</span>
+              </div>
+              <div class="lh-mock-cats">
+                <span class="on">Rice &amp; mains</span>
+                <span>Swallow</span>
+                <span>Soups</span>
+              </div>
+              <div class="lh-mock-item">
+                <div class="lh-mock-item-txt"><strong>Jollof Rice</strong><em>₦1,500</em></div>
+                <div class="lh-mock-thumb"></div>
+              </div>
+              <div class="lh-mock-item">
+                <div class="lh-mock-item-txt"><strong>Fried Rice</strong><em>₦1,500</em></div>
+                <div class="lh-mock-thumb"></div>
+              </div>
+              <div class="lh-mock-item">
+                <div class="lh-mock-item-txt"><strong>Egusi Soup</strong><em>₦2,000</em></div>
+                <div class="lh-mock-thumb"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
 
     <section class="lh-section" id="features">
-      <h2>What you get</h2>
-      <p class="lh-section-lead">Built for kitchens that deliver or want direct online orders without marketplace commission.</p>
-      <div class="lh-grid-6">
+      <h2>What your restaurant becomes</h2>
+      <p class="lh-section-lead">Not another marketplace listing — a direct channel you control, from the first tap to the last plate.</p>
+      <div class="lh-grid-3">
         <article class="lh-card">
-          <h3>Branded ordering page</h3>
-          <p>Your logo, name, and colours on a clean link like /food/your-name. Customers order without downloading an app.</p>
+          <div class="lh-card-icon">01</div>
+          <h3>A page that looks like you</h3>
+          <p>Your logo, colours, and name on a clean link. Guests order without an app — just a URL you share on Instagram, WhatsApp, or Google.</p>
         </article>
         <article class="lh-card">
-          <h3>Live menu and photos</h3>
-          <p>Categories, prices, and dish photos. Mark items unavailable from the staff dashboard so guests only see what is cooking.</p>
+          <div class="lh-card-icon">02</div>
+          <h3>Kitchen-first operations</h3>
+          <p>Live menu, availability toggles, and a staff dashboard on any phone. Telegram alerts the moment an order lands so nothing sits waiting.</p>
         </article>
         <article class="lh-card">
-          <h3>Pickup and delivery</h3>
-          <p>Customers choose pickup or delivery to areas you serve. You control fulfilment and your own riders — Leva does not take a delivery cut.</p>
-        </article>
-        <article class="lh-card">
-          <h3>Staff dashboard</h3>
-          <p>One login per restaurant. See new orders, update status, manage the menu, and toggle availability from any phone or laptop.</p>
-        </article>
-        <article class="lh-card">
-          <h3>Order alerts</h3>
-          <p>Telegram alert the moment an order lands so the kitchen can move fast. Order ID for the customer to track.</p>
-        </article>
-        <article class="lh-card">
-          <h3>Payments your way</h3>
-          <p>Paystack (card / transfer), bank receipt upload, pay on delivery, or a mix. Leva never takes a commission on food sales.</p>
+          <div class="lh-card-icon">03</div>
+          <h3>You keep the margin</h3>
+          <p>Flat monthly fee. Paystack, bank transfer, or pay on delivery — your choice. Leva does not take a commission on food sales.</p>
         </article>
       </div>
     </section>
 
-    <section class="lh-section lh-muted" id="how">
-      <h2>How it works</h2>
-      <p class="lh-section-lead">From setup to first order in a few minutes.</p>
+    <div class="lh-muted-band">
+      <section class="lh-section" id="showcase">
+        <h2>Pages in the wild</h2>
+        <p class="lh-section-lead">Every restaurant gets its own branded storefront. Same platform quality — your identity.</p>
+        <div class="lh-showcase">
+          <article class="lh-show-card">
+            <div class="lh-show-preview">
+              <div class="lh-show-mini"><strong>Victorious Mega Kitchen</strong><span>Ugbor · Open now</span></div>
+            </div>
+            <div class="lh-show-body">
+              <h3>Victorious Mega Kitchen</h3>
+              <p>Benin City · Pickup &amp; delivery near BIU</p>
+              <a href="/food/vmk">Open live page →</a>
+            </div>
+          </article>
+          <article class="lh-show-card">
+            <div class="lh-show-preview alt1">
+              <div class="lh-show-mini"><strong>Your kitchen name</strong><span>Your area · Brand colour</span></div>
+            </div>
+            <div class="lh-show-body">
+              <h3>Your brand next</h3>
+              <p>Logo, colour preset, and menu — live in minutes from the join form.</p>
+              <a href="/join">Create your page →</a>
+            </div>
+          </article>
+          <article class="lh-show-card">
+            <div class="lh-show-preview alt2">
+              <div class="lh-show-mini"><strong>Staff dashboard</strong><span>Orders · Menu · Status</span></div>
+            </div>
+            <div class="lh-show-body">
+              <h3>Built for the pass</h3>
+              <p>One login for the team. Mark items unavailable, update order status, keep the line moving.</p>
+              <a href="#how">See how it works →</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <section class="lh-section" id="how">
+      <h2>From blank page to first order</h2>
+      <p class="lh-section-lead">Three steps. No developer, no long contract.</p>
       <div class="lh-steps">
-        <div class="lh-step"><span>1</span><p><strong>Create your page</strong> — business details, state and LGA, staff password, brand colour, logo, and at least one menu item.</p></div>
-        <div class="lh-step"><span>2</span><p><strong>Share your link</strong> — Instagram bio, WhatsApp status, Google profile, flyers. Customers open it and order.</p></div>
-        <div class="lh-step"><span>3</span><p><strong>Run orders</strong> — staff dashboard and Telegram alerts. Update status; customers keep the order ID.</p></div>
+        <div class="lh-step"><span>1</span><p><strong>Set up once</strong> — name, state &amp; LGA, staff password, brand colour, logo, and your first dishes.</p></div>
+        <div class="lh-step"><span>2</span><p><strong>Share your link</strong> — bio, status, Google profile, table tents. Customers open and order.</p></div>
+        <div class="lh-step"><span>3</span><p><strong>Run the kitchen</strong> — dashboard + Telegram alerts. You fulfil; they keep the order ID.</p></div>
       </div>
     </section>
 
-    <section class="lh-section" id="pricing">
-      <h2>Simple pricing</h2>
-      <p class="lh-section-lead">One flat fee. No commission on food. No surprise marketplace deductions.</p>
-      <div class="lh-price">
-        <p class="lh-price-amount">₦30,000<span>/month</span></p>
-        <ul class="lh-price-list">
-          <li>Branded ordering page with your logo and colours</li>
-          <li>Unlimited menu items and orders</li>
-          <li>Staff dashboard and Telegram order alerts</li>
-          <li>Paystack, bank transfer, or pay-on-delivery options</li>
-          <li>Zero commission on food sales — you keep 100%</li>
-        </ul>
-        <a href="/join" class="lh-btn-primary">Create your page</a>
-      </div>
-      <div class="lh-compare">
-        <div class="lh-compare-card">
-          <h4>Marketplaces</h4>
-          <p>High commission per order, shared brand, less control over riders and customer data.</p>
+    <div class="lh-muted-band">
+      <section class="lh-section" id="pricing">
+        <h2>One price. No commission.</h2>
+        <p class="lh-section-lead">Predictable cost. Your food revenue stays yours.</p>
+        <div class="lh-price">
+          <p class="lh-price-amount">₦30,000<span>/month</span></p>
+          <ul class="lh-price-list">
+            <li>Branded ordering page with your logo and colours</li>
+            <li>Unlimited menu items and orders</li>
+            <li>Staff dashboard and Telegram alerts</li>
+            <li>Paystack, bank transfer, or pay on delivery</li>
+            <li>Zero commission on food sales</li>
+          </ul>
+          <a href="/join" class="lh-btn-primary lh-btn-accent lh-btn-lg">Create your page</a>
         </div>
-        <div class="lh-compare-card good">
-          <h4>Leva</h4>
-          <p>Flat monthly fee, your link and brand, your riders, your customers. No cut of food sales.</p>
+        <div class="lh-compare">
+          <div class="lh-compare-card">
+            <h4>Marketplaces</h4>
+            <p>High cut per order, shared brand, less control over riders and the customer relationship.</p>
+          </div>
+          <div class="lh-compare-card good">
+            <h4>Leva</h4>
+            <p>Flat fee, your link and brand, your riders, your customers. No cut of food sales.</p>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
 
-    <section class="lh-section lh-muted" id="support">
-      <h2>Staff access and support</h2>
-      <p class="lh-support" style="max-width:560px;margin:0 auto;text-align:center;color:#6b7280;font-size:0.95rem;line-height:1.55;">
-        After you create a page, staff open <code>/staff.html?slug=your-link</code> with the password you set.
-        Questions while setting up? We help you go live after you join.
+    <section class="lh-section" id="support">
+      <h2>Staff access</h2>
+      <p class="lh-support">
+        After you create a page, your team opens <code>/staff.html?slug=your-link</code> with the password you set.
+        We help you go live when you join.
       </p>
     </section>
   </main>
