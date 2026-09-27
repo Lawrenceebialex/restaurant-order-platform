@@ -12,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/styles-premium.css" />
   <script src="https://js.paystack.co/v1/inline.js"></script>
 </head>
 <body>
@@ -47,6 +48,7 @@
     <button class="menu-link" onclick="openMyOrders()">My Orders</button>
     <button class="menu-link" onclick="openTrack()">Track Order</button>
     <button class="menu-link" onclick="showAvailability()">Check Availability</button>
+    <a class="menu-link" id="staffMenuLinkStatic" href="/staff.html">Staff dashboard</a>
   </div>
   <div class="menu-overlay" id="menuOverlay"></div>
 
@@ -114,6 +116,7 @@
           <button type="button" onclick="showAvailability()">Availability</button>
           <button type="button" onclick="openTrack()">Track order</button>
           <button type="button" onclick="openMyOrders()">My orders</button>
+          <a id="footerStaffLink" href="/staff.html">Staff</a>
         </div>
         <p class="footer-copy" id="footerCopy"></p>
         <p class="powered-by-line">
@@ -317,8 +320,15 @@
           document.body.innerHTML =
             '<div style="font-family:system-ui;padding:40px;text-align:center">' +
             '<h1>Restaurant not found</h1><p class="powered-by-line"><span>Powered by</span> <a href="/"><img src="https://i.ibb.co/1GSR9HNV/1000622428-removebg-preview.png" alt="Leva" height="28" style="vertical-align:middle"/></a></p></div>';
+          return;
         }
       }
+      var slug = (window.LEVA && window.LEVA.slug) || "vmk";
+      var staffHref = "/staff.html?slug=" + encodeURIComponent(slug);
+      var s1 = document.getElementById("staffMenuLinkStatic");
+      var s2 = document.getElementById("footerStaffLink");
+      if (s1) s1.href = staffHref;
+      if (s2) s2.href = staffHref;
     })();
   </script>
 </body>
