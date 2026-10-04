@@ -231,59 +231,16 @@ body {
   gap: 8px;
   margin-top: 12px;
 }
-.action-btn {
+.order-actions button {
   border: none;
   padding: 8px 12px;
   border-radius: 8px;
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
+  background: var(--purple-light);
+  color: var(--purple);
 }
-.btn-confirm { background: #dbeafe; color: #1e40af; }
-.btn-preparing { background: #e0e7ff; color: #3730a3; }
-.btn-ready { background: #dcfce7; color: #166534; }
-.btn-complete { background: #f3f4f6; color: #374151; }
-.btn-cancel { background: #fee2e2; color: #991b1b; }
-.btn-print { background: var(--purple-light); color: var(--purple); }
-
-.menu-item-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: white;
-  padding: 14px 16px;
-  border-radius: 12px;
-  margin-bottom: 8px;
-  border: 1px solid var(--border);
-}
-.menu-item-name { font-weight: 600; }
-.toggle {
-  position: relative;
-  width: 48px;
-  height: 26px;
-}
-.toggle input { opacity: 0; width: 0; height: 0; }
-.slider {
-  position: absolute;
-  cursor: pointer;
-  inset: 0;
-  background: #d1d5db;
-  border-radius: 26px;
-  transition: 0.2s;
-}
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 20px;
-  width: 20px;
-  left: 3px;
-  bottom: 3px;
-  background: white;
-  border-radius: 50%;
-  transition: 0.2s;
-}
-input:checked + .slider { background: var(--purple); }
-input:checked + .slider:before { transform: translateX(22px); }
 
 .shop-status-card {
   background: white;
@@ -293,3 +250,79 @@ input:checked + .slider:before { transform: translateX(22px); }
 }
 
 .print-root { display: none; }
+
+/* Tenant branding */
+.login-logo-fallback,
+.dash-logo-fallback {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: var(--purple, #1a4d3e);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+.dash-logo-fallback {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  margin: 0;
+}
+.login-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 14px;
+  margin: 0 auto 16px;
+  background: #f3f4f6;
+}
+.brand img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #f3f4f6;
+}
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.brand-text span { font-weight: 700; font-size: 0.95rem; }
+.brand-text small { font-size: 0.72rem; color: var(--muted); font-weight: 500; }
+.login-alt {
+  margin-top: 16px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.login-alt a { color: var(--purple); font-weight: 600; text-decoration: none; }
+.menu-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: white;
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.menu-toggle .lbl {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  min-width: 88px;
+  text-align: right;
+}
+.menu-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--purple);
+}
