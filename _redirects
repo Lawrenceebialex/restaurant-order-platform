@@ -1,8 +1,11 @@
 # Marketing home
 /                 /home.html   200
 
+# Staff central login
+/login            /login.html  200
+/staff            /staff.html  200
+
 # /food/* is handled by functions/food/[[slug]].js (do not rewrite to .html)
-# Pretty URLs break /food/x → /order when rewritten to order.html
 
 # Optional legacy alias
 /restaurant/*     /food/:splat  302
