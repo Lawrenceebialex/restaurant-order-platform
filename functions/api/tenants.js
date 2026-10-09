@@ -35,6 +35,16 @@ const COLOR_MAP = {
   purple: "#6d28d9",
 };
 
+/** Starter dishes when founder skips menu photos - name + price only */
+const STARTER_MENU = [
+  { category: "Rice", name: "Jollof Rice", price: 1500, image_url: "" },
+  { category: "Rice", name: "Fried Rice", price: 1500, image_url: "" },
+  { category: "Soup", name: "Egusi Soup", price: 2000, image_url: "" },
+  { category: "Swallow", name: "Eba (Garri)", price: 500, image_url: "" },
+  { category: "Protein", name: "Chicken", price: 2500, image_url: "" },
+  { category: "Drinks", name: "Coke", price: 500, image_url: "" },
+];
+
 function slugify(s) {
   return String(s || "")
     .toLowerCase()
@@ -80,6 +90,32 @@ function mapTenant(row) {
   };
 }
 
+async function insertMenuItems(env, slug, items) {
+  for (let i = 0; i < items.length; i++) {
+    const m = items[i];
+    if (!m || !m.name) continue;
+    const mid = "mi_" + slug + "_" + i + "_" + Date.now().toString(36);
+    try {
+      await env.DB.prepare(
+        `INSERT INTO menu_items (id, tenant_slug, category, name, price, image_url, sort_order, is_active)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 1)`
+      )
+        .bind(
+          mid,
+          slug,
+          m.category || "Other",
+          m.name,
+          Number(m.price) || 0,
+          m.image_url || "",
+          i
+        )
+        .run();
+    } catch {
+      /* menu table optional */
+    }
+  }
+}
+
 export async function onRequestOptions() {
   return new Response(null, { headers: cors });
 }
@@ -109,7 +145,6 @@ export async function onRequestGet(context) {
     }
   }
 
-  // Only VMK has a hardcoded fallback. Every other slug must exist in D1.
   if (slug === "vmk") {
     return json({ tenant: FALLBACK_VMK });
   }
@@ -234,31 +269,11 @@ export async function onRequestPost(context) {
         .run();
     }
 
-    if (Array.isArray(body.menu_items) && body.menu_items.length) {
-      for (let i = 0; i < body.menu_items.length; i++) {
-        const m = body.menu_items[i];
-        const mid =
-          "mi_" + slug + "_" + i + "_" + Date.now().toString(36);
-        try {
-          await env.DB.prepare(
-            `INSERT INTO menu_items (id, tenant_slug, category, name, price, image_url, sort_order, is_active)
-             VALUES (?, ?, ?, ?, ?, ?, ?, 1)`
-          )
-            .bind(
-              mid,
-              slug,
-              m.category || "Other",
-              m.name,
-              Number(m.price) || 0,
-              m.image_url || "",
-              i
-            )
-            .run();
-        } catch {
-          /* menu table optional */
-        }
-      }
+    let menuItems = Array.isArray(body.menu_items) ? body.menu_items.filter((m) => m && m.name) : [];
+    if (!menuItems.length) {
+      menuItems = STARTER_MENU;
     }
+    await insertMenuItems(env, slug, menuItems);
 
     return json({
       ok: true,
@@ -270,6 +285,7 @@ export async function onRequestPost(context) {
         staff_path: "/staff.html?slug=" + slug,
         login_path: "/login?slug=" + slug,
         is_verified: false,
+        seeded_menu: menuItems === STARTER_MENU || !body.menu_items || !body.menu_items.length,
       },
     });
   } catch (e) {
