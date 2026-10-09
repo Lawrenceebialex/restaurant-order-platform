@@ -82,7 +82,7 @@ function showDashboard(){
   document.getElementById("loginScreen").style.display="none";
   document.getElementById("dashboard").style.display="block";
   paintDashboardBranding();
-  loadOrders();loadMenuControls();loadTotals();startPolling();
+  loadOrders();loadMenuControls();loadTotals();startPolling();loadTelegramStatus();
 }
 document.getElementById("logoutBtn")?.addEventListener("click",()=>{
   sessionStorage.removeItem(tokenKey());
@@ -96,6 +96,7 @@ document.querySelectorAll(".tab").forEach(tab=>{
     document.querySelectorAll(".tab-content").forEach(c=>c.classList.remove("active"));
     tab.classList.add("active");
     document.getElementById(tab.dataset.tab+"Tab")?.classList.add("active");
+    if(tab.dataset.tab==="status") loadTelegramStatus();
   });
 });
 document.getElementById("refreshOrdersBtn")?.addEventListener("click",()=>loadOrders());
@@ -213,3 +214,52 @@ function startPolling(){
     }catch{}
   }
 })();
+
+async function loadTelegramStatus(){
+  const statusEl=document.getElementById("telegramStatus");
+  const hintEl=document.getElementById("telegramHint");
+  const connectBtn=document.getElementById("telegramConnectBtn");
+  const unlinkBtn=document.getElementById("telegramUnlinkBtn");
+  if(!statusEl||!STAFF_SLUG) return;
+  statusEl.textContent="Checking…";
+  try{
+    const res=await fetch(API+"/telegram?slug="+encodeURIComponent(STAFF_SLUG),{headers:authHeaders()});
+    const data=await res.json();
+    if(!res.ok) throw new Error(data.error||"Failed");
+    if(data.connected){
+      statusEl.textContent="Connected";
+      if(hintEl) hintEl.textContent="New orders will notify this Telegram chat.";
+      if(connectBtn) connectBtn.style.display="none";
+      if(unlinkBtn) unlinkBtn.style.display="inline-flex";
+    }else{
+      statusEl.textContent="Not connected";
+      if(hintEl) hintEl.textContent=data.deep_link
+        ? "Tap Connect Telegram, then press Start. We link automatically."
+        : (data.instructions||"Telegram bot is not configured yet.");
+      if(connectBtn){
+        if(data.deep_link){
+          connectBtn.href=data.deep_link;
+          connectBtn.style.display="inline-flex";
+          connectBtn.textContent="Connect Telegram";
+        }else{
+          connectBtn.style.display="none";
+        }
+      }
+      if(unlinkBtn) unlinkBtn.style.display="none";
+    }
+  }catch(e){
+    statusEl.textContent="Unavailable";
+    if(hintEl) hintEl.textContent=e.message||"Could not load Telegram status";
+  }
+}
+document.getElementById("telegramRefreshBtn")?.addEventListener("click",()=>loadTelegramStatus());
+document.getElementById("telegramUnlinkBtn")?.addEventListener("click",async()=>{
+  if(!confirm("Stop Telegram alerts for this kitchen?")) return;
+  try{
+    await fetch(API+"/telegram?slug="+encodeURIComponent(STAFF_SLUG),{method:"DELETE",headers:authHeaders()});
+    loadTelegramStatus();
+  }catch{}
+});
+document.getElementById("telegramConnectBtn")?.addEventListener("click",()=>{
+  setTimeout(()=>loadTelegramStatus(),2500);
+});
