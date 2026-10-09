@@ -93,6 +93,20 @@
         <p>Current status: <strong id="shopStatusLabel">Open</strong></p>
         <button type="button" class="refresh-btn" id="toggleShopBtn">Mark as Closed</button>
       </div>
+
+      <div class="section-header" style="margin-top:28px">
+        <h2>Telegram order alerts</h2>
+        <p class="hint">One tap. No chat id. Opens Telegram and links this kitchen.</p>
+      </div>
+      <div class="shop-status-card" id="telegramCard">
+        <p>Status: <strong id="telegramStatus">Checking…</strong></p>
+        <p class="hint" id="telegramHint" style="margin:8px 0 12px"></p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <a class="refresh-btn" id="telegramConnectBtn" href="#" target="_blank" rel="noopener" style="text-decoration:none;display:none">Connect Telegram</a>
+          <button type="button" class="refresh-btn" id="telegramRefreshBtn">Refresh status</button>
+          <button type="button" class="logout-btn" id="telegramUnlinkBtn" style="display:none">Unlink</button>
+        </div>
+      </div>
     </section>
   </div>
 
