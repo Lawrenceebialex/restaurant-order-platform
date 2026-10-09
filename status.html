@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Order status · Leva</title>
+  <meta name="theme-color" content="#0a0a0a" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/storefront.css" />
+  <style>
+    .st-wrap { max-width: 480px; margin: 0 auto; padding: 24px 16px 48px; }
+    .st-card {
+      background: #fff;
+      border: 1px solid var(--sf-border, #e8e6e1);
+      border-radius: 20px;
+      padding: 28px 22px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.05);
+    }
+    .st-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #d1fae5; color: #047857;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; font-weight: 800; margin: 0 auto 16px;
+    }
+    .st-card h1 { font-size: 1.35rem; font-weight: 800; text-align: center; letter-spacing: -0.02em; }
+    .st-sub { text-align: center; color: var(--sf-muted, #6b7280); font-size: 0.9rem; margin: 8px 0 20px; }
+    .st-id-box {
+      background: #f3f4f6; border-radius: 14px; padding: 14px 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      margin-bottom: 20px;
+    }
+    .st-id-box code { font-family: ui-monospace, monospace; font-weight: 800; font-size: 1.05rem; letter-spacing: 0.02em; }
+    .st-copy {
+      border: none; background: #0a0a0a; color: #fff; border-radius: 10px;
+      padding: 8px 14px; font-weight: 600; font-size: 0.8rem; cursor: pointer;
+    }
+    .st-steps { display: flex; flex-direction: column; gap: 0; margin: 8px 0 20px; }
+    .st-step {
+      display: flex; gap: 12px; align-items: flex-start; padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0; opacity: 0.45;
+    }
+    .st-step:last-child { border-bottom: none; }
+    .st-step.on { opacity: 1; }
+    .st-step .dot {
+      width: 12px; height: 12px; border-radius: 50%; background: #d1d5db;
+      margin-top: 4px; flex-shrink: 0;
+    }
+    .st-step.on .dot { background: var(--sf-brand, #111827); box-shadow: 0 0 0 4px rgba(17,24,39,0.12); }
+    .st-step strong { display: block; font-size: 0.92rem; }
+    .st-step span { font-size: 0.78rem; color: var(--sf-muted, #6b7280); }
+    .st-meta { font-size: 0.88rem; color: #374151; line-height: 1.55; margin-bottom: 16px; }
+    .st-meta strong { color: #0a0a0a; }
+    .st-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+    .st-primary {
+      display: block; text-align: center; background: var(--sf-brand, #111827); color: #fff !important;
+      border-radius: 14px; padding: 14px; font-weight: 700; text-decoration: none;
+    }
+    .st-ghost {
+      display: block; text-align: center; border: 1px solid var(--sf-border, #e8e6e1);
+      background: #fff; border-radius: 14px; padding: 12px; font-weight: 600; text-decoration: none; color: #0a0a0a;
+    }
+    .st-loading { text-align: center; color: var(--sf-muted, #6b7280); padding: 40px 0; }
+  </style>
+</head>
+<body class="sf-body" style="padding-bottom:24px">
+  <div class="st-wrap">
+    <div class="st-card" id="stCard">
+      <p class="st-loading" id="stLoading">Loading order…</p>
+      <div id="stContent" style="display:none">
+        <div class="st-icon">✓</div>
+        <h1 id="stTitle">Order placed</h1>
+        <p class="st-sub" id="stSub">Save your order ID. The kitchen has been notified.</p>
+        <div class="st-id-box">
+          <code id="stOrderId">—</code>
+          <button type="button" class="st-copy" id="stCopy">Copy</button>
+        </div>
+        <div class="st-steps" id="stSteps"></div>
+        <div class="st-meta" id="stMeta"></div>
+        <div class="st-actions">
+          <a class="st-primary" id="stBackMenu" href="/">Back to menu</a>
+          <a class="st-ghost" href="/">Leva home</a>
+        </div>
+      </div>
+      <div id="stError" style="display:none;text-align:center">
+        <h1 style="font-size:1.2rem;margin-bottom:8px">Order not found</h1>
+        <p class="st-sub">Check the ID or ask the restaurant for help.</p>
+        <a class="st-primary" href="/">Go home</a>
+      </div>
+    </div>
+  </div>
+  <script>
+  (function () {
+    const params = new URLSearchParams(location.search);
+    const id = (params.get("id") || "").trim();
+    const slug = (params.get("slug") || "").trim();
+    const STEPS = ["Pending", "Confirmed", "Preparing", "Ready", "Completed"];
+    function money(n) { return "₦" + Number(n || 0).toLocaleString(); }
+    function stepIndex(status) {
+      const s = String(status || "Pending");
+      const i = STEPS.indexOf(s);
+      return i >= 0 ? i : 0;
+    }
+    function render(order) {
+      document.getElementById("stLoading").style.display = "none";
+      document.getElementById("stContent").style.display = "block";
+      document.getElementById("stOrderId").textContent = order.id;
+      document.getElementById("stTitle").textContent =
+        order.status === "Completed" ? "Order completed" :
+        order.status === "Ready" ? "Ready for pickup" :
+        order.status === "Preparing" ? "Being prepared" :
+        order.status === "Confirmed" ? "Order confirmed" : "Order placed";
+      const idx = stepIndex(order.status);
+      document.getElementById("stSteps").innerHTML = STEPS.map((label, i) =>
+        '<div class="st-step' + (i <= idx ? " on" : "") + '"><span class="dot"></span><div><strong>' + label + '</strong>' +
+        (i === idx ? '<span>Current</span>' : "") + "</div></div>"
+      ).join("");
+      const items = (order.items || []).map(i => i.name + " ×" + i.qty).join(", ");
+      document.getElementById("stMeta").innerHTML =
+        "<strong>" + (order.name || "") + "</strong> · " + (order.phone || "") + "<br/>" +
+        (order.fulfillment || "").toUpperCase() + (order.location ? " · " + order.location : "") + "<br/>" +
+        items + "<br/><strong>Total " + money(order.total) + "</strong>";
+      if (slug) document.getElementById("stBackMenu").href = "/food/" + encodeURIComponent(slug);
+    }
+    document.getElementById("stCopy").onclick = () => {
+      const t = document.getElementById("stOrderId").textContent;
+      navigator.clipboard.writeText(t).then(() => {
+        const b = document.getElementById("stCopy");
+        b.textContent = "Copied";
+        setTimeout(() => (b.textContent = "Copy"), 1500);
+      });
+    };
+    if (!id) {
+      document.getElementById("stLoading").style.display = "none";
+      document.getElementById("stError").style.display = "block";
+      return;
+    }
+    async function load() {
+      try {
+        const res = await fetch("/api/orders?track=" + encodeURIComponent(id));
+        const data = await res.json();
+        const orders = data.orders || [];
+        const order = orders.find(o => o.id === id) || orders[0];
+        if (!order) {
+          document.getElementById("stLoading").style.display = "none";
+          document.getElementById("stError").style.display = "block";
+          return;
+        }
+        render(order);
+      } catch {
+        document.getElementById("stLoading").style.display = "none";
+        document.getElementById("stError").style.display = "block";
+      }
+    }
+    load();
+    setInterval(load, 12000);
+  })();
+  </script>
+</body>
+</html>
