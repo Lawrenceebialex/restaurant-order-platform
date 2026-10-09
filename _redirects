@@ -1,11 +1,12 @@
 # Marketing home
 /                 /home.html   200
 
-# Staff central login
+# Staff central login (SPA-style paths)
 /login            /login.html  200
 /staff            /staff.html  200
-/join             /join.html   200
-/status           /status.html 200
+
+# Do NOT rewrite /status or /join to .html — Cloudflare pretty URLs
+# already map status.html → /status and create a loop if we also rewrite.
 
 # /food/* is handled by functions/food/[[slug]].js (do not rewrite to .html)
 
