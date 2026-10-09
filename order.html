@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/storefront.css" />
 </head>
-<body>
+<body class="sf-body">
   <div id="sfBrowse">
     <header class="sf-header">
       <div class="sf-header-inner">
@@ -29,8 +29,8 @@
       <p id="sfHeroSub">Order for pickup or delivery</p>
       <p class="sf-meta"><span id="sfLoc"></span> · <span id="sfPhone"></span></p>
       <div class="sf-fulfill">
-        <button type="button" data-fulfill="pickup">Pickup</button>
-        <button type="button" data-fulfill="delivery">Delivery</button>
+        <button type="button" data-fulfill="pickup"><strong>Pickup</strong><span>Collect in store</span></button>
+        <button type="button" data-fulfill="delivery"><strong>Delivery</strong><span>To your area</span></button>
       </div>
     </section>
     <nav class="sf-cats" id="sfCats"></nav>
@@ -38,13 +38,13 @@
   </div>
   <div id="sfCheckout" style="display:none">
     <header class="sf-header"><div class="sf-header-inner"><button type="button" id="sfBackBrowse">← Back</button><strong>Checkout</strong></div></header>
-    <form id="sfCheckoutForm" class="sf-checkout">
+    <form id="sfCheckoutForm" class="sf-checkout" style="display:block">
       <div class="sf-field"><label for="sfCustName">Name</label><input id="sfCustName" required /></div>
       <div class="sf-field"><label for="sfCustPhone">Phone</label><input id="sfCustPhone" type="tel" required /></div>
       <div class="sf-field" id="sfLocField" style="display:none"><label for="sfCustLoc">Delivery location</label><input id="sfCustLoc" /></div>
       <div class="sf-pay">
         <label class="sf-pay-opt"><input type="radio" name="sfPay" value="paystack" checked /> <span><strong>Pay now</strong></span></label>
-        <label class="sf-pay-opt" id="sfPodOpt" style="display:none"><input type="radio" name="sfPay" value="pod" /> <span><strong>Pay on delivery</strong></span></label>
+        <label class="sf-pay-opt" id="sfPodOpt"><input type="radio" name="sfPay" value="pod" /> <span><strong>Pay on delivery</strong></span></label>
       </div>
       <div class="sf-field"><label for="sfNote">Note</label><textarea id="sfNote" rows="2"></textarea></div>
       <div class="sf-summary">

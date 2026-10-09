@@ -4,6 +4,8 @@
 # Staff central login
 /login            /login.html  200
 /staff            /staff.html  200
+/join             /join.html   200
+/status           /status.html 200
 
 # /food/* is handled by functions/food/[[slug]].js (do not rewrite to .html)
 
