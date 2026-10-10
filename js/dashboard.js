@@ -1,53 +1,37 @@
 (function () {
   const PRESETS = {
-    charcoal: "#111827",
-    navy: "#1e3a8a",
-    blue: "#1d4ed8",
-    teal: "#0f766e",
-    green: "#047857",
-    red: "#b91c1c",
-    crimson: "#991b1b",
-    orange: "#c2410c",
-    amber: "#b45309",
-    burgundy: "#9f1239",
-    brown: "#78350f",
-    purple: "#6d28d9",
+    charcoal: "#111827", navy: "#1e3a8a", blue: "#1d4ed8", teal: "#0f766e",
+    green: "#047857", red: "#b91c1c", crimson: "#991b1b", orange: "#c2410c",
+    amber: "#b45309", burgundy: "#9f1239", brown: "#78350f", purple: "#6d28d9",
   };
 
   const params = new URLSearchParams(location.search);
+  let ownerToken = sessionStorage.getItem("leva_owner_token") || "";
   let slug = (params.get("slug") || sessionStorage.getItem("leva_staff_slug") || "").toLowerCase().trim();
-  let token = sessionStorage.getItem("leva_staff_token_" + slug) || sessionStorage.getItem("leva_staff_token") || "";
+  let staffToken = sessionStorage.getItem("leva_staff_token_" + slug) || sessionStorage.getItem("leva_staff_token") || "";
   let tenant = null;
 
   const gate = document.getElementById("dbGate");
   const app = document.getElementById("dbApp");
+  const onboard = document.getElementById("dbOnboard");
 
-  function origin() {
-    return location.origin;
-  }
-  function orderUrl() {
-    return origin() + "/food/" + slug;
-  }
-  function menuUrl() {
-    return origin() + "/m/" + slug;
-  }
+  function origin() { return location.origin; }
+  function orderUrl() { return origin() + "/food/" + slug; }
+  function menuUrl() { return origin() + "/m/" + slug; }
   function authHeaders() {
-    return {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    };
+    const t = ownerToken || staffToken;
+    return { "Content-Type": "application/json", Authorization: "Bearer " + t };
   }
-  function money(n) {
-    return "₦" + Number(n || 0).toLocaleString();
-  }
+  function money(n) { return "₦" + Number(n || 0).toLocaleString(); }
 
-  if (!slug || !token) {
-    gate.style.display = "flex";
-    app.style.display = "none";
+  // Must be logged in as owner (preferred) or staff with slug
+  if (!ownerToken && (!slug || !staffToken)) {
+    if (gate) gate.style.display = "flex";
+    if (app) app.style.display = "none";
     return;
   }
-  gate.style.display = "none";
-  app.style.display = "block";
+  if (gate) gate.style.display = "none";
+  if (app) app.style.display = "block";
 
   document.querySelectorAll(".db-tab").forEach((btn) => {
     btn.onclick = () => showTab(btn.dataset.tab);
@@ -61,12 +45,18 @@
     if (id === "qrmenu") renderQRs();
   }
 
-  document.getElementById("dbLogout").onclick = () => {
-    sessionStorage.removeItem("leva_staff_token_" + slug);
-    sessionStorage.removeItem("leva_staff_token");
-    sessionStorage.removeItem("leva_staff_slug");
-    location.href = "/login";
-  };
+  const logoutBtn = document.getElementById("dbLogout");
+  if (logoutBtn) {
+    logoutBtn.onclick = () => {
+      sessionStorage.removeItem("leva_owner_token");
+      sessionStorage.removeItem("leva_owner_email");
+      sessionStorage.removeItem("leva_owner_id");
+      sessionStorage.removeItem("leva_staff_token_" + slug);
+      sessionStorage.removeItem("leva_staff_token");
+      sessionStorage.removeItem("leva_staff_slug");
+      location.href = "/login";
+    };
+  }
 
   document.querySelectorAll("[data-copy]").forEach((btn) => {
     btn.onclick = () => {
@@ -80,50 +70,46 @@
   });
 
   function fillUrls() {
-    document.getElementById("dbOrderUrl").textContent = "/food/" + slug;
-    document.getElementById("dbMenuUrl").textContent = "/m/" + slug;
-    document.getElementById("dbMenuUrl2").textContent = "/m/" + slug;
-    document.getElementById("dbOpenOrder").href = orderUrl();
-    document.getElementById("dbOpenMenu").href = menuUrl();
-    document.getElementById("dbOpenMenu2").href = menuUrl();
-    document.getElementById("dbStaffLink").href = "/staff.html?slug=" + encodeURIComponent(slug);
-    document.getElementById("dbGoKitchen").href = "/staff.html?slug=" + encodeURIComponent(slug);
+    if (!slug) return;
+    ["dbOrderUrl", "dbMenuUrl", "dbMenuUrl2"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = id.indexOf("Menu") >= 0 || id.indexOf("menu") >= 0 ? "/m/" + slug : "/food/" + slug;
+      if (id === "dbOrderUrl") el.textContent = "/food/" + slug;
+      if (id === "dbMenuUrl" || id === "dbMenuUrl2") el.textContent = "/m/" + slug;
+    });
+    const oo = document.getElementById("dbOpenOrder"); if (oo) oo.href = orderUrl();
+    const om = document.getElementById("dbOpenMenu"); if (om) om.href = menuUrl();
+    const om2 = document.getElementById("dbOpenMenu2"); if (om2) om2.href = menuUrl();
+    const sl = document.getElementById("dbStaffLink"); if (sl) sl.href = "/staff.html?slug=" + encodeURIComponent(slug);
+    const gk = document.getElementById("dbGoKitchen"); if (gk) gk.href = "/staff.html?slug=" + encodeURIComponent(slug);
   }
 
   function setPreview() {
-    const name = document.getElementById("edName").value || "Restaurant";
-    const tag = document.getElementById("edTagline").value || "Order for pickup or delivery";
-    const ck = document.getElementById("edColorKey").value;
+    const name = (document.getElementById("edName") || {}).value || "Restaurant";
+    const tag = (document.getElementById("edTagline") || {}).value || "Order for pickup or delivery";
+    const ck = (document.getElementById("edColorKey") || {}).value || "charcoal";
     const color = PRESETS[ck] || "#111827";
-    const logo = document.getElementById("edLogo").value.trim();
-    document.getElementById("pvName").textContent = name;
-    document.getElementById("pvTag").textContent = tag;
+    const logo = ((document.getElementById("edLogo") || {}).value || "").trim();
+    const pvName = document.getElementById("pvName"); if (pvName) pvName.textContent = name;
+    const pvTag = document.getElementById("pvTag"); if (pvTag) pvTag.textContent = tag;
     document.documentElement.style.setProperty("--db-brand", color);
-    document.getElementById("pvBtn").style.background = color;
+    const pvBtn = document.getElementById("pvBtn"); if (pvBtn) pvBtn.style.background = color;
     const logoEl = document.getElementById("pvLogo");
-    if (logo) {
-      logoEl.innerHTML = '<img src="' + logo + '" alt="" />';
-    } else {
-      logoEl.textContent = (name.charAt(0) || "?").toUpperCase();
-      logoEl.style.background = color;
+    if (logoEl) {
+      if (logo) logoEl.innerHTML = '<img src="' + logo + '" alt="" />';
+      else {
+        logoEl.textContent = (name.charAt(0) || "?").toUpperCase();
+        logoEl.style.background = color;
+      }
     }
   }
 
   function buildColors(active) {
     const el = document.getElementById("edColors");
+    if (!el) return;
     el.innerHTML = Object.keys(PRESETS)
-      .map(
-        (k) =>
-          '<button type="button" class="db-color' +
-          (k === active ? " active" : "") +
-          '" data-k="' +
-          k +
-          '" style="background:' +
-          PRESETS[k] +
-          '" title="' +
-          k +
-          '"></button>'
-      )
+      .map((k) => '<button type="button" class="db-color' + (k === active ? " active" : "") + '" data-k="' + k + '" style="background:' + PRESETS[k] + '"></button>')
       .join("");
     el.querySelectorAll(".db-color").forEach((b) => {
       b.onclick = () => {
@@ -140,66 +126,58 @@
     if (n) n.addEventListener("input", setPreview);
   });
 
-  document.getElementById("edSave").onclick = async () => {
-    const msg = document.getElementById("edMsg");
-    msg.style.display = "none";
-    try {
-      const res = await fetch("/api/tenants", {
-        method: "PATCH",
-        headers: authHeaders(),
-        body: JSON.stringify({
-          slug,
-          name: document.getElementById("edName").value.trim(),
-          tagline: document.getElementById("edTagline").value.trim(),
-          phone: document.getElementById("edPhone").value.trim(),
-          location_text: document.getElementById("edLoc").value.trim(),
-          color_key: document.getElementById("edColorKey").value,
-          logo_url: document.getElementById("edLogo").value.trim(),
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Save failed");
-      tenant = data.tenant || tenant;
-      document.getElementById("dbRestName").textContent = tenant.name || slug;
-      msg.textContent = "Saved";
-      msg.className = "db-msg ok";
-      msg.style.display = "block";
-    } catch (e) {
-      msg.textContent = e.message || "Could not save";
-      msg.className = "db-msg err";
-      msg.style.display = "block";
-    }
-  };
+  const edSave = document.getElementById("edSave");
+  if (edSave) {
+    edSave.onclick = async () => {
+      const msg = document.getElementById("edMsg");
+      if (!slug) return;
+      msg.style.display = "none";
+      try {
+        const res = await fetch("/api/tenants", {
+          method: "PATCH",
+          headers: authHeaders(),
+          body: JSON.stringify({
+            slug,
+            name: document.getElementById("edName").value.trim(),
+            tagline: document.getElementById("edTagline").value.trim(),
+            phone: document.getElementById("edPhone").value.trim(),
+            location_text: document.getElementById("edLoc").value.trim(),
+            color_key: document.getElementById("edColorKey").value,
+            logo_url: document.getElementById("edLogo").value.trim(),
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Save failed");
+        tenant = data.tenant || tenant;
+        document.getElementById("dbRestName").textContent = (tenant && tenant.name) || slug;
+        msg.textContent = "Saved";
+        msg.className = "db-msg ok";
+        msg.style.display = "block";
+      } catch (e) {
+        msg.textContent = e.message || "Could not save";
+        msg.className = "db-msg err";
+        msg.style.display = "block";
+      }
+    };
+  }
 
   async function loadMenu() {
     const list = document.getElementById("miList");
+    if (!list || !slug) return;
     list.innerHTML = "<p class=\"db-muted\">Loading…</p>";
     try {
       const res = await fetch("/api/menu?slug=" + encodeURIComponent(slug));
       const data = await res.json();
       const items = data.items || [];
       if (!items.length) {
-        list.innerHTML = "<p class=\"db-muted\">No items yet. Add dishes above (photos optional).</p>";
+        list.innerHTML = "<p class=\"db-muted\">No items yet. Add dishes above.</p>";
         return;
       }
-      list.innerHTML = items
-        .map(
-          (it) =>
-            '<div class="db-mi-row" data-id="' +
-            it.id +
-            '">' +
-            '<div class="meta"><strong>' +
-            it.name +
-            "</strong><span>" +
-            (it.category || "") +
-            " · " +
-            money(it.price) +
-            "</span></div>" +
-            '<button type="button" class="db-btn sm danger" data-del="' +
-            it.id +
-            '">Remove</button></div>'
-        )
-        .join("");
+      list.innerHTML = items.map((it) =>
+        '<div class="db-mi-row"><div class="meta"><strong>' + it.name +
+        "</strong><span>" + (it.category || "") + " · " + money(it.price) +
+        '</span></div><button type="button" class="db-btn sm danger" data-del="' + it.id + '">Remove</button></div>'
+      ).join("");
       list.querySelectorAll("[data-del]").forEach((btn) => {
         btn.onclick = async () => {
           if (!confirm("Remove this item?")) return;
@@ -216,76 +194,172 @@
     }
   }
 
-  document.getElementById("miAdd").onclick = async () => {
-    const name = document.getElementById("miName").value.trim();
-    const price = parseInt(document.getElementById("miPrice").value, 10);
-    const category = document.getElementById("miCat").value;
-    if (!name || !Number.isFinite(price)) {
-      alert("Name and price required");
-      return;
-    }
-    const res = await fetch("/api/menu", {
-      method: "POST",
-      headers: authHeaders(),
-      body: JSON.stringify({ slug, name, price, category }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      alert(data.error || "Failed");
-      return;
-    }
-    document.getElementById("miName").value = "";
-    document.getElementById("miPrice").value = "";
-    loadMenu();
-  };
+  const miAdd = document.getElementById("miAdd");
+  if (miAdd) {
+    miAdd.onclick = async () => {
+      const name = document.getElementById("miName").value.trim();
+      const price = parseInt(document.getElementById("miPrice").value, 10);
+      const category = document.getElementById("miCat").value;
+      if (!name || !Number.isFinite(price)) { alert("Name and price required"); return; }
+      const res = await fetch("/api/menu", {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({ slug, name, price, category }),
+      });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || "Failed"); return; }
+      document.getElementById("miName").value = "";
+      document.getElementById("miPrice").value = "";
+      loadMenu();
+    };
+  }
 
   function renderQRs() {
-    if (typeof QRCode === "undefined") return;
+    if (typeof QRCode === "undefined" || !slug) return;
     const mCanvas = document.getElementById("qrMenuCanvas");
     const oCanvas = document.getElementById("qrOrderCanvas");
-    QRCode.toCanvas(mCanvas, menuUrl(), { width: 180, margin: 2 }, () => {});
-    QRCode.toCanvas(oCanvas, orderUrl(), { width: 180, margin: 2 }, () => {});
+    if (mCanvas) QRCode.toCanvas(mCanvas, menuUrl(), { width: 180, margin: 2 }, () => {});
+    if (oCanvas) QRCode.toCanvas(oCanvas, orderUrl(), { width: 180, margin: 2 }, () => {});
   }
 
   function dlCanvas(canvasId, filename) {
     const c = document.getElementById(canvasId);
+    if (!c) return;
     const a = document.createElement("a");
     a.download = filename;
     a.href = c.toDataURL("image/png");
     a.click();
   }
-  document.getElementById("qrMenuDl").onclick = () => dlCanvas("qrMenuCanvas", slug + "-digital-menu-qr.png");
-  document.getElementById("qrOrderDl").onclick = () => dlCanvas("qrOrderCanvas", slug + "-ordering-qr.png");
+  const qrMenuDl = document.getElementById("qrMenuDl");
+  if (qrMenuDl) qrMenuDl.onclick = () => dlCanvas("qrMenuCanvas", slug + "-digital-menu-qr.png");
+  const qrOrderDl = document.getElementById("qrOrderDl");
+  if (qrOrderDl) qrOrderDl.onclick = () => dlCanvas("qrOrderCanvas", slug + "-ordering-qr.png");
 
-  document.getElementById("planCta").onclick = () => {
-    alert("Paystack subscription checkout will open here. For now, message Leva support after transfer to activate paid_until.");
-  };
+  const planCta = document.getElementById("planCta");
+  if (planCta) planCta.onclick = () => alert("Paystack subscription will open here after you activate billing.");
+
+  // —— Create restaurant (only when logged in as owner, no site yet) ——
+  async function createRestaurant(e) {
+    if (e) e.preventDefault();
+    if (!ownerToken) {
+      alert("Sign up or log in as owner first");
+      location.href = "/signup";
+      return;
+    }
+    const name = document.getElementById("crName").value.trim();
+    const crSlug = document.getElementById("crSlug").value.trim().toLowerCase().replace(/[^a-z0-9-]/g, "");
+    const phone = document.getElementById("crPhone").value.trim();
+    const kitchenPass = document.getElementById("crPass").value;
+    const err = document.getElementById("crErr");
+    const btn = document.getElementById("crSubmit");
+    if (err) err.style.display = "none";
+    if (!name || !crSlug || !phone || kitchenPass.length < 6) {
+      if (err) { err.textContent = "Fill name, link, phone, and kitchen password (6+)"; err.style.display = "block"; }
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = "Creating…";
+    try {
+      const res = await fetch("/api/tenants", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + ownerToken,
+        },
+        body: JSON.stringify({
+          name,
+          slug: crSlug,
+          phone,
+          password: kitchenPass,
+          color_key: "charcoal",
+          tagline: "",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not create page");
+      slug = data.tenant.slug;
+      sessionStorage.setItem("leva_staff_slug", slug);
+      location.href = "/dashboard?slug=" + encodeURIComponent(slug);
+    } catch (ex) {
+      if (err) { err.textContent = ex.message; err.style.display = "block"; }
+      btn.disabled = false;
+      btn.textContent = "Create ordering page";
+    }
+  }
+
+  function showOnboard(show) {
+    if (onboard) onboard.style.display = show ? "block" : "none";
+    const mainPanels = document.getElementById("dbMainPanels");
+    if (mainPanels) mainPanels.style.display = show ? "none" : "block";
+    const tabs = document.getElementById("dbTabs");
+    if (tabs) tabs.style.display = show ? "none" : "flex";
+  }
+
+  async function initOwner() {
+    if (!ownerToken) return false;
+    try {
+      const res = await fetch("/api/me", { headers: { Authorization: "Bearer " + ownerToken } });
+      if (!res.ok) {
+        sessionStorage.removeItem("leva_owner_token");
+        return false;
+      }
+      const data = await res.json();
+      const nameEl = document.getElementById("dbRestName");
+      if (nameEl) nameEl.textContent = data.account.name || data.account.email || "Account";
+      const list = data.restaurants || [];
+      if (!list.length) {
+        showOnboard(true);
+        const form = document.getElementById("crForm");
+        if (form) form.onsubmit = createRestaurant;
+        return true;
+      }
+      // Prefer slug from URL, else first restaurant
+      if (!slug || !list.find((r) => r.slug === slug)) {
+        slug = list[0].slug;
+        sessionStorage.setItem("leva_staff_slug", slug);
+      }
+      showOnboard(false);
+      return true;
+    } catch {
+      return false;
+    }
+  }
 
   async function init() {
+    if (ownerToken) {
+      const ok = await initOwner();
+      if (!ok) {
+        location.href = "/login";
+        return;
+      }
+    }
+    if (!slug) {
+      // owner with no restaurant already handled by onboard
+      if (ownerToken) return;
+      location.href = "/login";
+      return;
+    }
     fillUrls();
     try {
       const res = await fetch("/api/tenants?slug=" + encodeURIComponent(slug));
       const data = await res.json();
       tenant = data.tenant;
-      if (!tenant) throw new Error("not found");
-      document.getElementById("dbRestName").textContent = tenant.name;
-      document.getElementById("edName").value = tenant.name || "";
-      document.getElementById("edTagline").value = tenant.tagline || "";
-      document.getElementById("edPhone").value = tenant.phone || "";
-      document.getElementById("edLoc").value = tenant.location_text || "";
-      document.getElementById("edLogo").value = tenant.logo_url || "";
-      const ck = tenant.color_key || "charcoal";
-      document.getElementById("edColorKey").value = ck;
-      buildColors(ck);
-      setPreview();
-      if (tenant.paid_until) {
-        document.getElementById("planUntil").textContent = "Paid until: " + tenant.paid_until;
-        document.getElementById("planStatus").textContent = "Subscribed";
-      } else {
-        document.getElementById("planUntil").textContent = "Trial / unpaid — subscribe to keep the page live after trial.";
+      if (tenant) {
+        document.getElementById("dbRestName").textContent = tenant.name;
+        if (document.getElementById("edName")) document.getElementById("edName").value = tenant.name || "";
+        if (document.getElementById("edTagline")) document.getElementById("edTagline").value = tenant.tagline || "";
+        if (document.getElementById("edPhone")) document.getElementById("edPhone").value = tenant.phone || "";
+        if (document.getElementById("edLoc")) document.getElementById("edLoc").value = tenant.location_text || "";
+        if (document.getElementById("edLogo")) document.getElementById("edLogo").value = tenant.logo_url || "";
+        const ck = tenant.color_key || "charcoal";
+        if (document.getElementById("edColorKey")) document.getElementById("edColorKey").value = ck;
+        buildColors(ck);
+        setPreview();
+        if (tenant.paid_until && document.getElementById("planUntil")) {
+          document.getElementById("planUntil").textContent = "Paid until: " + tenant.paid_until;
+        }
       }
     } catch {
-      document.getElementById("dbRestName").textContent = slug;
       buildColors("charcoal");
       setPreview();
     }
