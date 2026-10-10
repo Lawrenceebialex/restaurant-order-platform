@@ -4,11 +4,10 @@
 # Staff central login (SPA-style paths)
 /login            /login.html  200
 /staff            /staff.html  200
+/dashboard        /dashboard.html  200
 
-# Do NOT rewrite /status or /join to .html — Cloudflare pretty URLs
-# already map status.html → /status and create a loop if we also rewrite.
-
-# /food/* is handled by functions/food/[[slug]].js (do not rewrite to .html)
+# /food/* → functions/food/[[slug]].js (ordering page)
+# /m/* → functions/m/[[slug]].js (QR digital menu — browse only)
 
 # Optional legacy alias
 /restaurant/*     /food/:splat  302
