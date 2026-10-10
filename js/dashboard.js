@@ -24,7 +24,6 @@
   }
   function money(n) { return "₦" + Number(n || 0).toLocaleString(); }
 
-  // Must be logged in as owner (preferred) or staff with slug
   if (!ownerToken && (!slug || !staffToken)) {
     if (gate) gate.style.display = "flex";
     if (app) app.style.display = "none";
@@ -39,11 +38,67 @@
   document.querySelectorAll("[data-tab-jump]").forEach((btn) => {
     btn.onclick = () => showTab(btn.getAttribute("data-tab-jump"));
   });
+
   function showTab(id) {
     document.querySelectorAll(".db-tab").forEach((b) => b.classList.toggle("active", b.dataset.tab === id));
     document.querySelectorAll(".db-panel").forEach((p) => p.classList.toggle("active", p.dataset.panel === id));
     if (id === "qrmenu") renderQRs();
+    if (id === "kitchen") loadKitchenOrders();
   }
+
+  const STATUSES = ["Pending", "Confirmed", "Preparing", "Ready", "Completed"];
+
+  async function loadKitchenOrders() {
+    const list = document.getElementById("kitList");
+    const meta = document.getElementById("kitMeta");
+    if (!list) return;
+    if (!slug) {
+      list.innerHTML = '<p class="db-muted">Create a restaurant first.</p>';
+      return;
+    }
+    list.innerHTML = '<p class="db-muted">Loading…</p>';
+    try {
+      const res = await fetch("/api/orders?slug=" + encodeURIComponent(slug), {
+        headers: { Authorization: "Bearer " + (ownerToken || staffToken) },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Unauthorized");
+      const orders = data.orders || [];
+      if (meta) meta.textContent = orders.length + " order(s)";
+      if (!orders.length) {
+        list.innerHTML = '<p class="db-muted">No orders yet. Share your ordering link.</p>';
+        return;
+      }
+      list.innerHTML = orders.slice(0, 40).map(function (o) {
+        const items = (o.items || []).map(function (i) { return i.name + " ×" + i.qty; }).join(", ");
+        const opts = STATUSES.map(function (s) {
+          return '<option value="' + s + '"' + (o.status === s ? " selected" : "") + ">" + s + "</option>";
+        }).join("");
+        return (
+          '<div class="db-mi-row" style="flex-wrap:wrap">' +
+          '<div class="meta" style="flex:1;min-width:180px"><strong>' + (o.id || "") +
+          "</strong><span>" + (o.name || "") + " · " + (o.phone || "") +
+          "<br/>" + items + " · " + money(o.total) + "</span></div>" +
+          '<select data-oid="' + o.id + '" class="kit-status" style="padding:8px;border-radius:10px;border:1px solid #e6e0d6">' +
+          opts + "</select></div>"
+        );
+      }).join("");
+      list.querySelectorAll(".kit-status").forEach(function (sel) {
+        sel.onchange = async function () {
+          await fetch("/api/orders?slug=" + encodeURIComponent(slug), {
+            method: "PATCH",
+            headers: authHeaders(),
+            body: JSON.stringify({ id: sel.getAttribute("data-oid"), status: sel.value }),
+          });
+        };
+      });
+    } catch (e) {
+      list.innerHTML = '<p class="db-muted">' + (e.message || "Could not load orders") + "</p>";
+    }
+  }
+
+  const kitRefresh = document.getElementById("kitRefresh");
+  if (kitRefresh) kitRefresh.onclick = loadKitchenOrders;
 
   const logoutBtn = document.getElementById("dbLogout");
   if (logoutBtn) {
@@ -71,18 +126,12 @@
 
   function fillUrls() {
     if (!slug) return;
-    ["dbOrderUrl", "dbMenuUrl", "dbMenuUrl2"].forEach((id) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.textContent = id.indexOf("Menu") >= 0 || id.indexOf("menu") >= 0 ? "/m/" + slug : "/food/" + slug;
-      if (id === "dbOrderUrl") el.textContent = "/food/" + slug;
-      if (id === "dbMenuUrl" || id === "dbMenuUrl2") el.textContent = "/m/" + slug;
-    });
+    const ou = document.getElementById("dbOrderUrl"); if (ou) ou.textContent = "/food/" + slug;
+    const mu = document.getElementById("dbMenuUrl"); if (mu) mu.textContent = "/m/" + slug;
+    const mu2 = document.getElementById("dbMenuUrl2"); if (mu2) mu2.textContent = "/m/" + slug;
     const oo = document.getElementById("dbOpenOrder"); if (oo) oo.href = orderUrl();
     const om = document.getElementById("dbOpenMenu"); if (om) om.href = menuUrl();
     const om2 = document.getElementById("dbOpenMenu2"); if (om2) om2.href = menuUrl();
-    const sl = document.getElementById("dbStaffLink"); if (sl) sl.href = "/staff.html?slug=" + encodeURIComponent(slug);
-    const gk = document.getElementById("dbGoKitchen"); if (gk) gk.href = "/staff.html?slug=" + encodeURIComponent(slug);
   }
 
   function setPreview() {
@@ -236,13 +285,11 @@
   if (qrOrderDl) qrOrderDl.onclick = () => dlCanvas("qrOrderCanvas", slug + "-ordering-qr.png");
 
   const planCta = document.getElementById("planCta");
-  if (planCta) planCta.onclick = () => alert("Paystack subscription will open here after you activate billing.");
+  if (planCta) planCta.onclick = () => alert("Paystack subscription will open here after billing is activated.");
 
-  // —— Create restaurant (only when logged in as owner, no site yet) ——
   async function createRestaurant(e) {
     if (e) e.preventDefault();
     if (!ownerToken) {
-      alert("Sign up or log in as owner first");
       location.href = "/signup";
       return;
     }
@@ -262,18 +309,8 @@
     try {
       const res = await fetch("/api/tenants", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + ownerToken,
-        },
-        body: JSON.stringify({
-          name,
-          slug: crSlug,
-          phone,
-          password: kitchenPass,
-          color_key: "charcoal",
-          tagline: "",
-        }),
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + ownerToken },
+        body: JSON.stringify({ name, slug: crSlug, phone, password: kitchenPass, color_key: "charcoal" }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not create page");
@@ -313,7 +350,6 @@
         if (form) form.onsubmit = createRestaurant;
         return true;
       }
-      // Prefer slug from URL, else first restaurant
       if (!slug || !list.find((r) => r.slug === slug)) {
         slug = list[0].slug;
         sessionStorage.setItem("leva_staff_slug", slug);
@@ -334,7 +370,6 @@
       }
     }
     if (!slug) {
-      // owner with no restaurant already handled by onboard
       if (ownerToken) return;
       location.href = "/login";
       return;
@@ -355,9 +390,6 @@
         if (document.getElementById("edColorKey")) document.getElementById("edColorKey").value = ck;
         buildColors(ck);
         setPreview();
-        if (tenant.paid_until && document.getElementById("planUntil")) {
-          document.getElementById("planUntil").textContent = "Paid until: " + tenant.paid_until;
-        }
       }
     } catch {
       buildColors("charcoal");
