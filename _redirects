@@ -1,13 +1,12 @@
 # Marketing home
 /                 /home.html   200
 
-# Staff central login (SPA-style paths)
+# Auth + app (features live behind login)
 /login            /login.html  200
+/signup           /signup.html 200
+/join             /signup.html 200
 /staff            /staff.html  200
 /dashboard        /dashboard.html  200
 
-# /food/* → functions/food/[[slug]].js (ordering page)
-# /m/* → functions/m/[[slug]].js (QR digital menu — browse only)
-
-# Optional legacy alias
+# /food/* ordering · /m/* QR digital menu (public guest pages only)
 /restaurant/*     /food/:splat  302

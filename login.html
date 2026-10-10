@@ -3,175 +3,145 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login | Leva Food</title>
-  <meta name="description" content="Log in to your Leva restaurant dashboard." />
+  <title>Log in · Leva</title>
   <meta name="theme-color" content="#1a4d3e" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bg: #f5f2eb; --surface: #faf8f4; --ink: #14120f; --muted: #6b6560;
-      --border: #e6e0d6; --accent: #1a4d3e;
-    }
+    :root { --bg:#f5f2eb; --ink:#14120f; --muted:#6b6560; --border:#e6e0d6; --accent:#1a4d3e; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--ink);
-      min-height: 100vh; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased;
-    }
+    body { font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
     a { color: inherit; text-decoration: none; }
-    .top {
-      max-width: 420px; margin: 0 auto; padding: 20px 18px 0; width: 100%;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .top img { height: 28px; width: auto; display: block; }
-    .top a.muted { font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+    .top { max-width: 420px; margin: 0 auto; padding: 20px 18px 0; width: 100%; display: flex; justify-content: space-between; align-items: center; }
+    .top img { height: 28px; }
+    .top a.muted { font-size: .85rem; font-weight: 600; color: var(--muted); }
     main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px 16px 40px; }
-    .card {
-      width: 100%; max-width: 400px; background: #fff; border: 1px solid var(--border);
-      border-radius: 20px; padding: 32px 24px; box-shadow: 0 12px 40px rgba(20,18,15,0.06);
-    }
-    .card h1 { font-size: 1.35rem; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.02em; }
-    .lead { color: var(--muted); font-size: 0.92rem; margin-bottom: 24px; line-height: 1.5; }
-    label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
-    .field { margin-bottom: 16px; }
-    .slug-row {
-      display: flex; align-items: center; border: 1px solid var(--border);
-      border-radius: 12px; overflow: hidden; background: #fff;
-    }
-    .slug-prefix {
-      padding: 12px 10px; background: #f3f0ea; font-size: 0.82rem; color: var(--muted);
-      white-space: nowrap; font-weight: 500;
-    }
-    input[type="text"], input[type="password"] {
-      width: 100%; border: 1px solid var(--border); border-radius: 12px;
-      padding: 12px 14px; font-size: 1rem; font-family: inherit; background: #fff;
-    }
-    .slug-row input { border: none; border-radius: 0; flex: 1; min-width: 0; }
-    input:focus { outline: 2px solid rgba(26,77,62,0.2); border-color: var(--accent); }
-    .pass-row { display: flex; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-    .pass-row input { border: none; border-radius: 0; flex: 1; }
-    .pass-toggle {
-      border: none; background: #f3f0ea; padding: 12px 14px; font-weight: 600;
-      font-size: 0.8rem; cursor: pointer; font-family: inherit; color: var(--ink);
-    }
-    .dest {
-      display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;
-    }
-    .dest label.opt {
-      display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--border);
-      border-radius: 12px; padding: 12px; cursor: pointer; font-size: 0.88rem; font-weight: 500;
-    }
-    .dest label.opt:has(input:checked) { border-color: var(--ink); background: #f9fafb; }
-    .dest strong { display: block; }
-    .dest span { color: var(--muted); font-size: 0.8rem; font-weight: 400; }
-    .btn {
-      width: 100%; margin-top: 8px; background: var(--accent); color: #fff; border: none;
-      border-radius: 999px; padding: 14px 18px; font-weight: 700; font-size: 0.95rem;
-      cursor: pointer; font-family: inherit;
-    }
-    .btn:hover { background: #143d32; }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    .error { color: #b91c1c; font-size: 0.88rem; margin-top: 14px; text-align: center; display: none; }
-    .hint { margin-top: 20px; font-size: 0.82rem; color: var(--muted); text-align: center; line-height: 1.5; }
+    .card { width: 100%; max-width: 400px; background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 32px 24px; box-shadow: 0 12px 40px rgba(0,0,0,.06); }
+    h1 { font-size: 1.35rem; font-weight: 700; margin-bottom: 6px; }
+    .lead { color: var(--muted); font-size: .92rem; margin-bottom: 20px; line-height: 1.5; }
+    label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: 6px; }
+    .field { margin-bottom: 14px; }
+    input { width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; font-size: 1rem; font-family: inherit; }
+    .tabs { display: flex; gap: 6px; margin-bottom: 18px; }
+    .tabs button { flex: 1; border: 1px solid var(--border); background: #fff; border-radius: 10px; padding: 10px; font-weight: 600; font-size: .8rem; cursor: pointer; font-family: inherit; color: var(--muted); }
+    .tabs button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .panel { display: none; }
+    .panel.on { display: block; }
+    .btn { width: 100%; margin-top: 8px; background: var(--accent); color: #fff; border: none; border-radius: 999px; padding: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .btn:disabled { opacity: .6; }
+    .error { color: #b91c1c; font-size: .88rem; margin-top: 12px; text-align: center; display: none; }
+    .hint { margin-top: 18px; font-size: .82rem; color: var(--muted); text-align: center; }
     .hint a { color: var(--accent); font-weight: 600; }
+    .slug-row { display: flex; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .slug-row span { padding: 12px 10px; background: #f3f0ea; font-size: .8rem; color: var(--muted); }
+    .slug-row input { border: none; border-radius: 0; }
   </style>
 </head>
 <body>
   <div class="top">
     <a href="/"><img src="https://i.ibb.co/1GSR9HNV/1000622428-removebg-preview.png" alt="Leva" /></a>
-    <a class="muted" href="/join">Create a page</a>
+    <a class="muted" href="/signup">Sign up</a>
   </div>
   <main>
     <div class="card">
-      <h1>Restaurant login</h1>
-      <p class="lead">Enter your page link and password. Open the owner dashboard to edit your page, or kitchen for live orders.</p>
-      <form id="loginForm" novalidate>
+      <h1>Log in</h1>
+      <p class="lead">Owners open the dashboard. Kitchen staff can still use the restaurant link + password.</p>
+      <div class="tabs">
+        <button type="button" class="on" data-tab="owner">Owner dashboard</button>
+        <button type="button" data-tab="kitchen">Kitchen staff</button>
+      </div>
+      <form id="ownerForm" class="panel on">
         <div class="field">
-          <label for="slug">Your page link</label>
-          <div class="slug-row">
-            <span class="slug-prefix">/food/</span>
-            <input type="text" id="slug" name="slug" required placeholder="your-kitchen" autocomplete="username" autocapitalize="off" />
-          </div>
+          <label for="email">Email</label>
+          <input id="email" type="email" required autocomplete="email" placeholder="you@restaurant.com" />
         </div>
         <div class="field">
           <label for="password">Password</label>
-          <div class="pass-row">
-            <input type="password" id="password" name="password" required minlength="6" autocomplete="current-password" placeholder="Your password" />
-            <button type="button" class="pass-toggle" id="togglePass">Show</button>
+          <input id="password" type="password" required minlength="6" autocomplete="current-password" />
+        </div>
+        <button type="submit" class="btn" id="ownerBtn">Open dashboard</button>
+      </form>
+      <form id="kitchenForm" class="panel">
+        <div class="field">
+          <label for="slug">Restaurant link</label>
+          <div class="slug-row">
+            <span>/food/</span>
+            <input id="slug" type="text" placeholder="your-kitchen" autocomplete="username" />
           </div>
         </div>
         <div class="field">
-          <label>Open</label>
-          <div class="dest">
-            <label class="opt"><input type="radio" name="dest" value="dashboard" checked /> <span><strong>Owner dashboard</strong><span>Edit ordering page, QR menu, plan</span></span></label>
-            <label class="opt"><input type="radio" name="dest" value="staff" /> <span><strong>Kitchen / orders</strong><span>Live tickets &amp; availability</span></span></label>
-          </div>
+          <label for="kpass">Kitchen password</label>
+          <input id="kpass" type="password" minlength="6" autocomplete="current-password" />
         </div>
-        <button type="submit" class="btn" id="loginBtn">Continue</button>
-        <p class="error" id="loginError"></p>
+        <button type="submit" class="btn" id="kitchenBtn">Open kitchen</button>
       </form>
-      <p class="hint">
-        New restaurant? <a href="/join">Create your page</a>
-      </p>
+      <p class="error" id="err"></p>
+      <p class="hint">No account yet? <a href="/signup">Sign up</a> — then create your page from the dashboard.</p>
     </div>
   </main>
   <script>
-    (function () {
-      var params = new URLSearchParams(location.search);
-      var pre = (params.get("slug") || "").toLowerCase().trim();
-      if (pre) document.getElementById("slug").value = pre;
-      if (params.get("to") === "staff") {
-        var r = document.querySelector('input[name="dest"][value="staff"]');
-        if (r) r.checked = true;
+    document.querySelectorAll(".tabs button").forEach(function (b) {
+      b.onclick = function () {
+        document.querySelectorAll(".tabs button").forEach(function (x) { x.classList.remove("on"); });
+        b.classList.add("on");
+        document.getElementById("ownerForm").classList.toggle("on", b.dataset.tab === "owner");
+        document.getElementById("kitchenForm").classList.toggle("on", b.dataset.tab === "kitchen");
+      };
+    });
+    function showErr(m) {
+      var e = document.getElementById("err");
+      e.textContent = m;
+      e.style.display = "block";
+    }
+    document.getElementById("ownerForm").onsubmit = async function (e) {
+      e.preventDefault();
+      var btn = document.getElementById("ownerBtn");
+      btn.disabled = true;
+      try {
+        var res = await fetch("/api/auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: document.getElementById("email").value.trim(),
+            password: document.getElementById("password").value,
+          }),
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Login failed");
+        sessionStorage.setItem("leva_owner_token", data.token);
+        sessionStorage.setItem("leva_owner_email", data.account.email);
+        sessionStorage.setItem("leva_owner_name", data.account.name || "");
+        sessionStorage.setItem("leva_owner_id", data.account.id || "");
+        if (data.restaurants && data.restaurants[0]) {
+          sessionStorage.setItem("leva_staff_slug", data.restaurants[0].slug);
+        }
+        location.href = "/dashboard";
+      } catch (ex) {
+        showErr(ex.message);
+        btn.disabled = false;
       }
-
-      document.getElementById("togglePass").onclick = function () {
-        var input = document.getElementById("password");
-        var show = input.type === "password";
-        input.type = show ? "text" : "password";
-        this.textContent = show ? "Hide" : "Show";
-      };
-
-      document.getElementById("loginForm").onsubmit = async function (e) {
-        e.preventDefault();
-        var slug = document.getElementById("slug").value.toLowerCase().trim().replace(/[^a-z0-9-]/g, "");
-        var password = document.getElementById("password").value;
-        var dest = (document.querySelector('input[name="dest"]:checked') || {}).value || "dashboard";
-        var err = document.getElementById("loginError");
-        var btn = document.getElementById("loginBtn");
-        err.style.display = "none";
-        if (!slug || !password) {
-          err.textContent = "Enter your link and password";
-          err.style.display = "block";
-          return;
-        }
-        btn.disabled = true;
-        btn.textContent = "Checking…";
-        try {
-          var res = await fetch("/api/auth", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ password: password, slug: slug }),
-          });
-          var data = await res.json();
-          if (!res.ok) throw new Error(data.error || "Incorrect password");
-          var token = data.token;
-          var scope = (data.slug || slug).toLowerCase();
-          sessionStorage.setItem("leva_staff_token_" + scope, token);
-          sessionStorage.setItem("leva_staff_token", token);
-          sessionStorage.setItem("leva_staff_slug", scope);
-          if (dest === "staff") {
-            location.href = "/staff.html?slug=" + encodeURIComponent(scope);
-          } else {
-            location.href = "/dashboard?slug=" + encodeURIComponent(scope);
-          }
-        } catch (ex) {
-          err.textContent = ex.message || "Login failed";
-          err.style.display = "block";
-          btn.disabled = false;
-          btn.textContent = "Continue";
-        }
-      };
-    })();
+    };
+    document.getElementById("kitchenForm").onsubmit = async function (e) {
+      e.preventDefault();
+      var btn = document.getElementById("kitchenBtn");
+      btn.disabled = true;
+      var slug = document.getElementById("slug").value.toLowerCase().trim().replace(/[^a-z0-9-]/g, "");
+      try {
+        var res = await fetch("/api/auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug: slug, password: document.getElementById("kpass").value }),
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Login failed");
+        sessionStorage.setItem("leva_staff_token_" + data.slug, data.token);
+        sessionStorage.setItem("leva_staff_token", data.token);
+        sessionStorage.setItem("leva_staff_slug", data.slug);
+        location.href = "/staff.html?slug=" + encodeURIComponent(data.slug);
+      } catch (ex) {
+        showErr(ex.message);
+        btn.disabled = false;
+      }
+    };
   </script>
 </body>
 </html>

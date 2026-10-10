@@ -3,115 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Join Leva — Create your ordering page</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/css/join.css" />
-  <style>
-    .pay-options{display:flex;flex-direction:column;gap:8px}
-    .pay-opt{display:flex;gap:10px;align-items:flex-start;border:1px solid #e8e6e1;border-radius:12px;padding:12px;cursor:pointer;font-size:0.88rem}
-    .pay-opt:has(input:checked){border-color:#0a0a0a;background:#f9fafb}
-    .pay-opt strong{display:block}
-    .password-row{display:flex;border:1px solid #e8e6e1;border-radius:12px;overflow:hidden}
-    .password-row input{border:none;flex:1;padding:12px 14px}
-    .pass-toggle{border:none;background:#f3f4f6;padding:12px 14px;font-weight:600;font-size:0.8rem;cursor:pointer}
-  </style>
+  <title>Join Leva</title>
+  <meta http-equiv="refresh" content="0;url=/signup" />
+  <script>location.replace("/signup");</script>
 </head>
-<body class="join-body">
-  <header class="join-header">
-    <a href="/" class="join-logo"><img src="https://i.ibb.co/1GSR9HNV/1000622428-removebg-preview.png" alt="Leva" height="28" /></a>
-    <span class="join-header-note">For restaurants</span>
-  </header>
-  <main class="join-main">
-    <div class="join-card">
-      <h1>Create your page on Leva</h1>
-      <p class="join-lead">A few details. You get a link to share with customers.</p>
-      <div class="join-steps" id="stepDots">
-        <span class="dot active" data-step="1"></span>
-        <span class="dot" data-step="2"></span>
-        <span class="dot" data-step="3"></span>
-        <span class="dot" data-step="4"></span>
-      </div>
-      <form id="joinForm" novalidate>
-        <div class="join-panel active" data-panel="1">
-          <h2>Your restaurant</h2>
-          <div class="form-group"><label for="bizName">Business name *</label><input id="bizName" required placeholder="e.g. Success Kitchen" /></div>
-          <div class="form-group"><label for="slug">Your link *</label>
-            <div class="slug-row"><span class="slug-prefix">/food/</span><input id="slug" required placeholder="success-kitchen" /></div>
-          </div>
-          <div class="form-group"><label for="tagline">Tagline (optional)</label><input id="tagline" maxlength="80" placeholder="Fresh meals, fast delivery" /></div>
-          <button type="button" class="checkout-btn" id="next1">Continue</button>
-        </div>
-
-        <div class="join-panel" data-panel="2">
-          <h2>Contact and location</h2>
-          <div class="form-group"><label for="phone">Phone *</label><input id="phone" type="tel" required placeholder="0810 000 0000" /></div>
-          <div class="form-group"><label for="whatsapp">WhatsApp (if different)</label><input id="whatsapp" type="tel" /></div>
-          <div class="form-group"><label for="stateSelect">State *</label>
-            <select id="stateSelect" required><option value="">Select state</option></select>
-          </div>
-          <div class="form-group"><label for="lgaSelect">LGA / area *</label>
-            <select id="lgaSelect" required><option value="">Select LGA</option></select>
-            <p class="hint">Choose from the list. You can refine delivery zones later in staff tools.</p>
-          </div>
-          <input type="hidden" id="location" />
-          <div class="form-group"><label for="ownerEmail">Email *</label><input id="ownerEmail" type="email" required autocomplete="email" /></div>
-          <div class="form-group"><label>How customers pay *</label>
-            <div class="pay-options">
-              <label class="pay-opt"><input type="radio" name="payMode" value="paystack" checked /> <span><strong>Paystack</strong> Card and bank transfer</span></label>
-              <label class="pay-opt"><input type="radio" name="payMode" value="bank_receipt" /> <span><strong>Bank transfer</strong> Customer uploads receipt</span></label>
-              <label class="pay-opt"><input type="radio" name="payMode" value="both" /> <span><strong>Both</strong> Paystack and bank receipt</span></label>
-              <label class="pay-opt"><input type="radio" name="payMode" value="paystack_pod" /> <span><strong>Paystack + pay on delivery</strong></span></label>
-            </div>
-          </div>
-          <div class="form-group"><label for="ownerPassword">Staff password *</label>
-            <div class="password-row"><input type="password" id="ownerPassword" minlength="6" autocomplete="new-password" /><button type="button" class="pass-toggle" id="togglePass">Show</button></div>
-          </div>
-          <div class="form-group"><label for="ownerPasswordConfirm">Confirm password *</label>
-            <div class="password-row"><input type="password" id="ownerPasswordConfirm" minlength="6" autocomplete="new-password" /><button type="button" class="pass-toggle" id="togglePass2">Show</button></div>
-          </div>
-          <div class="join-nav"><button type="button" class="btn-secondary" id="back2">Back</button><button type="button" class="checkout-btn" id="next2">Continue</button></div>
-        </div>
-
-        <div class="join-panel" data-panel="3">
-          <h2>Look and logo</h2>
-          <p class="hint" style="margin-bottom:12px">Pick a brand colour. Upload a clear square logo (PNG/JPG, max 2MB).</p>
-          <div class="color-grid" id="colorGrid"></div>
-          <input type="hidden" id="colorKey" value="charcoal" />
-          <div class="form-group" style="margin-top:16px"><label for="logoFile">Logo (optional)</label>
-            <input type="file" id="logoFile" accept="image/png,image/jpeg,image/webp" />
-            <p class="hint" id="logoStatus">We place it in a square frame so it stays sharp.</p>
-            <img id="logoPreview" alt="" style="display:none;max-height:56px;margin-top:10px" />
-          </div>
-          <div class="join-nav"><button type="button" class="btn-secondary" id="back3">Back</button><button type="button" class="checkout-btn" id="next3">Continue</button></div>
-        </div>
-
-        <div class="join-panel" data-panel="4">
-          <h2>Your menu</h2>
-          <p class="hint" style="margin-bottom:12px">Add at least one dish. You can add more later in staff tools.</p>
-          <div class="form-group"><label for="itemName">Item name</label><input id="itemName" placeholder="Jollof Rice" /></div>
-          <div class="form-group"><label for="itemPrice">Price (₦)</label><input id="itemPrice" type="number" min="0" step="50" placeholder="1500" /></div>
-          <div class="form-group"><label for="itemCategory">Category</label><select id="itemCategory"></select></div>
-          <div class="form-group"><label for="itemImage">Photo (optional)</label><input id="itemImage" type="file" accept="image/*" /></div>
-          <button type="button" class="btn-secondary" id="addMenuItem" style="width:100%;margin-bottom:14px">Add item</button>
-          <div id="menuDraftList"></div>
-          <div class="join-nav" style="margin-top:16px"><button type="button" class="btn-secondary" id="back4">Back</button><button type="submit" class="checkout-btn" id="submitJoin">Create my page</button></div>
-          <p id="joinError" class="join-error" style="display:none"></p>
-        </div>
-
-        <div class="join-panel" data-panel="done">
-          <div class="join-success">
-            <div class="success-icon">✓</div>
-            <h2>Your page is ready</h2>
-            <p>Share this link:</p>
-            <div class="link-box"><a id="liveLink" href="#" target="_blank"></a><button type="button" class="copy-btn" id="copyLink">Copy</button></div>
-            <p class="hint" id="staffHint">Staff login uses the password you set.</p>
-            <a class="checkout-btn" id="openPageBtn" href="#" style="display:inline-block;text-align:center;margin-top:12px;text-decoration:none">Open my page</a>
-          </div>
-        </div>
-      </form>
-    </div>
-    <p class="join-powered"><span>Powered by</span><a href="/"><img src="https://i.ibb.co/1GSR9HNV/1000622428-removebg-preview.png" alt="Leva" height="26" /></a></p>
-  </main>
-  <script src="/js/join.js"></script>
+<body>
+  <p style="font-family:system-ui;padding:2rem;text-align:center">
+    Creating a page requires an account.
+    <a href="/signup">Sign up</a> or <a href="/login">log in</a> to your dashboard.
+  </p>
 </body>
 </html>
