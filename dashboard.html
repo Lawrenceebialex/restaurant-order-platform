@@ -26,7 +26,6 @@
         <span class="db-rest-name" id="dbRestName">—</span>
       </div>
       <div class="db-top-actions">
-        <a class="db-link" id="dbStaffLink" href="/staff">Kitchen orders</a>
         <button type="button" class="db-btn ghost" id="dbLogout">Log out</button>
       </div>
     </header>
@@ -41,7 +40,7 @@
             <div style="display:flex;align-items:center;gap:6px"><span class="db-muted">/food/</span><input id="crSlug" required placeholder="success-kitchen" style="flex:1" /></div>
           </div>
           <div class="db-field"><label for="crPhone">Phone *</label><input id="crPhone" type="tel" required /></div>
-          <div class="db-field"><label for="crPass">Kitchen password * (for staff)</label><input id="crPass" type="password" minlength="6" required /></div>
+          <div class="db-field"><label for="crPass">Kitchen password * (optional staff login)</label><input id="crPass" type="password" minlength="6" required /></div>
           <button type="submit" class="db-btn primary" id="crSubmit" style="width:100%">Create ordering page</button>
           <p id="crErr" class="db-msg err" style="display:none"></p>
         </form>
@@ -51,6 +50,7 @@
     <div id="dbMainPanels">
     <nav class="db-tabs" id="dbTabs">
       <button type="button" class="db-tab active" data-tab="overview">Overview</button>
+      <button type="button" class="db-tab" data-tab="kitchen">Kitchen / orders</button>
       <button type="button" class="db-tab" data-tab="ordering">Ordering page</button>
       <button type="button" class="db-tab" data-tab="menu">Menu items</button>
       <button type="button" class="db-tab" data-tab="qrmenu">QR digital menu</button>
@@ -60,7 +60,7 @@
     <main class="db-main">
       <section class="db-panel active" data-panel="overview">
         <h2>Overview</h2>
-        <p class="db-lead">Two products. Ordering takes payments. QR menu replaces paper menus.</p>
+        <p class="db-lead">Your live links. Everything else is in the tabs above.</p>
         <div class="db-cards-2">
           <article class="db-card">
             <span class="db-badge order">Ordering page</span>
@@ -81,15 +81,16 @@
             </div>
           </article>
         </div>
-        <div class="db-card" style="margin-top:16px">
-          <h3>Quick links</h3>
-          <div class="db-quick">
-            <a id="dbGoKitchen" href="/staff">Kitchen / orders</a>
-            <button type="button" data-tab-jump="ordering">Edit branding</button>
-            <button type="button" data-tab-jump="qrmenu">QR codes</button>
-            <button type="button" data-tab-jump="plan">Plan</button>
-          </div>
+      </section>
+
+      <section class="db-panel" data-panel="kitchen">
+        <h2>Kitchen / orders</h2>
+        <p class="db-lead">Live orders for this restaurant — managed here in your dashboard (not a separate app).</p>
+        <div class="db-card" style="margin-bottom:14px">
+          <button type="button" class="db-btn sm" id="kitRefresh">Refresh</button>
+          <span class="db-muted" id="kitMeta" style="margin-left:10px"></span>
         </div>
+        <div id="kitList" class="db-mi-list"><p class="db-muted">Open this tab to load orders.</p></div>
       </section>
 
       <section class="db-panel" data-panel="ordering">
@@ -111,13 +112,12 @@
             <div class="db-phone">
               <div class="db-phone-bar">
                 <div class="db-phone-logo" id="pvLogo">?</div>
-                <div><strong id="pvName">Restaurant</strong><span id="pvOpen">Open · via Leva</span></div>
+                <div><strong id="pvName">Restaurant</strong><span>Open · via Leva</span></div>
               </div>
               <div class="db-phone-body">
                 <p class="db-phone-tag" id="pvTag">Order for pickup or delivery</p>
                 <div class="db-phone-btns"><span class="on" id="pvBtn">Pickup</span><span>Delivery</span></div>
                 <div class="db-phone-item"><span>Jollof Rice</span><span>₦1,500</span></div>
-                <div class="db-phone-item"><span>Egusi Soup</span><span>₦2,000</span></div>
               </div>
             </div>
           </div>
@@ -126,7 +126,6 @@
 
       <section class="db-panel" data-panel="menu">
         <h2>Menu items</h2>
-        <p class="db-lead">Shared by ordering page and QR digital menu.</p>
         <div class="db-add-row">
           <input id="miName" placeholder="Item name" />
           <input id="miPrice" type="number" min="0" step="50" placeholder="Price ₦" />
@@ -138,7 +137,7 @@
 
       <section class="db-panel" data-panel="qrmenu">
         <h2>QR digital menu</h2>
-        <p class="db-lead"><strong>Not the same as ordering.</strong> Browse-only menu for tables.</p>
+        <p class="db-lead">Browse-only menu for tables — not the same as ordering.</p>
         <div class="db-cards-2">
           <article class="db-card">
             <h3>Digital menu link</h3>
@@ -153,23 +152,22 @@
         </div>
         <div class="db-card" style="margin-top:16px">
           <h3>QR for ordering page</h3>
-          <p class="db-muted">Different code — sends people to order online.</p>
           <canvas id="qrOrderCanvas" width="180" height="180"></canvas>
           <button type="button" class="db-btn sm" id="qrOrderDl" style="margin-top:10px">Download ordering QR</button>
         </div>
       </section>
 
       <section class="db-panel" data-panel="plan">
-        <h2>Plan &amp; subscription</h2>
+        <h2>Plan</h2>
         <div class="db-card plan-card">
           <span class="db-badge order" id="planStatus">Trial / unpaid</span>
           <h3>Leva Restaurant · ₦30k/mo</h3>
-          <p class="db-muted" id="planUntil">Subscribe from this dashboard when ready.</p>
+          <p class="db-muted" id="planUntil">Subscribe when ready.</p>
           <button type="button" class="db-btn primary" id="planCta">Subscribe with Paystack</button>
         </div>
       </section>
     </main>
-    </div><!-- dbMainPanels -->
+    </div>
   </div>
   <script src="/js/dashboard.js"></script>
 </body>
