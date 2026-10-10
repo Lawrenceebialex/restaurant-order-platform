@@ -2,9 +2,16 @@ import {
   cors,
   json,
   verifyStaffToken,
+  verifyOwnerToken,
   rateLimit,
   clientIp,
 } from "./_utils.js";
+
+async function canManageOrders(request, env, slug) {
+  if (await verifyStaffToken(request, env, slug || undefined)) return true;
+  if (await verifyOwnerToken(request, env)) return true;
+  return false;
+}
 
 export async function onRequestOptions() {
   return new Response(null, { headers: cors });
@@ -16,7 +23,6 @@ export async function onRequestGet(context) {
 
   const url = new URL(request.url);
   const id = url.searchParams.get("id");
-  const phone = url.searchParams.get("phone");
   const q = (url.searchParams.get("q") || "").trim();
   const publicTrack = url.searchParams.get("track");
   const status = url.searchParams.get("status");
@@ -26,18 +32,16 @@ export async function onRequestGet(context) {
     const ip = clientIp(request);
     const ok = await rateLimit(env, `track:${ip}`, 30, 60);
     if (!ok) return json({ error: "Too many requests" }, 429);
-
     const track = publicTrack.trim();
     const rows = await env.DB.prepare(
       `SELECT * FROM orders WHERE id = ? OR phone LIKE ? ORDER BY created_at DESC LIMIT 10`
     )
       .bind(track, `%${track.replace(/\D/g, "")}%`)
       .all();
-
     return json({ orders: (rows.results || []).map(mapOrder) });
   }
 
-  const authed = await verifyStaffToken(request, env, slug || undefined);
+  const authed = await canManageOrders(request, env, slug);
   if (!authed) return json({ error: "Unauthorized" }, 401);
 
   if (id) {
@@ -119,7 +123,6 @@ export async function onRequestPost(context) {
       return json({ error: "name, phone, and items required" }, 400);
     }
 
-    // Try insert with new columns; fallback if columns missing
     try {
       await env.DB.prepare(
         `INSERT INTO orders (
@@ -154,7 +157,6 @@ export async function onRequestPost(context) {
       tenantSlug, receiptUrl,
     };
     const tg = await notifyTelegram(env, orderPayload);
-
     return json({ ok: true, id, telegram: tg });
   } catch (e) {
     return json({ error: e.message || "Failed to save order" }, 500);
@@ -167,7 +169,7 @@ export async function onRequestPatch(context) {
 
   const url = new URL(request.url);
   const slug = (url.searchParams.get("slug") || "").toLowerCase().trim();
-  const authed = await verifyStaffToken(request, env, slug || undefined);
+  const authed = await canManageOrders(request, env, slug);
   if (!authed) return json({ error: "Unauthorized" }, 401);
 
   try {
@@ -205,14 +207,9 @@ async function resolveTelegramChatId(env, tenantSlug) {
 async function notifyTelegram(env, order) {
   const token = String(env.TELEGRAM_BOT_TOKEN || "").replace(/\s+/g, "").trim();
   const chatId = await resolveTelegramChatId(env, order.tenantSlug);
-  if (!token || !chatId) {
-    return { sent: false, reason: "missing_env_or_chat" };
-  }
+  if (!token || !chatId) return { sent: false, reason: "missing_env_or_chat" };
 
-  const items = (order.items || [])
-    .map((i) => `- ${i.name} x${i.qty}`)
-    .join("\n");
-
+  const items = (order.items || []).map((i) => `- ${i.name} x${i.qty}`).join("\n");
   const payLabel =
     order.paymentMethod === "paystack"
       ? order.paymentStatus || "Paystack"
