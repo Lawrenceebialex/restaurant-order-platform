@@ -19,17 +19,29 @@ export async function sha256(text) {
     .join("");
 }
 
+export async function hashPassword(password) {
+  const data = new TextEncoder().encode(String(password) + "leva-salt-v1");
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return [...new Uint8Array(buf)]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function authDays() {
+  return [0, -1].map((offset) => {
+    const d = new Date();
+    d.setUTCDate(d.getUTCDate() + offset);
+    return d.toISOString().slice(0, 10);
+  });
+}
+
 export async function verifyStaffToken(request, env, expectedSlug) {
   const auth = request.headers.get("Authorization") || "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
   if (!token) return false;
 
   const secret = env.STAFF_TOKEN_SECRET || env.STAFF_PASSWORD || "leva-staff";
-  const days = [0, -1].map((offset) => {
-    const d = new Date();
-    d.setUTCDate(d.getUTCDate() + offset);
-    return d.toISOString().slice(0, 10);
-  });
+  const days = authDays();
 
   const scopes = [];
   if (expectedSlug) scopes.push(String(expectedSlug).toLowerCase());
@@ -51,6 +63,36 @@ export async function verifyStaffToken(request, env, expectedSlug) {
     if (token === legacy) return true;
   }
   return false;
+}
+
+/** Owner account token — scope is lowercased email */
+export async function verifyOwnerToken(request, env) {
+  const auth = request.headers.get("Authorization") || "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  if (!token) return null;
+
+  const secret = env.STAFF_TOKEN_SECRET || env.STAFF_PASSWORD || "leva-staff";
+  const days = authDays();
+
+  // Token embeds email hash path: we look up accounts and recompute
+  if (!env.DB) return null;
+  try {
+    const { results } = await env.DB.prepare(
+      `SELECT id, email, name FROM accounts LIMIT 500`
+    ).all();
+    for (const row of results || []) {
+      const email = String(row.email || "").toLowerCase();
+      for (const day of days) {
+        const expected = await sha256(`${secret}:${day}:owner:${email}`);
+        if (token === expected) {
+          return { id: row.id, email, name: row.name || "" };
+        }
+      }
+    }
+  } catch {
+    return null;
+  }
+  return null;
 }
 
 export async function rateLimit(env, key, limit, windowSeconds) {
