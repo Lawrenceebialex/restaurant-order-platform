@@ -1,12 +1,9 @@
-# Marketing home
-/                 /home.html   200
+# Marketing home only — do NOT rewrite /login /signup /dashboard /staff
+# Cloudflare already maps file.html → /file and loops if we also rewrite.
+/			/home.html	200
 
-# Auth + app (features live behind login)
-/login            /login.html  200
-/signup           /signup.html 200
-/join             /signup.html 200
-/staff            /staff.html  200
-/dashboard        /dashboard.html  200
+# Guest storefronts (functions handle these)
+# /food/* ordering
+# /m/* QR digital menu
 
-# /food/* ordering · /m/* QR digital menu (public guest pages only)
-/restaurant/*     /food/:splat  302
+/restaurant/*	/food/:splat	302
