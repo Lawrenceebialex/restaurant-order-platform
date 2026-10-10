@@ -12,10 +12,10 @@
 <body class="db-body">
   <div id="dbGate" class="db-gate">
     <div class="db-gate-card">
-      <h1>Owner dashboard</h1>
-      <p>Sign in with the same link and password you use for staff.</p>
-      <a class="db-btn primary" href="/login">Go to login</a>
-      <p class="db-muted" style="margin-top:14px"><a href="/join">Create a new restaurant</a></p>
+      <h1>Your dashboard</h1>
+      <p>Sign up or log in to create ordering pages and QR menus. Features are only available after you sign in.</p>
+      <a class="db-btn primary" href="/login">Log in</a>
+      <p class="db-muted" style="margin-top:14px"><a href="/signup">Create an account</a></p>
     </div>
   </div>
 
@@ -31,6 +31,24 @@
       </div>
     </header>
 
+    <div id="dbOnboard" class="db-main" style="display:none">
+      <section class="db-card" style="max-width:480px;margin:24px auto">
+        <h2 style="font-size:1.25rem;font-weight:800;margin-bottom:8px">Create your restaurant on Leva</h2>
+        <p class="db-muted" style="margin-bottom:16px">This happens inside your account. You get an ordering URL and can add a QR digital menu next.</p>
+        <form id="crForm">
+          <div class="db-field"><label for="crName">Restaurant name *</label><input id="crName" required placeholder="Success Kitchen" /></div>
+          <div class="db-field"><label for="crSlug">Ordering link *</label>
+            <div style="display:flex;align-items:center;gap:6px"><span class="db-muted">/food/</span><input id="crSlug" required placeholder="success-kitchen" style="flex:1" /></div>
+          </div>
+          <div class="db-field"><label for="crPhone">Phone *</label><input id="crPhone" type="tel" required /></div>
+          <div class="db-field"><label for="crPass">Kitchen password * (for staff)</label><input id="crPass" type="password" minlength="6" required /></div>
+          <button type="submit" class="db-btn primary" id="crSubmit" style="width:100%">Create ordering page</button>
+          <p id="crErr" class="db-msg err" style="display:none"></p>
+        </form>
+      </section>
+    </div>
+
+    <div id="dbMainPanels">
     <nav class="db-tabs" id="dbTabs">
       <button type="button" class="db-tab active" data-tab="overview">Overview</button>
       <button type="button" class="db-tab" data-tab="ordering">Ordering page</button>
@@ -40,15 +58,13 @@
     </nav>
 
     <main class="db-main">
-      <!-- OVERVIEW -->
       <section class="db-panel active" data-panel="overview">
         <h2>Overview</h2>
-        <p class="db-lead">Two different products. Ordering takes payments. QR menu replaces paper menus.</p>
+        <p class="db-lead">Two products. Ordering takes payments. QR menu replaces paper menus.</p>
         <div class="db-cards-2">
           <article class="db-card">
             <span class="db-badge order">Ordering page</span>
             <h3>Customers order food</h3>
-            <p class="db-muted">Cart, checkout, pickup or delivery. Share this link on WhatsApp and Instagram.</p>
             <div class="db-url-row">
               <code id="dbOrderUrl">/food/—</code>
               <button type="button" class="db-btn sm" data-copy="order">Copy</button>
@@ -58,7 +74,6 @@
           <article class="db-card">
             <span class="db-badge menu">QR digital menu</span>
             <h3>Browse-only menu</h3>
-            <p class="db-muted">Guests scan a table QR and see prices — no cart. Replaces printed menus.</p>
             <div class="db-url-row">
               <code id="dbMenuUrl">/m/—</code>
               <button type="button" class="db-btn sm" data-copy="menu">Copy</button>
@@ -69,144 +84,92 @@
         <div class="db-card" style="margin-top:16px">
           <h3>Quick links</h3>
           <div class="db-quick">
-            <a id="dbGoKitchen" href="/staff">Kitchen / orders dashboard</a>
-            <button type="button" data-tab-jump="ordering">Edit branding &amp; live preview</button>
-            <button type="button" data-tab-jump="qrmenu">Download QR codes</button>
-            <button type="button" data-tab-jump="plan">Subscription &amp; plan</button>
+            <a id="dbGoKitchen" href="/staff">Kitchen / orders</a>
+            <button type="button" data-tab-jump="ordering">Edit branding</button>
+            <button type="button" data-tab-jump="qrmenu">QR codes</button>
+            <button type="button" data-tab-jump="plan">Plan</button>
           </div>
         </div>
       </section>
 
-      <!-- ORDERING PAGE EDITOR -->
       <section class="db-panel" data-panel="ordering">
         <h2>Ordering page</h2>
-        <p class="db-lead">This is the <strong>order URL</strong> (<code>/food/…</code>). Edit how it looks — preview updates live.</p>
+        <p class="db-lead">Edit how <code>/food/…</code> looks — preview updates live.</p>
         <div class="db-editor-grid">
           <div class="db-editor-form">
-            <div class="db-field">
-              <label for="edName">Restaurant name</label>
-              <input id="edName" type="text" />
-            </div>
-            <div class="db-field">
-              <label for="edTagline">Tagline</label>
-              <input id="edTagline" type="text" maxlength="80" />
-            </div>
-            <div class="db-field">
-              <label for="edPhone">Phone</label>
-              <input id="edPhone" type="tel" />
-            </div>
-            <div class="db-field">
-              <label for="edLoc">Location text</label>
-              <input id="edLoc" type="text" />
-            </div>
-            <div class="db-field">
-              <label>Brand colour</label>
-              <div class="db-colors" id="edColors"></div>
-              <input type="hidden" id="edColorKey" value="charcoal" />
-            </div>
-            <div class="db-field">
-              <label for="edLogo">Logo URL (optional)</label>
-              <input id="edLogo" type="url" placeholder="https://…" />
-              <p class="db-hint">Paste an image link, or upload from join/staff later.</p>
-            </div>
+            <div class="db-field"><label for="edName">Restaurant name</label><input id="edName" type="text" /></div>
+            <div class="db-field"><label for="edTagline">Tagline</label><input id="edTagline" type="text" maxlength="80" /></div>
+            <div class="db-field"><label for="edPhone">Phone</label><input id="edPhone" type="tel" /></div>
+            <div class="db-field"><label for="edLoc">Location text</label><input id="edLoc" type="text" /></div>
+            <div class="db-field"><label>Brand colour</label><div class="db-colors" id="edColors"></div><input type="hidden" id="edColorKey" value="charcoal" /></div>
+            <div class="db-field"><label for="edLogo">Logo URL</label><input id="edLogo" type="url" placeholder="https://…" /></div>
             <button type="button" class="db-btn primary" id="edSave">Save ordering page</button>
             <p id="edMsg" class="db-msg" style="display:none"></p>
           </div>
           <div class="db-preview-wrap">
-            <p class="db-preview-label">Live preview · ordering page</p>
+            <p class="db-preview-label">Live preview</p>
             <div class="db-phone">
               <div class="db-phone-bar">
                 <div class="db-phone-logo" id="pvLogo">?</div>
-                <div>
-                  <strong id="pvName">Restaurant</strong>
-                  <span id="pvOpen">Open · via Leva</span>
-                </div>
+                <div><strong id="pvName">Restaurant</strong><span id="pvOpen">Open · via Leva</span></div>
               </div>
               <div class="db-phone-body">
                 <p class="db-phone-tag" id="pvTag">Order for pickup or delivery</p>
-                <div class="db-phone-btns">
-                  <span class="on" id="pvBtn">Pickup</span>
-                  <span>Delivery</span>
-                </div>
-                <div class="db-phone-item"><span>Jollof Rice</span><span id="pvPrice">₦1,500</span></div>
+                <div class="db-phone-btns"><span class="on" id="pvBtn">Pickup</span><span>Delivery</span></div>
+                <div class="db-phone-item"><span>Jollof Rice</span><span>₦1,500</span></div>
                 <div class="db-phone-item"><span>Egusi Soup</span><span>₦2,000</span></div>
-                <div class="db-phone-item"><span>Coke</span><span>₦500</span></div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- MENU CRUD -->
       <section class="db-panel" data-panel="menu">
         <h2>Menu items</h2>
-        <p class="db-lead">Shared by both the ordering page and the QR digital menu. Photos are optional.</p>
+        <p class="db-lead">Shared by ordering page and QR digital menu.</p>
         <div class="db-add-row">
           <input id="miName" placeholder="Item name" />
           <input id="miPrice" type="number" min="0" step="50" placeholder="Price ₦" />
-          <select id="miCat">
-            <option>Rice</option><option>Swallow</option><option>Soup</option>
-            <option>Protein</option><option>Sides</option><option>Drinks</option>
-            <option>Pastries</option><option>Other</option>
-          </select>
+          <select id="miCat"><option>Rice</option><option>Swallow</option><option>Soup</option><option>Protein</option><option>Sides</option><option>Drinks</option><option>Other</option></select>
           <button type="button" class="db-btn primary" id="miAdd">Add</button>
         </div>
         <div id="miList" class="db-mi-list"></div>
       </section>
 
-      <!-- QR DIGITAL MENU -->
       <section class="db-panel" data-panel="qrmenu">
         <h2>QR digital menu</h2>
-        <p class="db-lead"><strong>Not the same as ordering.</strong> Guests scan this QR to <em>read</em> the menu (prices &amp; categories). No cart. Ideal for table tents instead of paper menus.</p>
+        <p class="db-lead"><strong>Not the same as ordering.</strong> Browse-only menu for tables.</p>
         <div class="db-cards-2">
           <article class="db-card">
             <h3>Digital menu link</h3>
-            <div class="db-url-row">
-              <code id="dbMenuUrl2">/m/—</code>
-              <button type="button" class="db-btn sm" data-copy="menu">Copy</button>
-            </div>
-            <a class="db-btn primary" id="dbOpenMenu2" href="#" target="_blank" style="margin-top:12px;display:inline-block;text-align:center">Preview digital menu</a>
+            <div class="db-url-row"><code id="dbMenuUrl2">/m/—</code><button type="button" class="db-btn sm" data-copy="menu">Copy</button></div>
+            <a class="db-btn primary" id="dbOpenMenu2" href="#" target="_blank" style="margin-top:12px;display:inline-block">Preview</a>
           </article>
           <article class="db-card">
             <h3>QR for tables</h3>
-            <p class="db-muted">Print and place on each table. Opens the digital menu only.</p>
             <canvas id="qrMenuCanvas" width="180" height="180"></canvas>
             <button type="button" class="db-btn sm" id="qrMenuDl" style="margin-top:10px">Download PNG</button>
           </article>
         </div>
         <div class="db-card" style="margin-top:16px">
-          <h3>QR for ordering page (optional)</h3>
-          <p class="db-muted">Different code — sends people to <strong>order online</strong> (cart &amp; pay). Use on Instagram or flyers, not as a table menu.</p>
+          <h3>QR for ordering page</h3>
+          <p class="db-muted">Different code — sends people to order online.</p>
           <canvas id="qrOrderCanvas" width="180" height="180"></canvas>
           <button type="button" class="db-btn sm" id="qrOrderDl" style="margin-top:10px">Download ordering QR</button>
         </div>
       </section>
 
-      <!-- PLAN -->
       <section class="db-panel" data-panel="plan">
         <h2>Plan &amp; subscription</h2>
-        <p class="db-lead">Flat fee. Zero commission on food sales.</p>
         <div class="db-card plan-card">
-          <div class="db-plan-head">
-            <div>
-              <span class="db-badge order" id="planStatus">Active trial</span>
-              <h3>Leva Restaurant</h3>
-              <p class="db-muted">₦30,000 / month · ordering page + QR digital menu + kitchen dashboard</p>
-            </div>
-            <div class="db-plan-price">₦30k<span>/mo</span></div>
-          </div>
-          <ul class="db-plan-list">
-            <li>Ordering page <code>/food/your-name</code></li>
-            <li>QR digital menu <code>/m/your-name</code> (separate product)</li>
-            <li>Kitchen order dashboard &amp; menu editing</li>
-            <li>0% commission on food sales</li>
-          </ul>
-          <p class="db-muted" id="planUntil">Paid until: —</p>
+          <span class="db-badge order" id="planStatus">Trial / unpaid</span>
+          <h3>Leva Restaurant · ₦30k/mo</h3>
+          <p class="db-muted" id="planUntil">Subscribe from this dashboard when ready.</p>
           <button type="button" class="db-btn primary" id="planCta">Subscribe with Paystack</button>
-          <p class="db-hint" id="planHint">Billing integration: contact support to activate after Paystack payment, or we wire checkout next.</p>
         </div>
       </section>
     </main>
+    </div><!-- dbMainPanels -->
   </div>
   <script src="/js/dashboard.js"></script>
 </body>
