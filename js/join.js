@@ -263,7 +263,20 @@
       document.getElementById("liveLink").href = path;
       document.getElementById("openPageBtn").href = path;
       const staffHint = document.getElementById("staffHint");
-      if (staffHint) staffHint.textContent = "Staff login: /staff.html?slug=" + finalSlug + " with the password you set.";
+      if (staffHint) staffHint.textContent = "Owner dashboard: /dashboard?slug=" + finalSlug + " · Kitchen: /staff.html?slug=" + finalSlug + " · Same password.";
+      const openBtn = document.getElementById("openPageBtn");
+      if (openBtn && openBtn.parentElement) {
+        let dash = document.getElementById("openDashBtn");
+        if (!dash) {
+          dash = document.createElement("a");
+          dash.id = "openDashBtn";
+          dash.className = "checkout-btn";
+          dash.style.cssText = "display:inline-block;text-align:center;margin-top:10px;text-decoration:none;background:#111;color:#fff";
+          dash.textContent = "Open owner dashboard";
+          openBtn.parentElement.appendChild(dash);
+        }
+        dash.href = "/login?slug=" + encodeURIComponent(finalSlug);
+      }
       showStep("done");
       document.querySelectorAll(".join-steps .dot").forEach((d) => d.classList.add("active"));
     } catch (ex) {
