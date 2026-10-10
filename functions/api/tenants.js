@@ -1,4 +1,4 @@
-import { cors, json } from "./_utils.js";
+import { cors, json, verifyStaffToken } from "./_utils.js";
 
 const FALLBACK_VMK = {
   id: "tenant_vmk",
@@ -18,6 +18,9 @@ const FALLBACK_VMK = {
   is_active: true,
   is_verified: false,
   verification_status: "none",
+  paid_until: "2099-12-31",
+  page_status: "live",
+  qr_menu_enabled: true,
 };
 
 const COLOR_MAP = {
@@ -35,7 +38,6 @@ const COLOR_MAP = {
   purple: "#6d28d9",
 };
 
-/** Starter dishes when founder skips menu photos - name + price only */
 const STARTER_MENU = [
   { category: "Rice", name: "Jollof Rice", price: 1500, image_url: "" },
   { category: "Rice", name: "Fried Rice", price: 1500, image_url: "" },
@@ -87,6 +89,12 @@ function mapTenant(row) {
     account_number: row.account_number || "",
     account_name: row.account_name || "",
     delivery_places: row.delivery_places || "",
+    paid_until: row.paid_until || "",
+    page_status: row.page_status || "live",
+    qr_menu_enabled: row.qr_menu_enabled == null ? true : Number(row.qr_menu_enabled) === 1,
+    owner_email: row.owner_email || "",
+    order_url: "/food/" + row.slug,
+    menu_url: "/m/" + row.slug,
   };
 }
 
@@ -150,6 +158,145 @@ export async function onRequestGet(context) {
   }
 
   return json({ error: "Restaurant not found" }, 404);
+}
+
+/** PATCH — owner/staff updates branding, contact, page status */
+export async function onRequestPatch(context) {
+  const { request, env } = context;
+  if (!env.DB) return json({ error: "Database not configured" }, 503);
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ error: "Invalid JSON" }, 400);
+  }
+
+  const slug = String(body.slug || "")
+    .toLowerCase()
+    .trim();
+  if (!slug) return json({ error: "slug required" }, 400);
+
+  const ok = await verifyStaffToken(request, env, slug);
+  if (!ok) return json({ error: "Unauthorized" }, 401);
+
+  const fields = [];
+  const values = [];
+
+  if (body.name != null) {
+    fields.push("name = ?");
+    values.push(String(body.name).trim().slice(0, 80));
+  }
+  if (body.tagline != null) {
+    fields.push("tagline = ?");
+    values.push(String(body.tagline).trim().slice(0, 120));
+  }
+  if (body.phone != null) {
+    fields.push("phone = ?");
+    values.push(String(body.phone).trim());
+  }
+  if (body.whatsapp != null) {
+    fields.push("whatsapp = ?");
+    values.push(String(body.whatsapp).trim());
+  }
+  if (body.location_text != null) {
+    fields.push("location_text = ?");
+    values.push(String(body.location_text).trim());
+  }
+  if (body.logo_url != null) {
+    fields.push("logo_url = ?");
+    values.push(String(body.logo_url).trim());
+  }
+  if (body.color_key != null) {
+    const ck = String(body.color_key);
+    fields.push("color_key = ?");
+    values.push(ck);
+    fields.push("primary_color = ?");
+    values.push(COLOR_MAP[ck] || body.primary_color || COLOR_MAP.charcoal);
+  } else if (body.primary_color != null) {
+    fields.push("primary_color = ?");
+    values.push(String(body.primary_color));
+  }
+  if (body.payment_mode != null) {
+    fields.push("payment_mode = ?");
+    values.push(String(body.payment_mode));
+  }
+  if (body.page_status != null) {
+    const ps = body.page_status === "draft" ? "draft" : "live";
+    try {
+      fields.push("page_status = ?");
+      values.push(ps);
+    } catch {
+      /* column may not exist */
+    }
+  }
+  if (body.qr_menu_enabled != null) {
+    try {
+      fields.push("qr_menu_enabled = ?");
+      values.push(body.qr_menu_enabled ? 1 : 0);
+    } catch {
+      /* optional */
+    }
+  }
+
+  if (!fields.length) return json({ error: "Nothing to update" }, 400);
+
+  values.push(slug);
+  try {
+    await env.DB.prepare(
+      `UPDATE tenants SET ${fields.join(", ")} WHERE slug = ?`
+    )
+      .bind(...values)
+      .run();
+  } catch (e) {
+    // Retry without optional columns if schema is older
+    const safe = [];
+    const safeVals = [];
+    const allowed = [
+      "name",
+      "tagline",
+      "phone",
+      "whatsapp",
+      "location_text",
+      "logo_url",
+      "color_key",
+      "primary_color",
+      "payment_mode",
+    ];
+    // Rebuild minimal update from body
+    if (body.name != null) {
+      safe.push("name = ?");
+      safeVals.push(String(body.name).trim());
+    }
+    if (body.tagline != null) {
+      safe.push("tagline = ?");
+      safeVals.push(String(body.tagline).trim());
+    }
+    if (body.phone != null) {
+      safe.push("phone = ?");
+      safeVals.push(String(body.phone).trim());
+    }
+    if (body.logo_url != null) {
+      safe.push("logo_url = ?");
+      safeVals.push(String(body.logo_url).trim());
+    }
+    if (body.color_key != null) {
+      safe.push("color_key = ?");
+      safeVals.push(String(body.color_key));
+      safe.push("primary_color = ?");
+      safeVals.push(COLOR_MAP[body.color_key] || COLOR_MAP.charcoal);
+    }
+    if (!safe.length) return json({ error: String(e.message || e) }, 500);
+    safeVals.push(slug);
+    await env.DB.prepare(`UPDATE tenants SET ${safe.join(", ")} WHERE slug = ?`)
+      .bind(...safeVals)
+      .run();
+  }
+
+  const row = await env.DB.prepare(`SELECT * FROM tenants WHERE slug = ? LIMIT 1`)
+    .bind(slug)
+    .first();
+  return json({ ok: true, tenant: row ? mapTenant(row) : null });
 }
 
 export async function onRequestPost(context) {
@@ -269,7 +416,9 @@ export async function onRequestPost(context) {
         .run();
     }
 
-    let menuItems = Array.isArray(body.menu_items) ? body.menu_items.filter((m) => m && m.name) : [];
+    let menuItems = Array.isArray(body.menu_items)
+      ? body.menu_items.filter((m) => m && m.name)
+      : [];
     if (!menuItems.length) {
       menuItems = STARTER_MENU;
     }
@@ -282,10 +431,15 @@ export async function onRequestPost(context) {
         slug,
         name,
         url_path: "/food/" + slug,
+        menu_path: "/m/" + slug,
         staff_path: "/staff.html?slug=" + slug,
+        dashboard_path: "/dashboard?slug=" + slug,
         login_path: "/login?slug=" + slug,
         is_verified: false,
-        seeded_menu: menuItems === STARTER_MENU || !body.menu_items || !body.menu_items.length,
+        seeded_menu:
+          menuItems === STARTER_MENU ||
+          !body.menu_items ||
+          !body.menu_items.length,
       },
     });
   } catch (e) {

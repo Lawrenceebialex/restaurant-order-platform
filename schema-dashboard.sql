@@ -1,0 +1,7 @@
+-- Optional columns for owner dashboard (run in D1 if missing)
+-- ALTER TABLE tenants ADD COLUMN paid_until TEXT;
+-- ALTER TABLE tenants ADD COLUMN page_status TEXT DEFAULT 'live';
+-- ALTER TABLE tenants ADD COLUMN qr_menu_enabled INTEGER DEFAULT 1;
+-- page_status: draft | live
+-- Ordering page URL: /food/{slug}
+-- QR digital menu URL: /m/{slug}  (browse-only, not the same as ordering)
