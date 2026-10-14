@@ -6,7 +6,8 @@
   };
   const TITLES = {
     home: "Home", ordering: "Ordering page", qrmenu: "QR digital menu",
-    menu: "Menu", kitchen: "Kitchen", telegram: "Telegram", plan: "Plan & billing",
+    menu: "Menu", kitchen: "Kitchen", telegram: "Telegram",
+    verified: "Verified by Leva", plan: "Plan & billing",
   };
   const params = new URLSearchParams(location.search);
   let ownerToken = sessionStorage.getItem("leva_owner_token") || "";
@@ -43,6 +44,7 @@
     if (id === "qrmenu") { refreshQrPanel(); renderQRs(); }
     if (id === "menu") refreshMenuPanel();
     if (id === "kitchen") refreshKitchenPanel();
+    if (id === "telegram") refreshTelegram();
   }
   document.querySelectorAll(".db-nav-item").forEach(function (btn) {
     btn.onclick = function () { showTab(btn.dataset.tab); };
@@ -106,6 +108,19 @@
     } else {
       if (need) need.style.display = "block";
       if (ready) ready.style.display = "none";
+    }
+  }
+  function refreshTelegram() {
+    var a = document.getElementById("tgConnect");
+    var st = document.getElementById("tgStatus");
+    if (!a) return;
+    // Deep link: bot receives /start SLUG — stores chat_id server-side (no manual ID)
+    var start = slug || "link";
+    a.href = "https://t.me/LevaOrdersBot?start=" + encodeURIComponent(start);
+    if (st) {
+      st.textContent = hasSite
+        ? "Status: ready to connect for /" + slug + ". Full bot auto-link ships with billing."
+        : "Create a restaurant first, then connect Telegram.";
     }
   }
   var STATUSES = ["Pending", "Confirmed", "Preparing", "Ready", "Completed"];
@@ -329,6 +344,38 @@
   if (planCta) planCta.onclick = function () {
     alert("Paystack checkout will open here once billing is activated.");
   };
+  var verRequest = document.getElementById("verRequest");
+  if (verRequest) {
+    verRequest.onclick = function () {
+      if (!slug) {
+        alert("Create your ordering page first, then request verification.");
+        return;
+      }
+      var badge = document.getElementById("verBadge");
+      var msg = document.getElementById("verMsg");
+      if (badge) {
+        badge.textContent = "Pending review";
+        badge.className = "db-badge pro";
+      }
+      if (msg) {
+        msg.style.display = "block";
+        msg.className = "db-msg ok";
+        msg.textContent = "Request saved locally. Full review workflow comes next.";
+      }
+      try {
+        localStorage.setItem("leva_verify_" + slug, "pending");
+      } catch (e) {}
+    };
+    try {
+      if (slug && localStorage.getItem("leva_verify_" + slug) === "pending") {
+        var badge0 = document.getElementById("verBadge");
+        if (badge0) {
+          badge0.textContent = "Pending review";
+          badge0.className = "db-badge pro";
+        }
+      }
+    } catch (e) {}
+  }
   async function createRestaurant(e) {
     if (e) e.preventDefault();
     if (!ownerToken) { location.href = "/signup"; return; }
