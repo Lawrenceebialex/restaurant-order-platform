@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard · Leva</title>
-  <meta name="theme-color" content="#0a0a0a" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <meta name="theme-color" content="#ffffff" />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Geist:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/dashboard.css" />
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" defer></script>
 </head>
@@ -13,160 +13,206 @@
   <div id="dbGate" class="db-gate">
     <div class="db-gate-card">
       <h1>Your dashboard</h1>
-      <p>Sign up or log in to create ordering pages and QR menus. Features are only available after you sign in.</p>
-      <a class="db-btn primary" href="/login">Log in</a>
-      <p class="db-muted" style="margin-top:14px"><a href="/signup">Create an account</a></p>
+      <p>Sign in to manage ordering pages, QR menus, kitchen orders, and more.</p>
+      <a class="db-btn" href="/login">Log in</a>
+      <p class="db-muted" style="margin-top:16px"><a href="/signup">Create an account</a></p>
     </div>
   </div>
 
-  <div id="dbApp" class="db-app" style="display:none">
-    <header class="db-top">
-      <div class="db-top-left">
-        <a href="/" class="db-logo"><img src="https://i.ibb.co/1GSR9HNV/1000622428-removebg-preview.png" alt="Leva" height="26" /></a>
-        <span class="db-rest-name" id="dbRestName">—</span>
+  <div id="dbApp" class="db-shell" style="display:none">
+    <aside class="db-side">
+      <div class="db-side-brand"><i></i>leva</div>
+      <nav class="db-side-nav">
+        <div class="db-nav-label">Workspace</div>
+        <button type="button" class="db-nav-item active" data-tab="home">Home</button>
+        <button type="button" class="db-nav-item" data-tab="ordering">Ordering page</button>
+        <button type="button" class="db-nav-item" data-tab="qrmenu">QR digital menu</button>
+        <button type="button" class="db-nav-item" data-tab="menu">Menu</button>
+        <div class="db-nav-label">Operations</div>
+        <button type="button" class="db-nav-item" data-tab="kitchen">Kitchen</button>
+        <button type="button" class="db-nav-item" data-tab="telegram">Telegram <span class="lock">Pro</span></button>
+        <div class="db-nav-label">Account</div>
+        <button type="button" class="db-nav-item" data-tab="plan">Plan &amp; billing</button>
+      </nav>
+      <div class="db-side-foot">
+        <div class="acct" id="dbAcct">—<span id="dbAcctEmail"></span></div>
+        <button type="button" class="db-btn ghost sm" id="dbLogout" style="width:100%">Log out</button>
       </div>
-      <div class="db-top-actions">
-        <button type="button" class="db-btn ghost" id="dbLogout">Log out</button>
-      </div>
-    </header>
+    </aside>
 
-    <div id="dbOnboard" class="db-main" style="display:none">
-      <section class="db-card" style="max-width:480px;margin:24px auto">
-        <h2 style="font-size:1.25rem;font-weight:800;margin-bottom:8px">Create your restaurant on Leva</h2>
-        <p class="db-muted" style="margin-bottom:16px">This happens inside your account. You get an ordering URL and can add a QR digital menu next.</p>
-        <form id="crForm">
-          <div class="db-field"><label for="crName">Restaurant name *</label><input id="crName" required placeholder="Success Kitchen" /></div>
-          <div class="db-field"><label for="crSlug">Ordering link *</label>
-            <div style="display:flex;align-items:center;gap:6px"><span class="db-muted">/food/</span><input id="crSlug" required placeholder="success-kitchen" style="flex:1" /></div>
+    <div class="db-main-col">
+      <header class="db-topbar">
+        <h1 id="dbPageTitle">Home</h1>
+        <span class="db-muted" id="dbRestName"></span>
+      </header>
+      <div class="db-content">
+
+        <section class="db-panel active" data-panel="home">
+          <div class="hub-hero">
+            <h2>What do you want to run?</h2>
+            <p class="db-lead">Your workspace is ready. Pick a product — nothing is forced. Set up an ordering page, a table QR menu, or both when you choose.</p>
           </div>
-          <div class="db-field"><label for="crPhone">Phone *</label><input id="crPhone" type="tel" required /></div>
-          <div class="db-field"><label for="crPass">Kitchen password * (optional staff login)</label><input id="crPass" type="password" minlength="6" required /></div>
-          <button type="submit" class="db-btn primary" id="crSubmit" style="width:100%">Create ordering page</button>
-          <p id="crErr" class="db-msg err" style="display:none"></p>
-        </form>
-      </section>
-    </div>
+          <div class="db-grid" id="hubCards">
+            <article class="db-card">
+              <span class="db-badge free">Included</span>
+              <h3>Ordering page</h3>
+              <p>A branded URL where guests order for pickup or delivery. Cart, checkout, your colours.</p>
+              <button type="button" class="db-btn sm" data-tab-jump="ordering">Open</button>
+            </article>
+            <article class="db-card">
+              <span class="db-badge free">Included</span>
+              <h3>QR digital menu</h3>
+              <p>Browse-only menu for tables. Separate from ordering — prices, no cart.</p>
+              <button type="button" class="db-btn sm" data-tab-jump="qrmenu">Open</button>
+            </article>
+            <article class="db-card">
+              <span class="db-badge free">Included</span>
+              <h3>Kitchen</h3>
+              <p>Live order queue for staff. Different screen from this owner workspace.</p>
+              <button type="button" class="db-btn sm" data-tab-jump="kitchen">Open kitchen</button>
+            </article>
+            <article class="db-card">
+              <span class="db-badge pro">Pro</span>
+              <h3>Telegram alerts</h3>
+              <p>Push new orders to a Telegram chat. Unlock with an active plan.</p>
+              <button type="button" class="db-btn sm ghost" data-tab-jump="telegram">View</button>
+            </article>
+          </div>
+          <div id="hubNoSite" class="db-card" style="margin-top:20px;display:none">
+            <h3>No restaurant linked yet</h3>
+            <p class="db-muted" style="margin-bottom:14px">When you are ready, create an ordering page from the sidebar. You can also start with a QR menu only.</p>
+            <button type="button" class="db-btn" data-tab-jump="ordering">Create ordering page</button>
+          </div>
+        </section>
 
-    <div id="dbMainPanels">
-    <nav class="db-tabs" id="dbTabs">
-      <button type="button" class="db-tab active" data-tab="overview">Overview</button>
-      <button type="button" class="db-tab" data-tab="kitchen">Kitchen / orders</button>
-      <button type="button" class="db-tab" data-tab="ordering">Ordering page</button>
-      <button type="button" class="db-tab" data-tab="menu">Menu items</button>
-      <button type="button" class="db-tab" data-tab="qrmenu">QR digital menu</button>
-      <button type="button" class="db-tab" data-tab="plan">Plan</button>
-    </nav>
-
-    <main class="db-main">
-      <section class="db-panel active" data-panel="overview">
-        <h2>Overview</h2>
-        <p class="db-lead">Your live links. Everything else is in the tabs above.</p>
-        <div class="db-cards-2">
-          <article class="db-card">
-            <span class="db-badge order">Ordering page</span>
-            <h3>Customers order food</h3>
-            <div class="db-url-row">
+        <section class="db-panel" data-panel="ordering">
+          <p class="db-lead">Public ordering URL for guests. Create one when you are ready — not required on day one.</p>
+          <div id="orderCreate" class="db-card" style="max-width:480px;display:none">
+            <h3>Create ordering page</h3>
+            <form id="crForm" style="margin-top:16px">
+              <div class="db-field"><label for="crName">Restaurant name *</label><input id="crName" required placeholder="Success Kitchen" /></div>
+              <div class="db-field"><label for="crSlug">Link *</label>
+                <div style="display:flex;align-items:center;gap:6px"><span class="db-muted">/food/</span><input id="crSlug" required placeholder="success-kitchen" style="flex:1" /></div>
+              </div>
+              <div class="db-field"><label for="crPhone">Phone *</label><input id="crPhone" type="tel" required /></div>
+              <div class="db-field"><label for="crPass">Kitchen password * (for staff)</label><input id="crPass" type="password" minlength="6" required /></div>
+              <button type="submit" class="db-btn" id="crSubmit">Create page</button>
+              <p id="crErr" class="db-msg err" style="display:none"></p>
+            </form>
+          </div>
+          <div id="orderEdit" style="display:none">
+            <div class="db-url-row" style="margin-bottom:20px">
               <code id="dbOrderUrl">/food/—</code>
-              <button type="button" class="db-btn sm" data-copy="order">Copy</button>
+              <button type="button" class="db-btn sm ghost" data-copy="order">Copy</button>
               <a class="db-btn sm ghost" id="dbOpenOrder" href="#" target="_blank">Open</a>
             </div>
-          </article>
-          <article class="db-card">
-            <span class="db-badge menu">QR digital menu</span>
-            <h3>Browse-only menu</h3>
-            <div class="db-url-row">
-              <code id="dbMenuUrl">/m/—</code>
-              <button type="button" class="db-btn sm" data-copy="menu">Copy</button>
-              <a class="db-btn sm ghost" id="dbOpenMenu" href="#" target="_blank">Open</a>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section class="db-panel" data-panel="kitchen">
-        <h2>Kitchen / orders</h2>
-        <p class="db-lead">Live orders for this restaurant — managed here in your dashboard (not a separate app).</p>
-        <div class="db-card" style="margin-bottom:14px">
-          <button type="button" class="db-btn sm" id="kitRefresh">Refresh</button>
-          <span class="db-muted" id="kitMeta" style="margin-left:10px"></span>
-        </div>
-        <div id="kitList" class="db-mi-list"><p class="db-muted">Open this tab to load orders.</p></div>
-      </section>
-
-      <section class="db-panel" data-panel="ordering">
-        <h2>Ordering page</h2>
-        <p class="db-lead">Edit how <code>/food/…</code> looks — preview updates live.</p>
-        <div class="db-editor-grid">
-          <div class="db-editor-form">
-            <div class="db-field"><label for="edName">Restaurant name</label><input id="edName" type="text" /></div>
-            <div class="db-field"><label for="edTagline">Tagline</label><input id="edTagline" type="text" maxlength="80" /></div>
-            <div class="db-field"><label for="edPhone">Phone</label><input id="edPhone" type="tel" /></div>
-            <div class="db-field"><label for="edLoc">Location text</label><input id="edLoc" type="text" /></div>
-            <div class="db-field"><label>Brand colour</label><div class="db-colors" id="edColors"></div><input type="hidden" id="edColorKey" value="charcoal" /></div>
-            <div class="db-field"><label for="edLogo">Logo URL</label><input id="edLogo" type="url" placeholder="https://…" /></div>
-            <button type="button" class="db-btn primary" id="edSave">Save ordering page</button>
-            <p id="edMsg" class="db-msg" style="display:none"></p>
-          </div>
-          <div class="db-preview-wrap">
-            <p class="db-preview-label">Live preview</p>
-            <div class="db-phone">
-              <div class="db-phone-bar">
-                <div class="db-phone-logo" id="pvLogo">?</div>
-                <div><strong id="pvName">Restaurant</strong><span>Open · via Leva</span></div>
+            <div class="db-editor-grid">
+              <div>
+                <div class="db-field"><label for="edName">Name</label><input id="edName" /></div>
+                <div class="db-field"><label for="edTagline">Tagline</label><input id="edTagline" maxlength="80" /></div>
+                <div class="db-field"><label for="edPhone">Phone</label><input id="edPhone" type="tel" /></div>
+                <div class="db-field"><label for="edLoc">Location</label><input id="edLoc" /></div>
+                <div class="db-field"><label>Brand colour</label><div class="db-colors" id="edColors"></div><input type="hidden" id="edColorKey" value="charcoal" /></div>
+                <div class="db-field"><label for="edLogo">Logo URL</label><input id="edLogo" type="url" placeholder="https://…" /></div>
+                <button type="button" class="db-btn" id="edSave">Save</button>
+                <p id="edMsg" class="db-msg" style="display:none"></p>
               </div>
-              <div class="db-phone-body">
-                <p class="db-phone-tag" id="pvTag">Order for pickup or delivery</p>
-                <div class="db-phone-btns"><span class="on" id="pvBtn">Pickup</span><span>Delivery</span></div>
-                <div class="db-phone-item"><span>Jollof Rice</span><span>₦1,500</span></div>
+              <div>
+                <p class="db-preview-label">Preview</p>
+                <div class="db-phone">
+                  <div class="db-phone-bar">
+                    <div class="db-phone-logo" id="pvLogo">?</div>
+                    <div><strong id="pvName">Restaurant</strong><div class="db-muted" style="font-size:11px">Open · Leva</div></div>
+                  </div>
+                  <div class="db-phone-body">
+                    <p class="db-phone-tag" id="pvTag">Order for pickup or delivery</p>
+                    <div class="db-phone-btns"><span class="on" id="pvBtn">Pickup</span><span>Delivery</span></div>
+                    <div class="db-phone-item"><span>Jollof Rice</span><span>₦1,500</span></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="db-panel" data-panel="menu">
-        <h2>Menu items</h2>
-        <div class="db-add-row">
-          <input id="miName" placeholder="Item name" />
-          <input id="miPrice" type="number" min="0" step="50" placeholder="Price ₦" />
-          <select id="miCat"><option>Rice</option><option>Swallow</option><option>Soup</option><option>Protein</option><option>Sides</option><option>Drinks</option><option>Other</option></select>
-          <button type="button" class="db-btn primary" id="miAdd">Add</button>
-        </div>
-        <div id="miList" class="db-mi-list"></div>
-      </section>
+        <section class="db-panel" data-panel="qrmenu">
+          <p class="db-lead">Table QR menu is browse-only. Not the same product as ordering.</p>
+          <div id="qrNeedSite" class="db-card" style="display:none">
+            <p class="db-muted">Link a restaurant first so the QR points at the right menu.</p>
+            <button type="button" class="db-btn sm" data-tab-jump="ordering" style="margin-top:12px">Go to ordering page</button>
+          </div>
+          <div id="qrReady" style="display:none">
+            <div class="db-grid">
+              <article class="db-card">
+                <h3>Menu link</h3>
+                <div class="db-url-row"><code id="dbMenuUrl">/m/—</code><button type="button" class="db-btn sm ghost" data-copy="menu">Copy</button></div>
+                <a class="db-btn sm" id="dbOpenMenu" href="#" target="_blank" style="margin-top:12px">Preview</a>
+              </article>
+              <article class="db-card">
+                <h3>Table QR</h3>
+                <canvas id="qrMenuCanvas" width="180" height="180"></canvas>
+                <button type="button" class="db-btn sm ghost" id="qrMenuDl" style="margin-top:10px">Download PNG</button>
+              </article>
+              <article class="db-card">
+                <h3>Ordering QR</h3>
+                <p class="db-muted">Different code — sends guests to order online.</p>
+                <canvas id="qrOrderCanvas" width="180" height="180"></canvas>
+                <button type="button" class="db-btn sm ghost" id="qrOrderDl" style="margin-top:10px">Download</button>
+              </article>
+            </div>
+          </div>
+        </section>
 
-      <section class="db-panel" data-panel="qrmenu">
-        <h2>QR digital menu</h2>
-        <p class="db-lead">Browse-only menu for tables — not the same as ordering.</p>
-        <div class="db-cards-2">
-          <article class="db-card">
-            <h3>Digital menu link</h3>
-            <div class="db-url-row"><code id="dbMenuUrl2">/m/—</code><button type="button" class="db-btn sm" data-copy="menu">Copy</button></div>
-            <a class="db-btn primary" id="dbOpenMenu2" href="#" target="_blank" style="margin-top:12px;display:inline-block">Preview</a>
-          </article>
-          <article class="db-card">
-            <h3>QR for tables</h3>
-            <canvas id="qrMenuCanvas" width="180" height="180"></canvas>
-            <button type="button" class="db-btn sm" id="qrMenuDl" style="margin-top:10px">Download PNG</button>
-          </article>
-        </div>
-        <div class="db-card" style="margin-top:16px">
-          <h3>QR for ordering page</h3>
-          <canvas id="qrOrderCanvas" width="180" height="180"></canvas>
-          <button type="button" class="db-btn sm" id="qrOrderDl" style="margin-top:10px">Download ordering QR</button>
-        </div>
-      </section>
+        <section class="db-panel" data-panel="menu">
+          <p class="db-lead">Shared by ordering page and QR menu.</p>
+          <div id="menuNeedSite" class="db-muted" style="display:none">Create an ordering page first.</div>
+          <div id="menuReady" style="display:none">
+            <div class="db-add-row">
+              <input id="miName" placeholder="Item name" />
+              <input id="miPrice" type="number" min="0" step="50" placeholder="Price ₦" />
+              <select id="miCat"><option>Rice</option><option>Swallow</option><option>Soup</option><option>Protein</option><option>Sides</option><option>Drinks</option><option>Other</option></select>
+              <button type="button" class="db-btn" id="miAdd">Add</button>
+            </div>
+            <div id="miList" class="db-mi-list"></div>
+          </div>
+        </section>
 
-      <section class="db-panel" data-panel="plan">
-        <h2>Plan</h2>
-        <div class="db-card plan-card">
-          <span class="db-badge order" id="planStatus">Trial / unpaid</span>
-          <h3>Leva Restaurant · ₦30k/mo</h3>
-          <p class="db-muted" id="planUntil">Subscribe when ready.</p>
-          <button type="button" class="db-btn primary" id="planCta">Subscribe with Paystack</button>
-        </div>
-      </section>
-    </main>
+        <section class="db-panel" data-panel="kitchen">
+          <p class="db-lead">Staff order board. Owners open it here; kitchen staff can also sign in with the kitchen password.</p>
+          <div id="kitNeedSite" class="db-muted" style="display:none">No restaurant yet.</div>
+          <div id="kitReady" style="display:none">
+            <div style="margin-bottom:14px">
+              <button type="button" class="db-btn sm" id="kitRefresh">Refresh</button>
+              <a class="db-btn sm ghost" id="kitFullscreen" href="/staff" style="margin-left:8px">Full kitchen screen</a>
+              <span class="db-muted" id="kitMeta" style="margin-left:12px"></span>
+            </div>
+            <div id="kitList" class="db-mi-list"></div>
+          </div>
+        </section>
+
+        <section class="db-panel" data-panel="telegram">
+          <span class="db-badge pro">Pro</span>
+          <h2 style="font-family:var(--display);font-size:1.5rem;margin:8px 0">Telegram order alerts</h2>
+          <p class="db-lead">Send each new order to a Telegram chat. Available on an active Leva plan.</p>
+          <div class="db-card" style="max-width:420px">
+            <div class="db-field"><label>Chat ID</label><input id="tgChat" placeholder="e.g. -1001234567890" disabled /></div>
+            <button type="button" class="db-btn" id="tgSave" disabled>Save</button>
+            <p class="db-muted" style="margin-top:14px">Subscribe under Plan &amp; billing to unlock.</p>
+            <button type="button" class="db-btn ghost sm" data-tab-jump="plan" style="margin-top:10px">View plan</button>
+          </div>
+        </section>
+
+        <section class="db-panel" data-panel="plan">
+          <p class="db-lead">One flat fee. Zero commission on food sales.</p>
+          <div class="db-card plan-card" style="max-width:400px">
+            <span class="db-badge off" id="planStatus">Trial</span>
+            <h3 style="font-family:var(--display);font-size:1.4rem;margin:8px 0">Leva · ₦30,000 / month</h3>
+            <p class="db-muted" id="planUntil">Ordering page, QR menu, kitchen. Telegram unlocks on paid plan.</p>
+            <button type="button" class="db-btn" id="planCta">Subscribe with Paystack</button>
+          </div>
+        </section>
+
+      </div>
     </div>
   </div>
   <script src="/js/dashboard.js"></script>
