@@ -32,6 +32,7 @@
         <button type="button" class="db-nav-item" data-tab="kitchen">Kitchen</button>
         <button type="button" class="db-nav-item" data-tab="telegram">Telegram <span class="lock">Pro</span></button>
         <div class="db-nav-label">Account</div>
+        <button type="button" class="db-nav-item" data-tab="verified">Verified by Leva</button>
         <button type="button" class="db-nav-item" data-tab="plan">Plan &amp; billing</button>
       </nav>
       <div class="db-side-foot">
@@ -50,43 +51,43 @@
         <section class="db-panel active" data-panel="home">
           <div class="hub-hero">
             <h2>What do you want to run?</h2>
-            <p class="db-lead">Your workspace is ready. Pick a product — nothing is forced. Set up an ordering page, a table QR menu, or both when you choose.</p>
+            <p class="db-lead">Your workspace is ready. Pick a product — nothing is forced.</p>
           </div>
           <div class="db-grid" id="hubCards">
             <article class="db-card">
               <span class="db-badge free">Included</span>
               <h3>Ordering page</h3>
-              <p>A branded URL where guests order for pickup or delivery. Cart, checkout, your colours.</p>
+              <p>Branded URL for pickup or delivery orders.</p>
               <button type="button" class="db-btn sm" data-tab-jump="ordering">Open</button>
             </article>
             <article class="db-card">
               <span class="db-badge free">Included</span>
               <h3>QR digital menu</h3>
-              <p>Browse-only menu for tables. Separate from ordering — prices, no cart.</p>
+              <p>Browse-only menu for tables — no cart.</p>
               <button type="button" class="db-btn sm" data-tab-jump="qrmenu">Open</button>
             </article>
             <article class="db-card">
               <span class="db-badge free">Included</span>
               <h3>Kitchen</h3>
-              <p>Live order queue for staff. Different screen from this owner workspace.</p>
+              <p>Live order board for staff.</p>
               <button type="button" class="db-btn sm" data-tab-jump="kitchen">Open kitchen</button>
             </article>
             <article class="db-card">
               <span class="db-badge pro">Pro</span>
               <h3>Telegram alerts</h3>
-              <p>Push new orders to a Telegram chat. Unlock with an active plan.</p>
+              <p>Orders to Telegram — connect in one tap.</p>
               <button type="button" class="db-btn sm ghost" data-tab-jump="telegram">View</button>
             </article>
           </div>
           <div id="hubNoSite" class="db-card" style="margin-top:20px;display:none">
             <h3>No restaurant linked yet</h3>
-            <p class="db-muted" style="margin-bottom:14px">When you are ready, create an ordering page from the sidebar. You can also start with a QR menu only.</p>
+            <p class="db-muted" style="margin-bottom:14px">Create an ordering page when you are ready.</p>
             <button type="button" class="db-btn" data-tab-jump="ordering">Create ordering page</button>
           </div>
         </section>
 
         <section class="db-panel" data-panel="ordering">
-          <p class="db-lead">Public ordering URL for guests. Create one when you are ready — not required on day one.</p>
+          <p class="db-lead">Public ordering URL. Create when ready — not required on day one.</p>
           <div id="orderCreate" class="db-card" style="max-width:480px;display:none">
             <h3>Create ordering page</h3>
             <form id="crForm" style="margin-top:16px">
@@ -95,7 +96,7 @@
                 <div style="display:flex;align-items:center;gap:6px"><span class="db-muted">/food/</span><input id="crSlug" required placeholder="success-kitchen" style="flex:1" /></div>
               </div>
               <div class="db-field"><label for="crPhone">Phone *</label><input id="crPhone" type="tel" required /></div>
-              <div class="db-field"><label for="crPass">Kitchen password * (for staff)</label><input id="crPass" type="password" minlength="6" required /></div>
+              <div class="db-field"><label for="crPass">Kitchen password *</label><input id="crPass" type="password" minlength="6" required /></div>
               <button type="submit" class="db-btn" id="crSubmit">Create page</button>
               <p id="crErr" class="db-msg err" style="display:none"></p>
             </form>
@@ -136,10 +137,10 @@
         </section>
 
         <section class="db-panel" data-panel="qrmenu">
-          <p class="db-lead">Table QR menu is browse-only. Not the same product as ordering.</p>
+          <p class="db-lead">Browse-only table menu. Not the same as ordering.</p>
           <div id="qrNeedSite" class="db-card" style="display:none">
-            <p class="db-muted">Link a restaurant first so the QR points at the right menu.</p>
-            <button type="button" class="db-btn sm" data-tab-jump="ordering" style="margin-top:12px">Go to ordering page</button>
+            <p class="db-muted">Create an ordering page first.</p>
+            <button type="button" class="db-btn sm" data-tab-jump="ordering" style="margin-top:12px">Go to ordering</button>
           </div>
           <div id="qrReady" style="display:none">
             <div class="db-grid">
@@ -155,7 +156,6 @@
               </article>
               <article class="db-card">
                 <h3>Ordering QR</h3>
-                <p class="db-muted">Different code — sends guests to order online.</p>
                 <canvas id="qrOrderCanvas" width="180" height="180"></canvas>
                 <button type="button" class="db-btn sm ghost" id="qrOrderDl" style="margin-top:10px">Download</button>
               </article>
@@ -178,7 +178,7 @@
         </section>
 
         <section class="db-panel" data-panel="kitchen">
-          <p class="db-lead">Staff order board. Owners open it here; kitchen staff can also sign in with the kitchen password.</p>
+          <p class="db-lead">Staff order board — also available as a full-screen kitchen view.</p>
           <div id="kitNeedSite" class="db-muted" style="display:none">No restaurant yet.</div>
           <div id="kitReady" style="display:none">
             <div style="margin-bottom:14px">
@@ -193,21 +193,37 @@
         <section class="db-panel" data-panel="telegram">
           <span class="db-badge pro">Pro</span>
           <h2 style="font-family:var(--display);font-size:1.5rem;margin:8px 0">Telegram order alerts</h2>
-          <p class="db-lead">Send each new order to a Telegram chat. Available on an active Leva plan.</p>
-          <div class="db-card" style="max-width:420px">
-            <div class="db-field"><label>Chat ID</label><input id="tgChat" placeholder="e.g. -1001234567890" disabled /></div>
-            <button type="button" class="db-btn" id="tgSave" disabled>Save</button>
-            <p class="db-muted" style="margin-top:14px">Subscribe under Plan &amp; billing to unlock.</p>
-            <button type="button" class="db-btn ghost sm" data-tab-jump="plan" style="margin-top:10px">View plan</button>
+          <p class="db-lead">No chat ID needed. Open the Leva bot, tap Start, and this restaurant is linked automatically.</p>
+          <div class="db-card" style="max-width:440px">
+            <ol style="margin:0 0 16px 18px;color:var(--mute);font-size:14px;line-height:1.6">
+              <li>Tap <strong>Connect Telegram</strong></li>
+              <li>Telegram opens the Leva orders bot</li>
+              <li>Tap <strong>Start</strong> — your chat is linked</li>
+            </ol>
+            <a class="db-btn" id="tgConnect" href="#" target="_blank" rel="noopener">Connect Telegram</a>
+            <p class="db-muted" style="margin-top:14px" id="tgStatus">Status: not connected yet. Bot wiring ships with Pro billing.</p>
+            <p class="db-muted" style="margin-top:8px;font-size:12px">You never paste a number. We store the chat ID from Telegram when you Start the bot.</p>
+            <button type="button" class="db-btn ghost sm" data-tab-jump="plan" style="margin-top:12px">View plan</button>
+          </div>
+        </section>
+
+        <section class="db-panel" data-panel="verified">
+          <h2 style="font-family:var(--display);font-size:1.5rem;margin-bottom:8px">Verified by Leva</h2>
+          <p class="db-lead">A trust badge on your ordering page after a light check (business name, phone, location). Built later — request stays in the product now.</p>
+          <div class="db-card" style="max-width:440px">
+            <span class="db-badge off" id="verBadge">Not requested</span>
+            <p class="db-muted" style="margin:12px 0 16px">When live, verified restaurants show a small “Verified by Leva” mark for guests.</p>
+            <button type="button" class="db-btn" id="verRequest">Request verification</button>
+            <p class="db-msg" id="verMsg" style="display:none"></p>
           </div>
         </section>
 
         <section class="db-panel" data-panel="plan">
-          <p class="db-lead">One flat fee. Zero commission on food sales.</p>
+          <p class="db-lead">Flat software fee. Zero commission on food sales.</p>
           <div class="db-card plan-card" style="max-width:400px">
             <span class="db-badge off" id="planStatus">Trial</span>
-            <h3 style="font-family:var(--display);font-size:1.4rem;margin:8px 0">Leva · ₦30,000 / month</h3>
-            <p class="db-muted" id="planUntil">Ordering page, QR menu, kitchen. Telegram unlocks on paid plan.</p>
+            <h3 style="font-family:var(--display);font-size:1.4rem;margin:8px 0">Leva · from ₦15,000 / month</h3>
+            <p class="db-muted" id="planUntil">Tiers refined after market fit. Subscribe when billing is active.</p>
             <button type="button" class="db-btn" id="planCta">Subscribe with Paystack</button>
           </div>
         </section>
