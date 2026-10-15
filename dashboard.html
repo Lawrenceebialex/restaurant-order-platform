@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Dashboard · Leva</title>
   <meta name="theme-color" content="#ffffff" />
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Geist:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -30,10 +30,10 @@
         <button type="button" class="db-nav-item" data-tab="menu">Menu</button>
         <div class="db-nav-label">Operations</div>
         <button type="button" class="db-nav-item" data-tab="kitchen">Kitchen</button>
-        <button type="button" class="db-nav-item" data-tab="telegram">Telegram <span class="lock">Pro</span></button>
+        <button type="button" class="db-nav-item" data-tab="telegram">Telegram</button>
         <div class="db-nav-label">Account</div>
         <button type="button" class="db-nav-item" data-tab="verified">Verified by Leva</button>
-        <button type="button" class="db-nav-item" data-tab="plan">Plan &amp; billing</button>
+        <button type="button" class="db-nav-item" data-tab="plan">Plan & billing</button>
       </nav>
       <div class="db-side-foot">
         <div class="acct" id="dbAcct">—<span id="dbAcctEmail"></span></div>
@@ -73,7 +73,7 @@
               <button type="button" class="db-btn sm" data-tab-jump="kitchen">Open kitchen</button>
             </article>
             <article class="db-card">
-              <span class="db-badge pro">Pro</span>
+              <span class="db-badge free">Included</span>
               <h3>Telegram alerts</h3>
               <p>Orders to Telegram — connect in one tap.</p>
               <button type="button" class="db-btn sm ghost" data-tab-jump="telegram">View</button>
@@ -191,7 +191,6 @@
         </section>
 
         <section class="db-panel" data-panel="telegram">
-          <span class="db-badge pro">Pro</span>
           <h2 style="font-family:var(--display);font-size:1.5rem;margin:8px 0">Telegram order alerts</h2>
           <p class="db-lead">No chat ID needed. Open the Leva bot, tap Start, and this restaurant is linked automatically.</p>
           <div class="db-card" style="max-width:440px">
@@ -201,9 +200,8 @@
               <li>Tap <strong>Start</strong> — your chat is linked</li>
             </ol>
             <a class="db-btn" id="tgConnect" href="#" target="_blank" rel="noopener">Connect Telegram</a>
-            <p class="db-muted" style="margin-top:14px" id="tgStatus">Status: not connected yet. Bot wiring ships with Pro billing.</p>
+            <p class="db-muted" style="margin-top:14px" id="tgStatus">Status: not connected yet.</p>
             <p class="db-muted" style="margin-top:8px;font-size:12px">You never paste a number. We store the chat ID from Telegram when you Start the bot.</p>
-            <button type="button" class="db-btn ghost sm" data-tab-jump="plan" style="margin-top:12px">View plan</button>
           </div>
         </section>
 
@@ -232,5 +230,34 @@
     </div>
   </div>
   <script src="/js/dashboard.js"></script>
+  <script>
+  /* Mobile sidebar drawer */
+  (function () {
+    var side = document.querySelector('.db-side');
+    var top = document.querySelector('.db-topbar');
+    if (!side || !top) return;
+    var burger = document.createElement('button');
+    burger.type = 'button';
+    burger.className = 'db-burger';
+    burger.setAttribute('aria-label', 'Open menu');
+    burger.setAttribute('aria-expanded', 'false');
+    burger.innerHTML = '<i></i><i></i>';
+    top.insertBefore(burger, top.firstChild);
+    var scrim = document.createElement('div');
+    scrim.className = 'db-scrim';
+    document.body.appendChild(scrim);
+    function setOpen(open) {
+      side.classList.toggle('open', open);
+      scrim.classList.toggle('on', open);
+      burger.setAttribute('aria-expanded', String(open));
+      document.body.classList.toggle('db-lock', open);
+    }
+    burger.addEventListener('click', function () { setOpen(!side.classList.contains('open')); });
+    scrim.addEventListener('click', function () { setOpen(false); });
+    side.addEventListener('click', function (e) { if (e.target.closest('.db-nav-item')) setOpen(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
+    window.matchMedia('(min-width:961px)').addEventListener('change', function () { setOpen(false); });
+  })();
+  </script>
 </body>
 </html>
