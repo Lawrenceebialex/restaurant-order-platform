@@ -1,76 +1,341 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Order · Leva</title>
-  <meta name="theme-color" content="#111827" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/css/storefront.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Order · Leva</title>
+<meta name="theme-color" content="#0f6b3e">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--brand:#0f6b3e;--on:#fff;--ink:#000;--soft:#f5f5f4;--line:#e8e8e6;--mute:#686866;--d:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif;--b:'Geist','Helvetica Neue',Arial,sans-serif}
+*{box-sizing:border-box;margin:0}
+body{font-family:var(--b);color:var(--ink);background:#fff;line-height:1.5;padding-bottom:110px;-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+h1,h2,h3,h4{font-family:var(--d);letter-spacing:-.03em;line-height:1.05}
+.cover{position:relative;height:clamp(220px,36vh,380px);background:radial-gradient(60% 80% at 15% 15%,color-mix(in srgb,var(--brand) 80%,#fff),transparent),radial-gradient(70% 90% at 95% 90%,color-mix(in srgb,var(--brand) 55%,#000),transparent),var(--brand);background-size:cover;background-position:center}
+.cover::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.4),transparent 55%)}
+.topbar{position:absolute;z-index:2;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:max(14px,env(safe-area-inset-top)) 16px 0}
+.pill{background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-radius:99px;padding:9px 14px;font-size:13px;font-weight:600}
+.rb{position:relative;width:46px;height:46px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.rb b{position:absolute;top:-4px;right:-4px;min-width:21px;height:21px;border-radius:99px;background:var(--brand);color:var(--on);font-size:12px;display:grid;place-items:center;padding:0 5px}
+.rb b[hidden]{display:none}
+.head{position:relative;z-index:3;display:flex;align-items:flex-end;gap:16px;margin-top:-46px}
+.logo{position:relative;flex:none;width:96px;height:96px;border-radius:50%;background:#fff;border:4px solid #fff;box-shadow:0 10px 30px rgba(0,0,0,.2);overflow:hidden;display:grid;place-items:center;font:800 38px var(--d);color:var(--brand)}
+.logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:14%;background:#fff}
+.head h1{font-size:clamp(28px,5.4vw,46px);font-weight:800;margin-bottom:6px}
+.tg{color:var(--mute);font-size:15px;padding-bottom:4px}
+.info{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}
+.info span{border:1px solid var(--line);border-radius:99px;padding:8px 14px;font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px}
+.info .o::before{content:"";width:8px;height:8px;border-radius:50%;background:#16a34a}
+.info .c::before{background:#dc2626}
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:520px}
+.mode button{text-align:left;padding:14px 16px;border-radius:18px;border:1.5px solid var(--line);transition:.15s}
+.mode b{display:block;font:700 16px var(--d)}.mode small{color:var(--mute);font-size:13px}
+.mode .on{border-color:var(--ink);background:var(--ink);color:#fff}.mode .on small{color:#bdbdbd}
+.sr{width:100%;max-width:520px;margin-top:12px;height:50px;border-radius:16px;border:1.5px solid var(--line);background:var(--soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%23686866' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='M13 13l4 4'/%3E%3C/svg%3E") no-repeat 16px center;padding:0 16px 0 44px;font-size:16px}
+.sr:focus{background-color:#fff;border-color:var(--ink);outline:0}
+.cats{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);margin-top:22px}
+.cats .wrap{display:flex;gap:8px;overflow-x:auto;padding-block:12px;scrollbar-width:none}
+.cats .wrap::-webkit-scrollbar{display:none}
+.cats a{flex:none;padding:9px 16px;border-radius:99px;font-size:14px;font-weight:600;color:var(--mute);transition:.15s}
+.cats a.on{background:var(--brand);color:var(--on)}
+section[data-k]{padding-top:34px;scroll-margin-top:56px}
+section h2{font-size:30px;font-weight:700;margin-bottom:6px}
+.grid{display:grid;column-gap:44px}
+@media(min-width:800px){.grid{grid-template-columns:1fr 1fr}}
+.it{display:flex;gap:16px;padding:20px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.it .tx{flex:1;min-width:0}
+.pop{font-style:normal;display:inline-block;font-size:12px;font-weight:600;background:color-mix(in srgb,var(--brand) 12%,#fff);color:var(--brand);border-radius:99px;padding:3px 10px;margin-bottom:8px}
+.it h3{font-size:19px;font-weight:700}
+.it p{color:var(--mute);font-size:14px;margin:6px 0 12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.it b{font-weight:600}
+.md{position:relative;flex:none;width:116px;height:116px}
+.pic{position:relative;overflow:hidden;width:100%;height:100%;border-radius:22px;display:grid;place-items:center;background:linear-gradient(135deg,color-mix(in srgb,var(--brand) 10%,#fff),color-mix(in srgb,var(--brand) 26%,#fff));font:800 36px var(--d);color:var(--brand)}
+.pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.add{position:absolute;right:-6px;bottom:-6px;width:40px;height:40px;border-radius:50%;background:var(--brand);color:var(--on);border:3px solid #fff;font-size:22px;line-height:1;display:grid;place-items:center;transition:transform .15s}
+.add:active{transform:scale(.88)}
+.none{padding:60px 0;text-align:center;color:var(--mute)}
+footer{margin-top:60px;padding:28px 0;border-top:1px solid var(--line);font-size:14px;color:var(--mute)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer a:hover{color:var(--ink)}
+#bar{position:fixed;z-index:30;left:14px;right:14px;bottom:max(14px,env(safe-area-inset-bottom));max-width:560px;margin:0 auto;height:64px;border-radius:20px;background:var(--brand);color:var(--on);display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-weight:600;box-shadow:0 18px 40px -12px rgba(0,0,0,.4);transform:translateY(140%);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+#bar.on{transform:none}
+#bar span:first-child{display:flex;align-items:center;gap:10px}
+#bar i{font-style:normal;background:var(--on);color:var(--brand);border-radius:99px;font-size:13px;padding:3px 10px}
+#ov{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .3s}
+#ov.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;z-index:41;left:0;right:0;bottom:0;margin:0 auto;max-width:560px;max-height:92vh;overflow:auto;background:#fff;border-radius:28px 28px 0 0;padding:26px 22px max(26px,env(safe-area-inset-bottom));transform:translateY(105%);visibility:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1),visibility 0s .35s}
+.sheet.on{transform:none;visibility:visible;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.sheet h2{font-size:28px;font-weight:700;margin-bottom:16px}
+.x{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;background:var(--soft);font-size:20px;z-index:2}
+.big{height:220px;margin:-26px -22px 20px;border-radius:28px 28px 0 0}
+.big .pic{border-radius:28px 28px 0 0;font-size:72px}
+.sheet .pr{font:700 22px var(--d);margin:8px 0 22px}
+.sheet .ds{color:var(--mute)}
+.st{display:inline-flex;align-items:center;gap:14px;background:var(--soft);border-radius:99px;padding:4px}
+.st button{width:38px;height:38px;border-radius:50%;background:#fff;font-size:20px;box-shadow:0 1px 3px rgba(0,0,0,.14)}
+.st b{min-width:22px;text-align:center}
+.cta{width:100%;height:56px;border-radius:18px;background:var(--brand);color:var(--on);font-weight:600;font-size:16px;transition:transform .15s}
+.cta:active{transform:scale(.98)}.cta:disabled{opacity:.6}
+.act{display:flex;gap:12px;align-items:center;margin-top:8px}.act .cta{flex:1}
+.ln{display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+.ln div:first-child{flex:1}.ln small{color:var(--mute)}
+.tot{margin:18px 0}.tot div{display:flex;justify-content:space-between;padding:6px 0;color:var(--mute)}
+.tot .g{color:var(--ink);font:700 22px var(--d);padding-top:12px;margin-top:6px;border-top:1px solid var(--line)}
+.f{display:block;margin-bottom:14px}.f span{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.f input,.f textarea{width:100%;border:1.5px solid var(--line);background:var(--soft);border-radius:14px;padding:14px;font-size:16px}
+.f input:focus,.f textarea:focus{background:#fff;border-color:var(--ink);outline:0}
+.pay{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.pay label{border:1.5px solid var(--line);border-radius:14px;padding:14px;font-weight:600;font-size:15px;cursor:pointer}
+.pay input{display:none}.pay label:has(input:checked){border-color:var(--ink);background:var(--ink);color:#fff}
+#er{color:#dc2626;font-size:14px;min-height:20px;margin-bottom:8px}
+.done{text-align:center;padding-top:20px}
+.ck{width:84px;height:84px;border-radius:50%;background:var(--brand);color:var(--on);display:grid;place-items:center;margin:0 auto 22px;font-size:40px;animation:pp .5s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes pp{from{transform:scale(.4);opacity:0}}
+.done p{color:var(--mute);margin:8px 0 22px}
+.oid{display:inline-flex;gap:12px;align-items:center;background:var(--soft);border-radius:14px;padding:10px 10px 10px 18px;font:700 18px var(--d);margin-bottom:22px}
+.oid button{background:#fff;border-radius:10px;padding:8px 14px;font:600 14px var(--b)}
+.gh{background:var(--soft);color:var(--ink);margin-top:10px}
+.loading{padding:80px 20px;text-align:center;color:var(--mute)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
 </head>
-<body class="sf-body">
-  <div id="sfBrowse">
-    <header class="sf-header">
-      <div class="sf-header-inner">
-        <img id="sfLogo" class="sf-logo" src="" alt="" />
-        <div class="sf-brand-meta">
-          <div class="sf-brand-name" id="sfName">Loading…</div>
-          <div class="sf-brand-sub"><span class="sf-open-dot" id="sfDot"></span><span id="sfStatusText">Open</span><span> · via Leva</span></div>
-        </div>
-        <div class="sf-header-actions">
-          <button type="button" class="sf-icon-btn" id="sfCartBtn" aria-label="Cart"><span id="sfCartBadge" style="display:none">0</span>🛒</button>
-          <button type="button" class="sf-icon-btn" id="sfMenuBtn" aria-label="Menu">☰</button>
-        </div>
-      </div>
-    </header>
-    <section class="sf-hero">
-      <h1 id="sfHeroTitle">…</h1>
-      <p id="sfHeroSub">Order for pickup or delivery</p>
-      <p class="sf-meta"><span id="sfLoc"></span> · <span id="sfPhone"></span></p>
-      <div class="sf-fulfill">
-        <button type="button" data-fulfill="pickup"><strong>Pickup</strong><span>Collect in store</span></button>
-        <button type="button" data-fulfill="delivery"><strong>Delivery</strong><span>To your area</span></button>
-      </div>
-    </section>
-    <nav class="sf-cats" id="sfCats"></nav>
-    <main class="sf-main" id="sfMain"></main>
-  </div>
-  <div id="sfCheckout" style="display:none">
-    <header class="sf-header"><div class="sf-header-inner"><button type="button" id="sfBackBrowse">← Back</button><strong>Checkout</strong></div></header>
-    <form id="sfCheckoutForm" class="sf-checkout" style="display:block">
-      <div class="sf-field"><label for="sfCustName">Name</label><input id="sfCustName" required /></div>
-      <div class="sf-field"><label for="sfCustPhone">Phone</label><input id="sfCustPhone" type="tel" required /></div>
-      <div class="sf-field" id="sfLocField" style="display:none"><label for="sfCustLoc">Delivery location</label><input id="sfCustLoc" /></div>
-      <div class="sf-pay">
-        <label class="sf-pay-opt"><input type="radio" name="sfPay" value="paystack" checked /> <span><strong>Pay now</strong></span></label>
-        <label class="sf-pay-opt" id="sfPodOpt"><input type="radio" name="sfPay" value="pod" /> <span><strong>Pay on delivery</strong></span></label>
-      </div>
-      <div class="sf-field"><label for="sfNote">Note</label><textarea id="sfNote" rows="2"></textarea></div>
-      <div class="sf-summary">
-        <div class="sf-summary-row"><span>Subtotal</span><span id="sfSumSub">₦0</span></div>
-        <div class="sf-summary-row" id="sfSumFeeRow" style="display:none"><span>Pickup fee</span><span id="sfSumFee">₦600</span></div>
-        <div class="sf-summary-row total"><span>Total</span><span id="sfSumTotal">₦0</span></div>
-      </div>
-      <button type="submit" class="sf-primary-btn">Place order</button>
-    </form>
-  </div>
-  <div class="sf-success" id="sfSuccess">
-    <div class="sf-success-icon">✓</div><h2>Order placed</h2>
-    <div class="sf-order-id" id="sfOrderId">—</div>
-    <button type="button" class="sf-ghost-btn" id="sfCopyId">Copy ID</button>
-    <button type="button" class="sf-primary-btn" onclick="location.reload()">Back to menu</button>
-  </div>
-  <div class="sf-cartbar" id="sfCartbar"><button type="button" class="sf-cartbar-btn" id="sfCartbarBtn"><span id="sfCartbarLabel">0 items</span><span id="sfCartbarTotal">₦0</span></button></div>
-  <div class="sf-backdrop" id="sfBackdrop"></div>
-  <div class="sf-sheet" id="sfCustomize"><div class="sf-sheet-handle"></div><div class="sf-sheet-body" id="sfCustomizeBody"></div></div>
-  <div class="sf-sheet" id="sfCartSheet"><div class="sf-sheet-handle"></div><div class="sf-sheet-body"><div class="sf-sheet-head"><h2>Your cart</h2><button type="button" class="sf-sheet-close" id="sfCloseCart">&times;</button></div><div id="sfCartBody"></div></div></div>
-  <div class="sf-menu-panel" id="sfMenuPanel">
-    <button type="button" onclick="document.getElementById('sfMenuPanel').classList.remove('open');document.getElementById('sfBackdrop').classList.remove('show')">Close</button>
-    <a data-staff-link href="/staff.html">Staff dashboard</a><a href="/">Leva home</a>
-  </div>
-  <script src="/js/tenant.js"></script>
-  <script src="/js/storefront.js"></script>
-  <script src="/js/logo-apply.js"></script>
+<body>
+
+<div class="cover" id="cv">
+<div class="topbar"><a class="pill" href="/">via Leva</a>
+<button class="rb" id="cb" aria-label="Open cart"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8a3 3 0 016 0"/></svg><b id="cn" hidden>0</b></button></div>
+</div>
+
+<div class="wrap">
+<div class="head"><div class="logo" id="lg"></div><div><h1 id="nm">Loading…</h1><p class="tg" id="tg"></p></div></div>
+<div class="info" id="inf"></div>
+<div class="mode" id="md"><button data-m="pickup" class="on"><b>Pickup</b><small>Collect in store</small></button><button data-m="delivery"><b>Delivery</b><small>To your area</small></button></div>
+<input class="sr" id="q" type="search" placeholder="Search the menu" aria-label="Search the menu">
+</div>
+
+<nav class="cats" id="ct" aria-label="Menu categories"><div class="wrap"></div></nav>
+<main class="wrap" id="mn"><p class="loading">Loading menu…</p></main>
+<footer><div class="wrap"><span>Powered by <a href="/"><b>Leva</b></a></span><a id="staffLink" href="/staff.html">Staff dashboard</a></div></footer>
+
+<button id="bar" aria-label="View cart"><span>View cart <i id="bt"></i></span><span id="bp"></span></button>
+<div id="ov"></div>
+
+<div class="sheet" id="is" role="dialog" aria-label="Item"><button class="x" data-x aria-label="Close">×</button>
+<div class="big" id="im"></div><h2 id="in"></h2><p class="ds" id="id"></p><div class="pr" id="ip"></div>
+<div class="act"><div class="st"><button id="m1" aria-label="Less">−</button><b id="qn">1</b><button id="p1" aria-label="More">+</button></div><button class="cta" id="ad"></button></div></div>
+
+<div class="sheet" id="cs" role="dialog" aria-label="Your cart"><button class="x" data-x aria-label="Close">×</button>
+<h2>Your cart</h2><div id="cl"></div><div class="tot" id="ct1"></div><button class="cta" id="go">Checkout</button></div>
+
+<div class="sheet" id="co" role="dialog" aria-label="Checkout"><button class="x" data-x aria-label="Close">×</button>
+<h2>Checkout</h2>
+<label class="f"><span>Name</span><input id="fn" autocomplete="name"></label>
+<label class="f"><span>Phone</span><input id="fp" type="tel" autocomplete="tel" inputmode="tel"></label>
+<label class="f" id="fw"><span>Delivery location</span><input id="fl" autocomplete="street-address"></label>
+<div class="pay"><label><input type="radio" name="pay" value="now" checked>Pay now</label><label><input type="radio" name="pay" value="later"><span id="pl">Pay on delivery</span></label></div>
+<label class="f"><span>Note</span><textarea id="fo" rows="2"></textarea></label>
+<div class="tot" id="ct2"></div><div id="er"></div><button class="cta" id="po">Place order</button></div>
+
+<div class="sheet" id="dn" role="dialog" aria-label="Order placed"><div class="done"><div class="ck">✓</div><h2>Order placed</h2><p>The kitchen has your order.</p>
+<div class="oid"><span id="oid">—</span><button id="cp">Copy ID</button></div><button class="cta gh" data-x>Back to menu</button></div></div>
+
+<script src="/js/tenant.js"></script>
+<script>
+/* Dynamic Leva storefront – loads tenant + menu from API; all restaurants use this template */
+(function(){
+  const PRESETS = {
+    charcoal:'#111827', navy:'#1e3a8a', blue:'#1d4ed8', teal:'#0f766e',
+    green:'#047857', red:'#b91c1c', crimson:'#991b1b', orange:'#c2410c',
+    amber:'#b45309', burgundy:'#9f1239', brown:'#78350f', purple:'#6d28d9'
+  };
+  function getSlug(){
+    const parts = location.pathname.replace(/\/+$/,'').split('/').filter(Boolean);
+    if((parts[0]==='food'||parts[0]==='restaurant') && parts[1]) return parts[1].toLowerCase();
+    return (window.LEVA && window.LEVA.slug) || 'vmk';
+  }
+  const slug = getSlug();
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+  const N = n => '₦' + Number(n||0).toLocaleString('en-NG');
+  const H = s => String(s).replace(/[&<>"]/g, c => ({'&':'&','<':'<','>':'>','"':'"'}[c]));
+  let R = { name:'', tag:'', brand:'#0f6b3e', logo:'', cover:'', open:true, hours:'', address:'', fees:{pickup:600,delivery:0} };
+  let M = [];
+  let items = {};
+  let cart = {};
+  let mode = 'pickup';
+  let cur = null;
+  let qty = 1;
+
+  async function submitOrder(o){
+    const payload = {
+      name: o.name, phone: o.phone, fulfillment: o.mode,
+      location: o.location || '', note: o.note || '',
+      paymentMethod: o.pay === 'now' ? 'paystack' : 'pod',
+      paymentStatus: o.pay === 'later' ? 'Pay on delivery' : 'Pending',
+      items: o.items.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
+      total: o.total, status: 'Pending', tenant_slug: slug, slug: slug
+    };
+    const res = await fetch('/api/orders', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || 'Order failed');
+    return { id: data.id || data.order_id || ('LV-' + Math.random().toString(36).slice(2,8).toUpperCase()) };
+  }
+
+  function applyBrand(){
+    const rs = document.documentElement.style;
+    rs.setProperty('--brand', R.brand);
+    const n = parseInt((R.brand||'#0f6b3e').replace('#',''), 16);
+    const f = v => (v/=255) <= .03928 ? v/12.92 : ((v+.055)/1.055)**2.4;
+    const lum = .2126*f(n>>16) + .7152*f((n>>8)&255) + .0722*f(n&255);
+    rs.setProperty('--on', lum > .45 ? '#000' : '#fff');
+    document.title = (R.name || 'Order') + ' · Leva';
+    if(R.cover) $('#cv').style.backgroundImage = 'url("' + R.cover + '")';
+    const mono = n => H((String(n||'L').trim()[0]||'L').toUpperCase());
+    $('#lg').innerHTML = '<span>' + mono(R.name) + '</span>' + (R.logo ? '<img src="' + H(R.logo) + '" alt="" onerror="this.remove()">' : '');
+    $('#nm').textContent = R.name || 'Restaurant';
+    $('#tg').textContent = R.tag || '';
+    $('#inf').innerHTML =
+      '<span class="' + (R.open ? 'o' : 'c') + '">' + (R.open ? 'Open now' : 'Closed') + '</span>' +
+      (R.hours ? '<span>' + H(R.hours) + '</span>' : '') +
+      (R.address ? '<span>' + H(R.address) + '</span>' : '');
+    const staff = document.getElementById('staffLink');
+    if(staff) staff.href = '/staff.html?slug=' + encodeURIComponent(slug);
+  }
+
+  function pic(i){
+    const mono = H((String(i.n||'?').trim()[0]||'?').toUpperCase());
+    return '<div class="pic"><span>' + mono + '</span>' + (i.img ? '<img src="' + H(i.img) + '" alt="" loading="lazy" onerror="this.remove()">' : '') + '</div>';
+  }
+
+  function render(){
+    const q = ($('#q').value || '').toLowerCase().trim();
+    $('#mn').innerHTML = M.map((s,k) => {
+      const l = s.i.filter(i => !q || (i.n + ' ' + (i.d||'')).toLowerCase().includes(q));
+      if(!l.length) return '';
+      return '<section id="s' + k + '" data-k="' + k + '"><h2>' + H(s.c) + '</h2><div class="grid">' +
+        l.map(i => '<article class="it" data-id="' + i.id + '"><div class="tx">' +
+          (i.pop ? '<em class="pop">Popular</em>' : '') +
+          '<h3>' + H(i.n) + '</h3>' +
+          (i.d ? '<p>' + H(i.d) + '</p>' : '') +
+          '<b>' + N(i.p) + '</b></div><div class="md">' + pic(i) +
+          '<button class="add" aria-label="Add ' + H(i.n) + '">+</button></div></article>').join('') +
+        '</div></section>';
+    }).join('') || '<p class="none">' + (q ? 'Nothing matches that search.' : 'Menu is being set up. Check back soon.') + '</p>';
+    $('#ct .wrap').innerHTML = M.map((s,k) => {
+      const has = s.i.some(i => !q || (i.n + ' ' + (i.d||'')).toLowerCase().includes(q));
+      return has ? '<a href="#s' + k + '"' + (k===0?' class="on"':'') + '>' + H(s.c) + '</a>' : '';
+    }).join('');
+  }
+
+  const cnt = () => Object.values(cart).reduce((a,b)=>a+b,0);
+  const sub = () => Object.entries(cart).reduce((a,[k,v]) => a + (items[k]?.p||0)*v, 0);
+  const fee = () => (R.fees && R.fees[mode]) || 0;
+  function feeRow(){ return '<div><span>' + (mode==='pickup'?'Pickup':'Delivery') + ' fee</span><span>' + (fee() ? N(fee()) : 'Confirmed by kitchen') + '</span></div>'; }
+  function totals(){ return '<div><span>Subtotal</span><span>' + N(sub()) + '</span></div>' + feeRow() + '<div class="g"><span>Total</span><span>' + N(sub()+fee()) + '</span></div>'; }
+  function sync(){
+    const c = cnt();
+    $('#cn').textContent = c; $('#cn').hidden = !c;
+    $('#bar').classList.toggle('on', c>0);
+    $('#bt').textContent = c + (c===1 ? ' item' : ' items');
+    $('#bp').textContent = N(sub());
+    $('#cl').innerHTML = Object.entries(cart).map(([k,v]) =>
+      '<div class="ln"><div><b>' + H(items[k]?.n||'') + '</b><br><small>' + N((items[k]?.p||0)*v) + '</small></div>' +
+      '<div class="st"><button data-c="' + k + '" data-d="-1" aria-label="Less">−</button><b>' + v + '</b>' +
+      '<button data-c="' + k + '" data-d="1" aria-label="More">+</button></div></div>'
+    ).join('') || '<p class="none">Your cart is empty.</p>';
+    $('#ct1').innerHTML = totals(); $('#ct2').innerHTML = totals();
+    $('#fw').hidden = mode !== 'delivery';
+    $('#pl').textContent = mode === 'pickup' ? 'Pay on pickup' : 'Pay on delivery';
+  }
+  function show(id){ $$('.sheet').forEach(s => s.classList.toggle('on', s.id===id)); $('#ov').classList.add('on'); document.body.style.overflow = 'hidden'; }
+  function hide(){ $$('.sheet').forEach(s => s.classList.remove('on')); $('#ov').classList.remove('on'); document.body.style.overflow = ''; }
+  function bump(id, d){ cart[id] = (cart[id]||0) + d; if(cart[id] <= 0) delete cart[id]; sync(); if(!cnt() && $('#cs').classList.contains('on')) hide(); }
+  function openItem(id){ cur = items[id]; if(!cur) return; qty = 1; $('#im').innerHTML = pic(cur); $('#in').textContent = cur.n; $('#id').textContent = cur.d || ''; $('#ip').textContent = N(cur.p); qs(); show('is'); }
+  function qs(){ $('#qn').textContent = qty; $('#ad').textContent = 'Add to cart · ' + N(cur.p * qty); }
+
+  $('#mn').addEventListener('click', e => { const it = e.target.closest('.it'); if(!it) return; if(e.target.closest('.add')) bump(it.dataset.id, 1); else openItem(it.dataset.id); });
+  $('#m1').onclick = () => { qty = Math.max(1, qty-1); qs(); };
+  $('#p1').onclick = () => { qty++; qs(); };
+  $('#ad').onclick = () => { bump(cur.id, qty); hide(); };
+  $('#cl').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if(b) bump(b.dataset.c, +b.dataset.d); });
+  $('#bar').onclick = $('#cb').onclick = () => { sync(); show('cs'); };
+  $('#go').onclick = () => cnt() && show('co');
+  $('#ov').onclick = hide;
+  $$('[data-x]').forEach(b => b.onclick = hide);
+  document.addEventListener('keydown', e => { if(e.key==='Escape') hide(); });
+  $('#md').addEventListener('click', e => { const b = e.target.closest('[data-m]'); if(!b) return; mode = b.dataset.m; $$('#md button').forEach(x => x.classList.toggle('on', x===b)); sync(); });
+  $('#q').addEventListener('input', render);
+  $('#po').onclick = async () => {
+    const n = $('#fn').value.trim(), p = $('#fp').value.replace(/\D/g,''), l = $('#fl').value.trim();
+    let e = ''; if(!n) e = 'Please enter your name.'; else if(p.length < 10) e = 'Please enter a valid phone number.'; else if(mode==='delivery' && !l) e = 'Please enter your delivery location.';
+    $('#er').textContent = e; if(e) return;
+    const b = $('#po'); b.disabled = true; b.textContent = 'Placing order…';
+    try {
+      const r = await submitOrder({ restaurant: R.name, mode, name: n, phone: p, location: mode==='delivery' ? l : '', pay: $('[name=pay]:checked').value, note: $('#fo').value.trim(), items: Object.entries(cart).map(([k,v]) => ({ id: +k || k, name: items[k].n, qty: v, price: items[k].p })), subtotal: sub(), fee: fee(), total: sub() + fee() });
+      $('#oid').textContent = r.id; cart = {}; sync(); show('dn');
+    } catch(x) { $('#er').textContent = x.message || 'Could not place your order. Please try again.'; }
+    b.disabled = false; b.textContent = 'Place order';
+  };
+  $('#cp').onclick = async () => { try { await navigator.clipboard.writeText($('#oid').textContent); $('#cp').textContent = 'Copied'; } catch(e) {} };
+  addEventListener('scroll', () => {
+    let a = 0; $$('section[data-k]').forEach(s => { if(s.getBoundingClientRect().top < 120) a = +s.dataset.k; });
+    $$('#ct a').forEach((x,k) => { const on = k === a; if(on && !x.classList.contains('on')) x.parentNode.scrollTo({ left: x.offsetLeft - 20, behavior: 'smooth' }); x.classList.toggle('on', on); });
+  }, { passive: true });
+
+  async function boot(){
+    try {
+      const [tRes, mRes] = await Promise.all([
+        fetch('/api/tenants?slug=' + encodeURIComponent(slug)),
+        fetch('/api/menu?slug=' + encodeURIComponent(slug))
+      ]);
+      const tData = await tRes.json();
+      const mData = await mRes.json();
+      const tenant = tData.tenant;
+      if(tenant){
+        const key = tenant.color_key || 'green';
+        R = {
+          name: tenant.name || 'Restaurant', tag: tenant.tagline || '',
+          brand: PRESETS[key] || tenant.primary_color || '#0f6b3e',
+          logo: tenant.logo_url || '', cover: tenant.cover_url || '',
+          open: tenant.is_active !== false, hours: tenant.hours || '',
+          address: tenant.location_text || '',
+          fees: { pickup: Number(tenant.pickup_fee) || 600, delivery: Number(tenant.delivery_fee) || 0 }
+        };
+      } else if(slug === 'vmk'){
+        R = { name:'Victorious Mega Kitchen', tag:'Rice, soups & grills', brand:'#0f6b3e', logo:'', cover:'', open:true, hours:'Daily · 9am – 10pm', address:'Ugbor, Benin City', fees:{pickup:600,delivery:0} };
+      }
+      applyBrand();
+      const raw = mData.items || mData.menu_items || [];
+      const byCat = {};
+      raw.forEach((it, i) => {
+        const c = (it.category || 'Other').trim() || 'Other';
+        if(!byCat[c]) byCat[c] = [];
+        const id = String(it.id || ('i'+i));
+        const row = { id, n: it.name, p: Number(it.price) || 0, d: it.description || it.desc || '', img: it.image_url || it.img || '', pop: !!it.popular };
+        byCat[c].push(row); items[id] = row;
+      });
+      M = Object.keys(byCat).map(c => ({ c, i: byCat[c] }));
+      if(!M.length && slug === 'vmk'){
+        M = [ { c:'Rice & mains', i:[{id:'1',n:'Jollof Rice',p:1500,d:'Smoky party-style jollof.',img:'',pop:1},{id:'2',n:'Fried Rice',p:1800,d:'',img:''}] }, { c:'Soups', i:[{id:'4',n:'Egusi Soup',p:2000,d:'',img:'',pop:1}] } ];
+        M.forEach(s => s.i.forEach(i => items[i.id] = i));
+      }
+      render(); sync();
+    } catch(err){
+      $('#mn').innerHTML = '<p class="none">Could not load this kitchen. <a href="/">Back to Leva</a></p>';
+    }
+  }
+  boot();
+})();
+</script>
 </body>
 </html>
