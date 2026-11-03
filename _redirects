@@ -1,4 +1,16 @@
-# Homepage is index.html at /
-# Do not rewrite /login /signup /dashboard — CF pretty URLs handle those.
+# MAINTENANCE MODE — easy to revert
+# Homepage is now the offline page
 
 /restaurant/*	/food/:splat	302
+
+# Force common entry points to the maintenance homepage
+/login	/	302
+/signup	/	302
+/join	/	302
+/dashboard	/	302
+/staff	/	302
+/kds	/	302
+/order	/	302
+/order-status	/	302
+/status	/	302
+/qr-menu	/	302
